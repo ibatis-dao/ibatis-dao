@@ -3,6 +3,7 @@ package fxapp01.dto;
 import fxapp01.excpt.EArgumentBreaksRule;
 import fxapp01.excpt.ENegativeArgument;
 import fxapp01.excpt.ENullArgument;
+import fxapp01.excpt.EUnsupported;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 
@@ -65,8 +66,8 @@ public class LimitedIntRange {
     }
 
     private static boolean IsIntRule3Ok(final String callerMethodName, int first, int length, int rightLimit) throws EArgumentBreaksRule {
-        if (first+length > rightLimit) {
-            throw new EArgumentBreaksRule(callerMethodName, "first+length <= rightLimit");
+        if (first+length-1 > rightLimit) {
+            throw new EArgumentBreaksRule(callerMethodName, "first+length-1 <= rightLimit");
         }
         return true;
     }
@@ -88,7 +89,7 @@ public class LimitedIntRange {
     private boolean IsInternalRulesOk(final String callerMethodName) {
         IsIntRule1Ok(callerMethodName, leftLimit, first); // leftLimit <= first
         IsIntRule2Ok(callerMethodName, length); // length >= 0
-        IsIntRule3Ok(callerMethodName, first, length, rightLimit); // first+length <= rightLimit
+        IsIntRule3Ok(callerMethodName, first, length, rightLimit); // first+length-1 <= rightLimit
         IsIntRule4Ok(callerMethodName, leftLimit, rightLimit); // leftLimit <= rightLimit
         return true;
     }
@@ -104,6 +105,7 @@ public class LimitedIntRange {
      */
     public void setFirst(int first) {
         IsIntRule1Ok("setFirst", leftLimit, first); // leftLimit <= first
+        IsIntRule3Ok("setFirst", first, length, rightLimit); // first+length-1 <= rightLimit
         this.first = first;
     }
 
@@ -120,14 +122,14 @@ public class LimitedIntRange {
     public void setLength(int length) {
         log.debug(">>> setLength("+length+")");
         IsIntRule2Ok("setLength", length); // length >= 0
-        IsIntRule3Ok("setLength", first, length, rightLimit); // first+length <= rightLimit
+        IsIntRule3Ok("setLength", first, length, rightLimit); // first+length-1 <= rightLimit
         this.length = length;
     }
     
     public void incLength(int increment) {
         log.debug(">>> incLength("+increment+"). old length="+length);
         if (IsIntRule2Ok("incLength", length+increment)) { // length >= 0
-            IsIntRule3Ok("incLength", first, length+increment, rightLimit); // first+length <= rightLimit
+            IsIntRule3Ok("incLength", first, length+increment, rightLimit); // first+length-1 <= rightLimit
         }
         this.length = length + increment;
     }
@@ -147,7 +149,7 @@ public class LimitedIntRange {
     }
 
     public void setRightLimit(int rightLimit) {
-        IsIntRule3Ok("setRightLimit", first, length, rightLimit); // first+length <= rightLimit
+        IsIntRule3Ok("setRightLimit", first, length, rightLimit); // first+length-1 <= rightLimit
         IsIntRule4Ok("setRightLimit", leftLimit, rightLimit); // leftLimit <= rightLimit
         log.debug("setRightLimit(rightLimit="+rightLimit+")");
         this.rightLimit = rightLimit;
@@ -208,6 +210,14 @@ public class LimitedIntRange {
     }
     
     /**
+     * Определяет, является ли текущий диапазон вырожденным
+     * @return 
+     */
+    public boolean IsSingular() {
+        return ((this == Singular) || ((first == 0) && (length == 0)));
+    }
+    
+    /**
      * Определяет, входит ли указанная отметка в текущий диапазон
      * @param value
      * @return 
@@ -218,24 +228,12 @@ public class LimitedIntRange {
     }
     
     /**
-     * Определяет, пересекаются ли указанный диапазон с текущим
-     * @param aRange
-     * @return 
-     */
-    public boolean IsOverlapped(LimitedIntRange aRange) {
-        if (aRange == null) {
-            throw new ENullArgument("IsOverlapped");
-        } 
-        return !((getLast() < aRange.getFirst()) || (getFirst() > aRange.getLast()));
-    }
-    
-    /**
      * Определяет, накрывает ли целиком указанный диапазон (т.е. помещается ли 
-     * текущий диапазон внутри указанного)
+     * текущий диапазон целиком внутри указанного)
      * @param aRange
      * @return 
      */
-    public boolean IsCoveredBy(LimitedIntRange aRange) {
+    public boolean IsInbound(LimitedIntRange aRange) {
         if (aRange == null) {
             throw new ENullArgument("IsCoveredBy");
         } 
@@ -254,6 +252,7 @@ public class LimitedIntRange {
             return 0;
         } else {
             int dist = Math.min(Math.abs(to - first), Math.abs(to - getLast()));
+            log.debug("dist="+dist);
             if (to < first) {
                 return - dist;
             } else {
@@ -268,11 +267,13 @@ public class LimitedIntRange {
     Если точка внутри самого диапазона, то расстояние = 0
     */
     public int getMaxDistance(int to) {
+        log.trace("getMaxDistance(to="+to+")");
         IsIntRule5Ok("getMaxDistance", leftLimit, to, rightLimit); // leftLimit >= to >= rightLimit
         if (IsInbound(to)) {
             return 0;
         } else {
             int dist = Math.max(Math.abs(to - first), Math.abs(to - getLast()));
+            log.debug("dist="+dist);
             if (to < first) {
                 return - dist;
             } else {
@@ -282,11 +283,15 @@ public class LimitedIntRange {
     }
     
     /**
-     * Определяет, является ли текущий диапазон вырожденным
+     * Определяет, пересекаются ли указанный диапазон с текущим
+     * @param aRange
      * @return 
      */
-    public boolean IsSingular() {
-        return (this == Singular);
+    public boolean IsOverlapped(LimitedIntRange aRange) {
+        if (aRange == null) {
+            throw new ENullArgument("IsOverlapped");
+        } 
+        return !((getLast() < aRange.getFirst()) || (getFirst() > aRange.getLast()));
     }
     
     /**
@@ -295,14 +300,17 @@ public class LimitedIntRange {
      * @return 
    */
     public LimitedIntRange Overlap(LimitedIntRange aRange) {
+        log.trace("Overlap(aRange)");
         if (aRange == null) {
             throw new ENullArgument("Overlap");
         }
         if (IsOverlapped(aRange)) {
+            log.debug("IsOverlapped");
             int maxStart = Math.max(first, aRange.getFirst());
             int minLast = Math.min(getLast(), aRange.getLast());
-            return new LimitedIntRange(maxStart, minLast - maxStart);
+            return new LimitedIntRange(maxStart, minLast - maxStart + 1);
         } else {
+            log.debug("Is not overlapped. returns Singular");
             return Singular;
         }
     }
@@ -320,7 +328,7 @@ public class LimitedIntRange {
         int minStart = Math.max(leftLimit, Math.min(first, aRange.getFirst()));
         int maxLast = Math.min(Math.max(getLast(), aRange.getLast()), rightLimit);
         log.debug("Add(). minStart="+minStart+", maxLast="+maxLast);
-        return new LimitedIntRange(minStart, maxLast - minStart);
+        return new LimitedIntRange(minStart, maxLast - minStart + 1);
     }
 
     /**
@@ -330,12 +338,24 @@ public class LimitedIntRange {
      */
     public LimitedIntRange Extend(int to) {
         IsIntRule5Ok("Extend", leftLimit, to, rightLimit); // leftLimit >= to >= rightLimit
-        int minStart = Math.max(leftLimit, Math.min(first, to));
-        int maxLast = Math.min(Math.max(getLast(), to), rightLimit);
-        log.debug("Add(). minStart="+minStart+", maxLast="+maxLast);
-        return new LimitedIntRange(minStart, maxLast - minStart);
+        if (IsInbound(to)) {
+            return Singular;
+        } else {
+            int minStart = Math.max(leftLimit, Math.min(first, to));
+            int maxLast = Math.min(Math.max(getLast(), to), rightLimit);
+            log.debug("Extend(). minStart="+minStart+", maxLast="+maxLast);
+            return new LimitedIntRange(minStart, maxLast - minStart + 1);
+        }
     }
 
+    /*
+    * смещает начало диапазона на указанную величину
+    */
+    public LimitedIntRange Shift(int value) {
+        //setFirst(first+value);
+        return new LimitedIntRange(Math.max(leftLimit, first+value), length);
+    }
+    
     /**
      * Вычитает указанный диапазон из текущего. 
      * Результирующий диапазон включает в себя часть текущего диапазона, не 
@@ -346,6 +366,9 @@ public class LimitedIntRange {
      * @return 
      */
     public LimitedIntRange Sub(LimitedIntRange aRange) {
+        throw new EUnsupported(); 
+    /*
+        //а если из охватывающего диапазона вычитают меньший, входящий в него ?
         if (aRange == null) {
             throw new ENullArgument("Sub");
         }
@@ -362,16 +385,9 @@ public class LimitedIntRange {
             log.debug("Sub(). Not overlapped. first="+first+", length="+length);
             return new LimitedIntRange(first, length);
         }
+    */
     }
 
-    /*
-    * смещает начало диапазона на указанную величину
-    */
-    public LimitedIntRange Shift(int value) {
-        //setFirst(first+value);
-        return new LimitedIntRange(Math.max(leftLimit, first+value), length);
-    }
-    
     /**
      * Возвращает диапазон, который дополняет текущий диапазон до указанной точки. 
      * @param to
@@ -381,10 +397,10 @@ public class LimitedIntRange {
         log.trace("Complement(to="+to+")");
         int dist = getMinDistance(to);
         if (dist < 0) {
-            return new LimitedIntRange(first + dist, - dist - 1);
+            return new LimitedIntRange(first + dist, - dist);
         } else {
             if (dist > 0) {
-                return new LimitedIntRange(first + dist + 1, dist);
+                return new LimitedIntRange(first + dist - 1, dist);
             } else {
                 return Singular;
             }

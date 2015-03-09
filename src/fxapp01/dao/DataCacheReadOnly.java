@@ -39,7 +39,7 @@ public class DataCacheReadOnly<T> implements List {
         this.maxSize = 300;
         this.data = new ArrayList<>();
         log.debug("before new IntRange");
-        this.range = new LimitedIntRange(0, this.defSize); 
+        this.range = new LimitedIntRange(0, 0); 
         log.trace(exiting+methodName);
     }
     
@@ -49,7 +49,7 @@ public class DataCacheReadOnly<T> implements List {
         log.trace(entering+methodName);
         this.defSize = defSize;
         this.maxSize = maxSize;
-        range.setLength(this.defSize);
+        //range.setLength(this.defSize);
         log.trace(exiting+methodName);
     }
 
@@ -187,11 +187,12 @@ public class DataCacheReadOnly<T> implements List {
         /* округляем до ближайшего большего целого размера страницы кеша */
         log.debug("AlignToCacheDefSize(point="+point+")");
         int pagePart = defSize - (point % defSize);
+        log.debug("pagePart="+pagePart);
         if (pagePart != 0) {
             if (point < 0) {
-                point =- pagePart;
+                point = point - pagePart + 1;
             } else {
-                point =+ pagePart;
+                point = point + pagePart - 1;
             }
         }
         log.debug("point="+point);
@@ -217,13 +218,17 @@ public class DataCacheReadOnly<T> implements List {
             //если строка за пределами текущего диапазона
             //рассчитываем расстояние до указаной строки
             int target = range.getMaxDistance(index);
+            log.debug("before AlignToCacheDefSize. target="+target);
             // строка (позиция, точка), выровненная по границе страниц кеша
             target = AlignToCacheDefSize(target);
+            log.debug("after AlignToCacheDefSize. target="+target);
             // расстояние в целых страницах кеша
             int dist = Math.abs(target);
+            log.debug("dist="+dist);
             LimitedIntRange aRange;
             //если расчетная длина диапазона меньше максимально допустимого размера кеша
             if (dist <= maxSize) {
+                log.debug("dist <= maxSize");
                 //вычисляем диапазон строк, который требуется дозагрузить
                 //загружаем только новую порцию данных.  
                 //ту часть диапазона, что уже есть в кеше, исключаем из загрузки

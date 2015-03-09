@@ -48,7 +48,9 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>, IData
         this.cache.addAll(l);
         */
         log.debug("before requestDataPage");
-        dps.fetch(cache.getRange(), 0);
+        LimitedIntRange initRange = cache.getRange().clone();
+        initRange.setLength(20);
+        dps.fetch(initRange, 0);
         log.trace("<<< constructor");
     }
     
