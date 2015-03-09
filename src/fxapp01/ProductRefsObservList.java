@@ -35,11 +35,18 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>{
         log.trace(">>> constructor");
         this.changeListeners = new ArrayList<>();
         this.invListeners = new ArrayList<>();
+        log.debug("before new DataCacheReadOnly");
         this.cache = new DataCacheReadOnly<>(20, 300);
+        log.debug("before FXCollections.observableList");
         this.dataFacade = FXCollections.observableList(cache);
+        log.debug("before new ProductRefsDAO");
         this.dao = new ProductRefsDAO();
-        List<ProductRefs> l = dao.select(cache.getRange());
+        /*
+        List<ProductRefs> l = dao.select();
         this.cache.addAll(l);
+        */
+        log.debug("before requestDataPage");
+        requestDataPage(cache.getRange());
         log.trace("<<< constructor");
     }
     
@@ -205,6 +212,12 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>{
         } else {
             log.debug("Out of cache. Try find new range");
             //если строка за пределами диапазона
+            //определяем расстояние от дальнего края текущего диапазона до указаной строки
+            int dist = cache.getRange().getMaxDistance(index);
+            //если расстояние меньше максимального размера кеша
+            // TODO: продолжить с этого места мета-описание логики из requestDataPage
+            
+            
             //проверяем прилегающий диапазон слева
             IntRange l = cache.getRange().Shift(- cache.getDefSize());
             if (l.IsInbound(index)) {
@@ -234,51 +247,79 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>{
         return cache.get(index);
     }
 
-    public void requestDataPage(IntRange aRowsRange) {
+    private void requestDataPage(IntRange aRowsRange) {
+    /* мета-описание логики работы:
+    1. проверяем, есть ли в кеше данные (первоначальная загрузка)
+    если данных нет, а запрошенный диапазон равен дипазону кеша, то считаем, что это первая загрузка
+    загружаем данные и корректируем дипазон в соответствии с фактически загруженным кол-вом строк
+    корректировка нужна, чтобы: 
+        1.учесть особенности нумерации строк в разных БД, (н-р, в postgres offset 
+        начинается с 0, в oracle rownum начинается с 1)
+        2.учесть вероятность того, что из БД будут возвращено не то кол-во записей, 
+        которое изначально предполагалось, поскольку записи могут быть добавлены/удалены 
+        другими пользователями и кол-во строк в таблице изменится
+    2. если ранее загруженная и запрошенная сейчас страницы пересекаются 
+    (имеют общий диапазон), загружаем только ту часть запрошенной страницы, 
+    которая выходит за рамки ранее загруженной. корректируем диапазон в соответствии 
+    с фактически загруженным кол-вом. проверяем, не превышен ли размер кеша и 
+    удаляем лишние данные. помещаем загруженные данные в начало или в конец кеша - 
+    в зависимости от того, с какой стороны находится запрошенная страница по отношению 
+    к ранее загруженной.
+    3. если запрошенная страница не пересекается с текущей.
+    смотрим, как далеко она находится. если расстояние от текущей до запрошенной 
+    не превышает максимальный размер кеша, загружаем весь диапазон. корректируем 
+    дипазон под кол-во фактически загруженных строк. добавляем в кеш.
+    4. если расстояние от текущей до запрошенной страницы превышает максимальный 
+    размер кеша, очищаем текущий кеш и загружаем данные запрошенного диапазона, 
+    как при первоначальной загрузке
+    */
         log.trace(">>> requestDataPage");
-        /*
-        * если ранее загруженная и запрошенная сейчас страницы пересекаются 
-        * (имеют общий диапазон), загружаем только ту часть запрошенной страницы, 
-        * которая выходит за рамки ранее загруженной и добавляем её в начало или 
-        * в конец кеша - в зависимости от того, с какой стороны находится запрошенная
-        * страница по отношению к ранее загруженной
-        */
         if (aRowsRange == null) {
             throw new ENullArgument("requestDataPage");
         }
         // вычисляем новую порцию данных дя загрузки
         IntRange aRange;
-        //если диапазоны пересекаются
-        if (cache.getRange().IsOverlapped(aRowsRange)) {
-            log.debug("cache range overlapped");
-            //загружаем только новую порцию данных. ту часть, что уже есть, не загружаем
-            aRange = aRowsRange.Sub(cache.getRange());
+        if ((cache.isEmpty()) && (cache.getRange().equals(aRowsRange))) {
+        //если кеш пуст, а диапазоны совпадают, то это - первоначальная загрузка
+            log.debug("initial cache loading");
+            aRange = aRowsRange.clone();
+            cache.getRange().setLength(0);
         } else {
-            log.debug("cache range not overlapped");
-            // если диапазоны не пересекаются, вычислим диапазон, включающий оба 
-            aRange = aRowsRange.Add(cache.getRange());
-            //а затем вычтем из него исходный
-            aRange = cache.getRange().Sub(aRange);
+            throw new EUnsupported();
+            /*
+            //если диапазоны пересекаются
+            if (cache.getRange().IsOverlapped(aRowsRange)) {
+                log.debug("cache range overlapped");
+                //загружаем только новую порцию данных. ту часть, что уже есть, не загружаем
+                aRange = aRowsRange.Sub(cache.getRange());
+            } else {
+                log.debug("cache range not overlapped");
+                // если диапазоны не пересекаются, вычислим диапазон, включающий оба 
+                aRange = aRowsRange.Add(cache.getRange());
+                //а затем вычтем из него исходный
+                aRange = cache.getRange().Sub(aRange);
+            }
+            */
         }
+        /*
         //ограничим длину запрашиваемого диапазона
         aRange.setLength(Math.min(aRange.getLength(), cache.getMaxSize()));
         log.debug("define new cache range. first="+aRange.getFirst()+", length="+aRange.getLength());
         // фактически запрашиваем данные для вычисленного диапазона
-        throw new EUnsupported();
-        /*
+        */
+        
         List<ProductRefs> l = dao.select(aRange);
         //смотрим, куда добавлять полученные данные - в начало кеша или в конец
-        if (aRange.getFirst() <= cache.getRange().getFirst()) {
+        if (aRange.getFirst() < cache.getRange().getFirst()) {
             //добавляем в начало
-            log.debug("insert into start. Range.first<= cache.first.");
+            log.debug("insert into start. Range.first < cache.first.");
             cache.addAll(1, l);
         } else {
             //добавляем в конец
-            log.debug("add at end. Range.first<= cache.first.");
+            log.debug("add at end. Range.first >= cache.first.");
             cache.addAll(l);
         }
         log.trace("<<< requestDataPage");
-        */
     }
 
     @Override

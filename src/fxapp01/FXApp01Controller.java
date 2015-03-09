@@ -5,26 +5,18 @@
  */
 package fxapp01;
 
-import com.sun.javafx.scene.control.skin.TableViewSkin;
-import com.sun.javafx.scene.control.skin.VirtualFlow;
-import fxapp01.dto.IntRange;
-import fxapp01.dto.ProductRefs;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 import java.net.URL;
 import java.util.ResourceBundle;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
-import javafx.scene.control.Skin;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.util.Callback;
 
 /**
  * http://docs.oracle.com/javafx/2/ui_controls/table-view.htm
@@ -89,6 +81,7 @@ public class FXApp01Controller implements Initializable {
         log.trace("<<< initialize");
     }
     
+    /*
     protected IntRange getVisibleRows01() {
         //http://stackoverflow.com/questions/26159224/tableview-visible-rows
         log.trace(">>> getVisibleRows");
@@ -112,4 +105,5 @@ public class FXApp01Controller implements Initializable {
         log.trace("<<< getVisibleRows");
         return r;
     }
+    */
 }

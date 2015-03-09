@@ -17,7 +17,7 @@ public class IntRange {
     private int length;
     private int leftLimit;
     private int rightLimit;
-    private static IntRange Singular = new IntRange(0, 0, 0, 0);
+    private static final IntRange Singular = new IntRange(0, 0, 0, 0);
 
     public IntRange() {
         first = 0;
@@ -39,6 +39,7 @@ public class IntRange {
     
     public IntRange(int first, int length, int leftLimit, int rightLimit) {
         this(first, length);
+        log.trace(">>> contructor(first="+first+", length="+length+", leftLimit="+leftLimit+", rightLimit="+rightLimit+")");
         if (first < leftLimit) {
             throw new EArgumentBreaksRule("Constructor", "leftLimit <= first");
         }
@@ -87,6 +88,18 @@ public class IntRange {
         this.length = length;
     }
     
+    public void incLength(int increment) {
+        log.debug(">>> incLength("+increment+"). old length="+length);
+        if (length+increment < 0) {
+            throw new EArgumentBreaksRule("incLength", "length+increment >= 0");
+        } else {
+            if (first+length+increment > rightLimit) {
+                throw new EArgumentBreaksRule("incLength", "first+length <= rightLimit");
+            }
+        }
+        this.length = length + increment;
+    }
+    
     public int getLeftLimit() {
         return leftLimit;
     }
@@ -121,16 +134,43 @@ public class IntRange {
         return first+length-1;
     }
     
+    
+    @Override
+    public IntRange clone() {
+        //IntRange n = (IntRange) super.clone();
+        return new IntRange(first, length, leftLimit, rightLimit);
+    }
+    
     /**
      * Определяет, равны ли (полностью совпадают) указанный диапазон с текущим
-     * @param aRange
+     * @param o
      * @return 
      */
-    public boolean IsEqual(IntRange aRange) {
-        if (aRange == null) {
-            throw new ENullArgument("IsEqual");
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+        //если параметр = null, то он не может быть равен текущему экземпляру
+            return false;
+        } else {
+            //если тип входного параметра нельзя присвоить текущему типу, 
+            //то их нельзя сравнить. он не может быть равен текущему экземпляру
+            if (! o.getClass().isAssignableFrom(this.getClass())) {
+                log.debug("!!! equals("+o.getClass().getName()+")=FALSE");
+                return false;
+            } else {
+                return (hashCode() == o.hashCode());
+            }
         }
-        return (first == aRange.getFirst()) && (length == aRange.getLength());
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 89 * hash + this.first;
+        hash = 89 * hash + this.length;
+        hash = 89 * hash + this.leftLimit;
+        hash = 89 * hash + this.rightLimit;
+        return hash;
     }
     
     /**
@@ -153,6 +193,48 @@ public class IntRange {
             throw new ENullArgument("IsOverlapped");
         } 
         return !((getLast() < aRange.getFirst()) || (getFirst() > aRange.getLast()));
+    }
+    
+    /*
+    Определяет расстояние от указанной точки до до ближайшей границы диапазона
+    Если точка указана за макс. границами, то ошибка
+    Если точка внутри самого диапазона, то расстояние = 0
+    */
+    public int getMinDistance(int to) {
+        if ((to < leftLimit) || (to > rightLimit)) {
+            throw new EArgumentBreaksRule("getMinDistance", "leftLimit >= to >= rightLimit");
+        }
+        if (IsInbound(to)) {
+            return 0;
+        } else {
+            int dist = Math.min(Math.abs(to - first), Math.abs(to - getLast()));
+            if (to < first) {
+                return - dist;
+            } else {
+                return dist;
+            }
+        }
+    }
+    
+    /*
+    Определяет расстояние от указанной точки до до ближайшей границы диапазона
+    Если точка указана за макс. границами, то ошибка
+    Если точка внутри самого диапазона, то расстояние = 0
+    */
+    public int getMaxDistance(int to) {
+        if ((to < leftLimit) || (to > rightLimit)) {
+            throw new EArgumentBreaksRule("getMaxDistance", "leftLimit >= to >= rightLimit");
+        }
+        if (IsInbound(to)) {
+            return 0;
+        } else {
+            int dist = Math.max(Math.abs(to - first), Math.abs(to - getLast()));
+            if (to < first) {
+                return - dist;
+            } else {
+                return dist;
+            }
+        }
     }
     
     /**

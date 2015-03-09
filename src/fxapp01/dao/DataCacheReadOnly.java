@@ -20,22 +20,27 @@ public class DataCacheReadOnly<T> implements List {
     // фактическое начало (порядковый номер первой строки) и фактический размер 
     // окна данных в рамках источника данных. 
     private IntRange range;
-    int defSize;
-    int maxSize;
+    private int defSize;
+    private int maxSize;
     private final List<T> data;
     
     public DataCacheReadOnly() {
+        log.trace(">>> constructor()");
         this.defSize = 100; //defaults
         this.maxSize = 300;
         this.data = new ArrayList<>();
-        this.range = new IntRange(0, defSize); 
+        log.debug("before new IntRange");
+        this.range = new IntRange(0, this.defSize); 
+        log.trace("<<< constructor()");
     }
     
     public DataCacheReadOnly(int defSize, int maxSize) {
         this();
+        log.trace(">>> constructor(defSize, maxSize)");
         this.defSize = defSize;
         this.maxSize = maxSize;
-        range.setLength(defSize);
+        range.setLength(this.defSize);
+        log.trace("<<< constructor(defSize, maxSize)");
     }
 
     public IntRange getRange() {
@@ -71,7 +76,7 @@ public class DataCacheReadOnly<T> implements List {
     public int size() {
         //**********************************************************************
         int sz = data.size();
-        log.trace(">>> size()="+sz);
+        log.trace(">>> size()="+sz+", range.length="+range.getLength());
         //return dataFacade.size();
         return sz;
     }
@@ -80,6 +85,7 @@ public class DataCacheReadOnly<T> implements List {
     public void clear() {
         log.trace(">>> clear");
         data.clear();
+        range.setLength(0);
     }
     
     @Override
@@ -109,12 +115,20 @@ public class DataCacheReadOnly<T> implements List {
 
     @Override
     public boolean add(Object e) {
-        return data.add((T)e);
+        boolean res = data.add((T)e);
+        if (res) {
+            range.incLength(1);
+        }
+        return res;
     }
 
     @Override
     public boolean remove(Object o) {
-        return data.remove(o);
+        boolean res = data.remove(o);
+        if (res) {
+            range.incLength(-1);
+        }
+        return res;
     }
 
     @Override
@@ -124,16 +138,25 @@ public class DataCacheReadOnly<T> implements List {
 
     @Override
     public boolean addAll(Collection c) {
+        if (c != null) {
+            range.incLength(c.size());
+        }
         return data.addAll(c);
     }
 
     @Override
     public boolean addAll(int index, Collection c) {
+        if (c != null) {
+            range.incLength(c.size());
+        }
         return data.addAll(index, c);
     }
 
     @Override
     public boolean removeAll(Collection c) {
+        if (c != null) {
+            range.incLength(- c.size());
+        }
         return data.removeAll(c);
     }
 
@@ -144,6 +167,9 @@ public class DataCacheReadOnly<T> implements List {
 
     @Override
     public T get(int index) {
+    /***************************************************************************
+     * 
+    ***************************************************************************/
         return data.get(index-range.getFirst());
     }
 
@@ -154,11 +180,13 @@ public class DataCacheReadOnly<T> implements List {
 
     @Override
     public void add(int index, Object element) {
+        range.incLength(1);
         data.add(index, (T)element);
     }
 
     @Override
     public Object remove(int index) {
+        range.incLength(-1);
         return data.remove(index);
     }
 

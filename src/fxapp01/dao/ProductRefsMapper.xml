@@ -29,7 +29,7 @@
                name
           from t001
       )
-     where rn between #{first}+1 and #{last}+1
+     where rn between #{first} and #{last}
     </select>
 
     <select id="selectByID" databaseId="oracle" parameterType="BigInteger" resultMap="ProductRefsMap">
