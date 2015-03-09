@@ -1,6 +1,5 @@
 package fxapp01.dto;
 
-import com.sun.org.apache.xpath.internal.operations.Equals;
 import java.io.Serializable;
 import java.math.BigInteger;
 import javafx.beans.property.IntegerProperty;

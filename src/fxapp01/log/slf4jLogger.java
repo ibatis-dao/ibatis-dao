@@ -57,6 +57,21 @@ public class slf4jLogger implements ILogger {
     public void error(String string, Throwable thrwbl) {
         log.error(string, thrwbl);
     }
+
+    @Override
+    public boolean isEnabled(ILogger.Level lvl) {
+        //throw new UnsupportedOperationException("Not supported yet.");
+        switch (lvl) {
+            case All: return true;
+            case Trace: return log.isTraceEnabled();
+            case Debug: return log.isDebugEnabled();
+            case Info: return log.isInfoEnabled();
+            case Warn: return log.isWarnEnabled();
+            case Error: return log.isErrorEnabled();
+            case Off: return false;
+            default: return log.isInfoEnabled();
+        }
+    }
     
 }
 

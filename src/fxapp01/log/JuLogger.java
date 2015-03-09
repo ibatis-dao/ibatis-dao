@@ -9,7 +9,6 @@ package fxapp01.log;
 //import org.slf4j.LoggerFactory;
 
 //java.util.logging
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
@@ -57,7 +56,7 @@ public class JuLogger implements ILogger {
     @Override
     public void warn(String string, Throwable thrwbl) {
         //log.warn(string, thrwbl); // slf4j, log4j
-        log.log(Level.WARNING, string, thrwbl); //java.util.logging
+        log.log(java.util.logging.Level.WARNING, string, thrwbl); //java.util.logging
     }
     
     @Override
@@ -69,7 +68,26 @@ public class JuLogger implements ILogger {
     @Override
     public void error(String string, Throwable thrwbl) {
         //log.error(string, thrwbl); // slf4j, log4j
-        log.log(Level.SEVERE, string, thrwbl); //java.util.logging
+        log.log(java.util.logging.Level.SEVERE, string, thrwbl); //java.util.logging
+    }
+    
+    private java.util.logging.Level convertLevel(ILogger.Level lvl) {
+        switch (lvl) {
+            case All: return java.util.logging.Level.ALL;
+            case Trace: return java.util.logging.Level.FINEST;
+            case Debug: return java.util.logging.Level.FINE;
+            case Info: return java.util.logging.Level.INFO;
+            case Warn: return java.util.logging.Level.WARNING;
+            case Error: return java.util.logging.Level.SEVERE;
+            case Off: return java.util.logging.Level.OFF;
+            default: return java.util.logging.Level.INFO;
+        }
+    }
+
+    @Override
+    public boolean isEnabled(ILogger.Level lvl) {
+        //throw new UnsupportedOperationException("Not supported yet.");
+        return log.isLoggable(convertLevel(lvl));
     }
     
 }

@@ -24,7 +24,7 @@
           )
     select id, name
       from (
-        select rownum - 1 as rn, 
+        select rownum as rn, 
                id, 
                name
           from t001
@@ -67,7 +67,12 @@
     end;
     </insert>
     
-    <insert id="insertRow" databaseId="postgresql" statementType="CALLABLE" parameterType="ProductRefs">
-        //TODO
+    <insert id="insertRow" databaseId="postgresql" useGeneratedKeys="true" keyProperty="id" parameterType="ProductRefs">
+    insert into test02 (id, name) 
+    values (DEFAULT, #{name})
+    </insert>
+
+    <insert id="insertRowBySP" databaseId="postgresql" statementType="CALLABLE" parameterType="ProductRefs">
+    select public."test02_insertRow3"(#{id,mode=IN,jdbcType=BIGINT}, #{name,mode=IN,jdbcType=VARCHAR})
     </insert>
 </mapper>

@@ -26,3 +26,45 @@ ALTER FUNCTION test01datagenerator()
   OWNER TO postgres;
 
 SELECT test02datagenerator();
+
+-- DROP FUNCTION "test02_insertRow"(bigint, character varying);
+
+CREATE OR REPLACE FUNCTION "test02_insertRow"("pId" bigint, "pName" character varying)
+  RETURNS test02 AS
+$BODY$begin
+  insert into test02 (id, name)
+  values (pId, pName)
+  returning *;
+end;$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION "test02_insertRow"(bigint, character varying)
+  OWNER TO postgres;
+
+-- DROP FUNCTION "test02_insertRow2"(test02);
+
+CREATE OR REPLACE FUNCTION "test02_insertRow2"("pRow" test02)
+  RETURNS test02 AS
+$BODY$begin
+  insert into test02 
+  values (pRow)
+  returning *;
+end;$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION "test02_insertRow2"(test02)
+  OWNER TO postgres;
+
+-- DROP FUNCTION "test02_insertRow3"(bigint, character varying);
+
+CREATE OR REPLACE FUNCTION "test02_insertRow3"("pId" bigint, "pName" character varying)
+  RETURNS test02 AS
+$BODY$begin
+  insert into test02 
+  values (pRow)
+  returning *;
+end;$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION "test02_insertRow3"(bigint, character varying)
+  OWNER TO postgres;

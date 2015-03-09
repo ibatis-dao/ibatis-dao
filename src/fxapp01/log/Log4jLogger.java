@@ -57,5 +57,24 @@ public class Log4jLogger implements ILogger {
     public void error(String string, Throwable thrwbl) {
         log.error(string, thrwbl);
     }
+
+    private org.apache.log4j.Level convertLevel(ILogger.Level lvl) {
+        switch (lvl) {
+            case All: return org.apache.log4j.Level.ALL;
+            case Trace: return org.apache.log4j.Level.TRACE;
+            case Debug: return org.apache.log4j.Level.DEBUG;
+            case Info: return org.apache.log4j.Level.INFO;
+            case Warn: return org.apache.log4j.Level.WARN;
+            case Error: return org.apache.log4j.Level.ERROR;
+            case Off: return org.apache.log4j.Level.OFF;
+            default: return org.apache.log4j.Level.INFO;
+        }
+    }
+
+    @Override
+    public boolean isEnabled(ILogger.Level lvl) {
+        //throw new UnsupportedOperationException("Not supported yet.");
+        return log.isEnabledFor(convertLevel(lvl));
+    }
     
 }

@@ -6,6 +6,10 @@ package fxapp01.log;
  */
 public interface ILogger {
     
+    public enum Level {
+        All, Trace, Debug, Info, Warn, Error, Off
+    }
+    
     public void info(String string);
     
     public void trace(String string);
@@ -19,5 +23,7 @@ public interface ILogger {
     public void error(String string);
     
     public void error(String string, Throwable thrwbl);
+    
+    public boolean isEnabled(ILogger.Level lvl);
     
 }

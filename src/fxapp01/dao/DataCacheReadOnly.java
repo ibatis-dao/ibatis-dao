@@ -1,7 +1,6 @@
 package fxapp01.dao;
 
 import fxapp01.dto.LimitedIntRange;
-import fxapp01.dto.ProductRefs;
 import fxapp01.excpt.EArgumentBreaksRule;
 import fxapp01.excpt.ENullArgument;
 import fxapp01.log.ILogger;
@@ -233,6 +232,7 @@ public class DataCacheReadOnly<T> implements List {
     /***************************************************************************
      * 
     ***************************************************************************/
+        index = /*range.getLeftLimit() +*/ index;
         log.trace(entering+getClass().getName()+".get(index="+index+").-------------------------------------------");
         log.debug("range=("+range+")");
         //проверяем, находится ли строка в пределах текущего диапазона
