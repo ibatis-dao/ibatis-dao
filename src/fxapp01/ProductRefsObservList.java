@@ -242,55 +242,13 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>, IData
     размер кеша, очищаем текущий кеш и загружаем данные запрошенного диапазона, 
     как при первоначальной загрузке
     */
-        log.trace(">>> fetch(aRowsRange.first="+aRowsRange.getFirst()+", aRowsRange.length="+aRowsRange.getLength()+", pos="+pos+")");
+        log.trace(">>> fetch(aRowsRange="+aRowsRange+"), pos="+pos+")");
         if (aRowsRange == null) {
             throw new ENullArgument("fetch");
         }
         List<ProductRefs> l = dao.select(aRowsRange);
         cache.addAll(pos, l);
-        /*
-        // вычисляем новую порцию данных дя загрузки
-        LimitedIntRange aRange;
-        if ((cache.isEmpty()) && (cache.getRange().equals(aRowsRange))) {
-        //если кеш пуст, а диапазоны совпадают, то это - первоначальная загрузка
-            log.debug("initial cache loading");
-            aRange = aRowsRange.clone();
-            cache.getRange().setLength(0);
-        } else {
-            throw new EUnsupported();
-            //если диапазоны пересекаются
-            if (cache.getRange().IsOverlapped(aRowsRange)) {
-                log.debug("cache range overlapped");
-                //загружаем только новую порцию данных. ту часть, что уже есть, не загружаем
-                aRange = aRowsRange.Sub(cache.getRange());
-            } else {
-                log.debug("cache range not overlapped");
-                // если диапазоны не пересекаются, вычислим диапазон, включающий оба 
-                aRange = aRowsRange.Add(cache.getRange());
-                //а затем вычтем из него исходный
-                aRange = cache.getRange().Sub(aRange);
-            }
-        }
-        */
-        /*
-        //ограничим длину запрашиваемого диапазона
-        aRange.setLength(Math.min(aRange.getLength(), cache.getMaxSize()));
-        log.debug("define new cache range. first="+aRange.getFirst()+", length="+aRange.getLength());
-        // фактически запрашиваем данные для вычисленного диапазона
-        */
-        /*
-        List<ProductRefs> l = dao.select(aRange);
-        //смотрим, куда добавлять полученные данные - в начало кеша или в конец
-        if (aRange.getFirst() < cache.getRange().getFirst()) {
-            //добавляем в начало
-            log.debug("insert into start. Range.first < cache.first.");
-            cache.addAll(1, l);
-        } else {
-            //добавляем в конец
-            log.debug("add at end. Range.first >= cache.first.");
-            cache.addAll(l);
-        }
-        */
+        log.debug("cache.size="+cache.size());
         log.trace("<<< fetch");
     }
 

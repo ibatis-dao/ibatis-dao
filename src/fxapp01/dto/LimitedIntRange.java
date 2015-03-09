@@ -112,9 +112,6 @@ public class LimitedIntRange {
         return true;
     }
     
-    
-    
-
     private boolean IsInternalRulesOk(final String callerMethodName) {
         IsIntRule1Ok(callerMethodName, leftLimit, first); // leftLimit <= first
         IsIntRule2Ok(callerMethodName, length); // length >= 0
@@ -134,6 +131,7 @@ public class LimitedIntRange {
      * @param first the first to set
      */
     public void setFirst(int first) {
+        log.debug(entering+setFirstMthdName+"("+first+"). old value="+this.first);
         IsIntRule1Ok(setFirstMthdName, leftLimit, first); // leftLimit <= first
         IsIntRule3Ok(setFirstMthdName, first, length, rightLimit); // first+length-1 <= rightLimit
         IsIntRule6Ok(this, setFirstMthdName, first, length, leftLimit, rightLimit); //check Singular for non-zeros
@@ -189,14 +187,14 @@ public class LimitedIntRange {
         log.debug(setRightLimitMthdName+"(rightLimit="+rightLimit+")");
         this.rightLimit = rightLimit;
     }
+    
     /**
      * @return the length
      */
     public int getLast() {
         return first+length-1;
     }
-    
-    
+        
     @Override
     public LimitedIntRange clone() {
         return new LimitedIntRange(first, length, leftLimit, rightLimit);
@@ -242,6 +240,11 @@ public class LimitedIntRange {
         hash = 89 * hash + this.leftLimit;
         hash = 89 * hash + this.rightLimit;
         return hash;
+    }
+    
+    @Override
+    public String toString() {
+        return "first="+first+", length="+length+", leftLimit="+leftLimit+", rightLimit="+rightLimit;
     }
     
     /**

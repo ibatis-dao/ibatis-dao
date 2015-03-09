@@ -1,6 +1,7 @@
 package fxapp01.dao;
 
 import fxapp01.dto.LimitedIntRange;
+import fxapp01.excpt.EArgumentBreaksRule;
 import fxapp01.excpt.ENullArgument;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
@@ -84,10 +85,24 @@ public class DataCacheReadOnly<T> implements List {
 
     public boolean remove(int from, int to) {
         log.trace("remove(from="+from+", to="+to+")");
-        for (int i = from; i <= to; i++) {
-            data.remove(i);
+        if (from > to) {
+            throw new EArgumentBreaksRule("remove", "(from <= to)");
         }
-        range.incLength(from-to-1);
+        if (! ((from == 0) || (to == data.size()-1)) ) {
+            log.debug("data.size="+data.size());
+            throw new EArgumentBreaksRule("remove", "(from == 0) || (to == data.size()-1)");
+        }
+        for (int i = from; i <= to; i++) {
+            data.remove(0);
+        }
+        log.debug("after data.remove. data.size="+data.size());
+        int delta = to - from + 1;
+        range.incLength(-delta);
+        if (from == 0) {
+            range.setFirst(range.getFirst()+delta);
+        } else {
+            range.setFirst(range.getFirst()-delta);
+        }
         return (from <= to);
     }
 
@@ -189,14 +204,12 @@ public class DataCacheReadOnly<T> implements List {
     private int AlignToCacheDefSize(int point) {
         /* округляем до ближайшего большего целого размера страницы кеша */
         log.debug("AlignToCacheDefSize(point="+point+")");
-        int pagePart = defSize - (point % defSize);
+        int pagePart = (point % defSize);
         log.debug("pagePart="+pagePart);
-        if (pagePart != 0) {
-            if (point < 0) {
-                point = point - pagePart + 1;
-            } else {
-                point = point + pagePart - 1;
-            }
+        if (point < range.getFirst()) {
+            point = point + pagePart;
+        } else {
+            point = point + defSize - pagePart - 1;
         }
         log.debug("point="+point);
         return point;
@@ -207,7 +220,8 @@ public class DataCacheReadOnly<T> implements List {
     /***************************************************************************
      * 
     ***************************************************************************/
-        log.debug("get(index="+index+")");
+        log.trace(entering+getClass().getName()+".get(index="+index+").-------------------------------------------");
+        log.debug("range=("+range+")");
         //проверяем, находится ли строка в пределах текущего диапазона
         if (containsIndex(index)) {
             //внутренний адрес строки в кеше
@@ -219,14 +233,11 @@ public class DataCacheReadOnly<T> implements List {
         } else {
             log.debug("Out of cache. Try find new range");
             //если строка за пределами текущего диапазона
-            //рассчитываем расстояние до указаной строки
-            int target = range.getMaxDistance(index);
-            log.debug("before AlignToCacheDefSize. target="+target);
-            // строка (позиция, точка), выровненная по границе страниц кеша
-            target = AlignToCacheDefSize(target);
-            log.debug("after AlignToCacheDefSize. target="+target);
-            // расстояние в целых страницах кеша
-            int dist = Math.abs(target);
+            //выравниваем строку по границе страниц кеша
+            int target = AlignToCacheDefSize(index);
+            log.debug("after AlignToCacheDefSize. index="+index+", target="+target);
+            //рассчитываем расстояние до указаной строки в целых страницах кеша
+            int dist = Math.abs(range.getMaxDistance(target));
             log.debug("dist="+dist);
             LimitedIntRange aRange;
             //если расчетная длина диапазона меньше максимально допустимого размера кеша
@@ -248,20 +259,21 @@ public class DataCacheReadOnly<T> implements List {
                 if (dist < maxSize * 2) {
                     log.debug("dist < maxSize * 2");
                     aRange = range.Complement(target);
-                    if (target < 0) {
-                        log.debug("target < 0. before remove(x, len)");
+                    if (target < range.getFirst()) {
+                        log.debug("target < range.first. before remove(x, len)");
                         //сбрасываем часть строк с правого края кеша
-                        remove(dist - maxSize + 1, aRange.getLength());
-                        log.debug("before dataFetcher.fetch(aRange, size()+1);");
-                        //дозагружаем данные справа
-                        dataFetcher.fetch(aRange, size()+1);
-                    } else {
-                        log.debug("target >= 0. before remove(0, x). dist="+dist+", aRange.length="+aRange.getLength());
-                        //сбрасываем часть строк с левого края кеша
-                        remove(0, aRange.getLength());
+                        log.debug("data.size="+data.size()+", aRange.length="+aRange.getLength());
+                        remove(data.size()-aRange.getLength(), data.size()-1);
                         log.debug("before dataFetcher.fetch(aRange, 0);");
                         //дозагружаем данные слева
                         dataFetcher.fetch(aRange, 0);
+                    } else {
+                        log.debug("target >= 0. before remove(0, x). dist="+dist+", aRange.length="+aRange.getLength());
+                        //сбрасываем часть строк с левого края кеша
+                        remove(0, aRange.getLength()-1);
+                        log.debug("before dataFetcher.fetch(aRange, size()+1);");
+                        //дозагружаем данные справа
+                        dataFetcher.fetch(aRange, size());
                     }
                 } else {
                     //расстояние равно или больше удвоенного макс. размера кеша,
@@ -271,10 +283,12 @@ public class DataCacheReadOnly<T> implements List {
                     clear(); 
                     //загружаем данные 
                     dataFetcher.fetch(aRange, 0);
+                    range.setFirst(index);
                 }
             }
         }
-        log.debug("Cache ranging finshed. Check asserts about range");
+        log.debug("Cache ranging finshed. Check asserts about range.");
+        log.debug("index="+index+", range=("+range+")");
         int intIdx = index-range.getFirst();
         log.debug("intIdx="+intIdx);
         //если да, то возвращаем значение из этой строки

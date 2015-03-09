@@ -42,7 +42,7 @@ public class DAOTest01 {
     @After
     public void tearDown() {
     }
-
+    /*
     @Test
     public void testSelectByRange() {
         log.trace(">>> testSelectByRange");
@@ -59,7 +59,7 @@ public class DAOTest01 {
         Assert.assertTrue("ProductRefs retrieved not in 3 rows", (numRows == 3));
         log.trace("<<< testSelectByRange");
     }
-
+    */
     @Test
     public void testProductRefsObservList() {
         log.trace(">>> testProductRefsObservList");
@@ -72,6 +72,16 @@ public class DAOTest01 {
         log.debug("p(40). Id="+p.getId()+", Name="+p.getName());
         p = pl.get(60);
         log.debug("p(60). Id="+p.getId()+", Name="+p.getName());
+        p = pl.get(80);
+        log.debug("p(80). Id="+p.getId()+", Name="+p.getName());
+        p = pl.get(60);
+        log.debug("p(60). Id="+p.getId()+", Name="+p.getName());
+        p = pl.get(40);
+        log.debug("p(40). Id="+p.getId()+", Name="+p.getName());
+        p = pl.get(20);
+        log.debug("p(20). Id="+p.getId()+", Name="+p.getName());
+        p = pl.get(0);
+        log.debug("p(0). Id="+p.getId()+", Name="+p.getName());
         log.trace("<<< testProductRefsObservList");
     }
     /*
