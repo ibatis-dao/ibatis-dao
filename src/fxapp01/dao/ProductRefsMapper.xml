@@ -16,13 +16,18 @@
     </select>
 
     <select id="select" databaseId="oracle" parameterType="IntRange" resultMap="ProductRefsMap">
-    select id, name
+    with t001 as (
+            select s.id, 
+                   trim(substr(s.name, 1, 70)) as name 
+              from lisa.insurancescheme s 
+             order by s.id
+          )
+    select rn, id, name
       from (
         select rownum as rn, 
-               s.id, 
-               trim(substr(s.name, 1, 70)) as name 
-          from lisa.insurancescheme s 
-         order by s.id
+               id, 
+               name
+          from t001
       )
      where rn between #{first} and #{last}
     </select>
@@ -44,7 +49,7 @@
     select count(s.id) from lisa.insurancescheme s
     </select>
     
-    <select id="selectCount" databaseId="oracle" resultType="BigInteger">
+    <select id="selectCount" databaseId="postgresql" resultType="BigInteger">
     select count(id) from "public"."test02"
     </select>
     

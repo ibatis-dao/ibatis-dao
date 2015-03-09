@@ -32,7 +32,8 @@ public class BatisORM {
     public BatisORM (String configURI) throws IOException {
         log.trace(">>> constructor");
         if ((configURI == null) || configURI.length() == 0) {
-            String fs = System.getProperty("file.separator");
+            //String fs = System.getProperty("file.separator"); //не работает для чтения из ресурсов
+            String fs = "/";
             configURI = getClass().getPackage().getName().replace(".", fs).concat(fs).concat("batis-config.xml");
         }
         log.debug("configURI="+configURI);

@@ -131,7 +131,7 @@ public class IntRange {
      * @return the length
      */
     public int getLast() {
-        return first+length;
+        return first+length-1;
     }
     
     /**
