@@ -4,6 +4,6 @@ package fxapp01.dao.filter;
  *
  * @author serg
  */
-public interface ISqlFilterable extends Filterable {
+public interface ISqlFilterable {
     String getText();
 }

@@ -6,4 +6,11 @@ package fxapp01.excpt;
  */
 public class EUnsupported extends UnsupportedOperationException {
     
+    public EUnsupported() {
+        super();
+    }    
+
+    public EUnsupported(String subject) {
+        super(subject+" not supported");
+    }    
 }

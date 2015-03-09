@@ -97,7 +97,7 @@ public class DAOTest01 {
         }
         Assert.assertTrue("ProductRefs retrieved more than one row", (numRows > 0));
         SortOrder so = new SortOrder();
-        ContainerProperties cp = dao.getContainerProperties();
+        ItemProperties cp = dao.getContainerProperties();
         List<String> colNames = cp.getColumnNames();
         String s;
         for (int i = 0; i < colNames.size(); i++) {

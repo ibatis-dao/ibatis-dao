@@ -1,7 +1,7 @@
 package fxapp01.dto;
 
+import fxapp01.dao.filter.SqlFilterTest;
 import fxapp01.dao.sort.SortOrderTest;
-import fxapp01.dao.filter.SqlFilterConditionTest;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 import org.junit.After;
@@ -21,7 +21,7 @@ import org.junit.runners.Suite;
     LimitedIntRangeTest.class, 
     GeoLocationTest.class,
     SortOrderTest.class,
-    SqlFilterConditionTest.class
+    SqlFilterTest.class
 })
 public class DTOAllTests {
 

@@ -8,8 +8,6 @@ import fxapp01.dto.ProductRefsQBE;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.ibatis.exceptions.PersistenceException;
 
 /**
@@ -19,29 +17,29 @@ import org.apache.ibatis.exceptions.PersistenceException;
 public class ProductRefsDAO implements ProductRefsMapper{
     
     private static final ILogger log = LogMgr.getLogger(ProductRefsDAO.class);
-    private BigInteger rowCount = null;
-    private final ContainerProperties properties;
+    private INestedRange rowRange = null;
+    private final ItemProperties properties;
     private int pageSize;
     
     public ProductRefsDAO() throws IOException {
         log.trace(">>> constructor");
         BaseDao dao = new BaseDao();
         List<BeanPropertyMapping> beanPropertiesMap = dao.getBeanPropertiesMapping(ProductRefs.class);
-        properties = new ContainerProperties(beanPropertiesMap);
+        properties = new ItemProperties(beanPropertiesMap);
         log.trace("<<< constructor");
     }
     
     public int getRowCount() {
         //log.trace(">>> getRowCount");
-        if (rowCount == null) {
-            rowCount = selectCount();
+        if (rowRange == null) {
+            rowRange = selectTotalRange();
         }
         //пока условно считаем, что кол-во записей в таблице не меняется
         //в дальнейшем надо будет продумать, как и когда это должно обновляться
-        return rowCount.intValue();
+        return rowRange.getLast().intValue();
     }
     
-    public ContainerProperties getContainerProperties() {
+    public ItemProperties getContainerProperties() {
         log.trace(">>> getContainerProperties");
         return properties;
     }
@@ -103,15 +101,15 @@ public class ProductRefsDAO implements ProductRefsMapper{
     }
 
     @Override
-    public BigInteger selectCount() {
+    public INestedRange selectTotalRange() {
         try {
             //throw new UnsupportedOperationException("Not supported yet.");
-            log.trace(">>> selectCount");
+            log.trace(">>> selectTotalRange");
             BaseDao dao = new BaseDao();
             try {
                 ProductRefsMapper mapper = dao.getMapper(ProductRefsMapper.class);
-                BigInteger res = mapper.selectCount();
-                log.trace("<<< selectCount");
+                INestedRange res = mapper.selectTotalRange();
+                log.trace("<<< selectTotalRange");
                 return res;
             } catch (Exception e) {
                 log.error(null, e);

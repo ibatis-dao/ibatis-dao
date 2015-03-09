@@ -9,7 +9,7 @@ import fxapp01.dto.ProductRefsQBE;
 public interface ProductRefsMapper {
     List<ProductRefs> select(INestedRange rowsrange);
     ProductRefs selectByID(BigInteger id);
-    BigInteger selectCount();
+    INestedRange selectTotalRange();
     List<ProductRefs> selectBE(ProductRefsQBE qbe);
     int insertRow(ProductRefs item);
     ProductRefs insertRowBySP(ProductRefs item);

@@ -11,12 +11,12 @@ import fxapp01.log.LogMgr;
  *
  * @author serg
  */
-public class ContainerProperties {
+public class ItemProperties {
     
     private static ILogger log;
     private List<BeanPropertyMapping> beanPropertiesMap;
     
-    public ContainerProperties(List<BeanPropertyMapping> beanPropertiesMap) {
+    public ItemProperties(List<BeanPropertyMapping> beanPropertiesMap) {
         if (beanPropertiesMap == null) {
             throw new IllegalArgumentException("Wrong parameter beanPropertiesMap (= null)");
         }
@@ -37,9 +37,7 @@ public class ContainerProperties {
                 try {
                     Field f = c.getDeclaredField(propName);
                     return f;
-                } catch (NoSuchFieldException ex) {
-                    log.error("", ex);
-                } catch (SecurityException ex) {
+                } catch (NoSuchFieldException | SecurityException ex) {
                     log.error("", ex);
                 }
                 return null;
@@ -55,11 +53,7 @@ public class ContainerProperties {
         Field f = getBeanField(bean, propIndex);
         try {
             return f.get(bean);
-        } catch (IllegalArgumentException ex) {
-            log.error("", ex);
-        } catch (IllegalAccessException ex) {
-            log.error("", ex);
-        } catch (Exception ex) {
+        } catch (IllegalArgumentException | IllegalAccessException ex) {
             log.error("", ex);
         }
         return null;
@@ -69,17 +63,13 @@ public class ContainerProperties {
         Field f = getBeanField(bean, propIndex);
         try {
             f.set(bean, propValue);
-        } catch (IllegalArgumentException ex) {
-            log.error("", ex);
-        } catch (IllegalAccessException ex) {
-            log.error("", ex);
-        } catch (Exception ex) {
+        } catch (IllegalArgumentException | IllegalAccessException ex) {
             log.error("", ex);
         }
     }
     
     public List<String> getColumnNames() {
-        List<String> colNames = new ArrayList<String>();
+        List<String> colNames = new ArrayList<>();
         Iterator<BeanPropertyMapping> bpi = beanPropertiesMap.iterator();
         while (bpi.hasNext()) {
             BeanPropertyMapping bp = bpi.next();

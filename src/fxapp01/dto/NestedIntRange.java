@@ -3,7 +3,6 @@ package fxapp01.dto;
 import fxapp01.excpt.EArgumentBreaksRule;
 import fxapp01.excpt.ENegativeArgument;
 import fxapp01.excpt.ENullArgument;
-import fxapp01.excpt.EUnsupported;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 import java.util.Objects;
@@ -11,7 +10,6 @@ import java.util.Objects;
 /**
  *
  * @author serg
- * @param <<error>>
  */
 public class NestedIntRange implements INestedRange<Integer> {
     
