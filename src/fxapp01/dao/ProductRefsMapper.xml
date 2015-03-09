@@ -22,9 +22,9 @@
               from lisa.tmp$items i 
              order by i.id
           )
-    select rn, id, name
+    select id, name
       from (
-        select rownum as rn, 
+        select rownum - 1 as rn, 
                id, 
                name
           from t001

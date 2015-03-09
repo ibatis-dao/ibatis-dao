@@ -34,5 +34,10 @@ public class ProductRefs implements Serializable {
         }
         return name;
     }
+    
+    @Override
+    public String toString() {
+        return "Id="+IdProperty().get()+", Name="+NameProperty().get();
+    }
 
 }

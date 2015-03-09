@@ -64,24 +64,28 @@ public class DAOTest01 {
     public void testProductRefsObservList() {
         log.trace(">>> testProductRefsObservList");
         ProductRefsObservList pl = new ProductRefsObservList();
-        ProductRefs p = pl.get(0);
-        log.debug("p(0). Id="+p.getId()+", Name="+p.getName());
-        p = pl.get(20);
-        log.debug("p(20). Id="+p.getId()+", Name="+p.getName());
-        p = pl.get(40);
-        log.debug("p(40). Id="+p.getId()+", Name="+p.getName());
-        p = pl.get(60);
-        log.debug("p(60). Id="+p.getId()+", Name="+p.getName());
-        p = pl.get(80);
-        log.debug("p(80). Id="+p.getId()+", Name="+p.getName());
-        p = pl.get(60);
-        log.debug("p(60). Id="+p.getId()+", Name="+p.getName());
-        p = pl.get(40);
-        log.debug("p(40). Id="+p.getId()+", Name="+p.getName());
-        p = pl.get(20);
-        log.debug("p(20). Id="+p.getId()+", Name="+p.getName());
-        p = pl.get(0);
-        log.debug("p(0). Id="+p.getId()+", Name="+p.getName());
+        ProductRefs p;
+        log.debug("p(0). "+pl.get(0).toString());
+        //Oracle - при первом шаге фактически читается не 20 записей, 
+        //а 19 из-за того, что rownum начинается с 1, не с 0.
+        //поскольку в буфер загружается 19 строк, диапазон корректируется под эту длину
+        //На втором шаге загрузка опять начинается с 19 строки.
+        //в итоге - в буфере ДВЕ 19 строки.
+        log.debug("p(20). "+pl.get(20).toString());
+        log.debug("p(40). "+pl.get(40).toString());
+        log.debug("p(60). "+pl.get(60).toString());
+        /*
+        log.debug("p(80). "+pl.get(80).toString());
+        log.debug("p(60). "+pl.get(60).toString());
+        */
+        log.debug("p(40). "+pl.get(40).toString());
+        log.debug("p(20). "+pl.get(20).toString());
+        log.debug("p(0). "+pl.get(0).toString());
+        /*
+        log.debug("p(50). "+pl.get(50).toString());
+        log.debug("p(150). "+pl.get(150).toString());
+        */
+        pl.debugPrintAll();
         log.trace("<<< testProductRefsObservList");
     }
     /*

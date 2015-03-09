@@ -57,6 +57,10 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>, IData
     public List<String> getColumnNames() {
         return dao.getContainerProperties().getColumnNames();
     }
+    
+    public void debugPrintAll() {
+        cache.debugPrintAll();
+    }
 
     /******************* javafx.collections.ObservableList *******************/
     

@@ -44,6 +44,7 @@ public class FXApp01Controller implements Initializable {
     private void handleButtonAction(ActionEvent event) {
         log.debug("You clicked me!");
         label.setText("Hello World!");
+        dataOL.debugPrintAll();
     }
     
     @Override

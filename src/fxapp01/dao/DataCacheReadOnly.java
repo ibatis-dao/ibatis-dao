@@ -1,6 +1,7 @@
 package fxapp01.dao;
 
 import fxapp01.dto.LimitedIntRange;
+import fxapp01.dto.ProductRefs;
 import fxapp01.excpt.EArgumentBreaksRule;
 import fxapp01.excpt.ENullArgument;
 import fxapp01.log.ILogger;
@@ -54,6 +55,16 @@ public class DataCacheReadOnly<T> implements List {
         log.trace(exiting+methodName);
     }
 
+    public void debugPrintAll() {
+        log.debug("----- printAll -----");
+        Iterator<Object> itr = iterator();
+        while (itr.hasNext()) {
+            Object o = itr.next();
+            log.debug(o.toString());
+        }
+        log.debug("----- printAll -----");
+    }
+
     public LimitedIntRange getRange() {
         return range;
     }
@@ -93,7 +104,7 @@ public class DataCacheReadOnly<T> implements List {
             throw new EArgumentBreaksRule("remove", "(from == 0) || (to == data.size()-1)");
         }
         for (int i = from; i <= to; i++) {
-            data.remove(0);
+            data.remove(from);
         }
         log.debug("after data.remove. data.size="+data.size());
         int delta = to - from + 1;
@@ -207,9 +218,11 @@ public class DataCacheReadOnly<T> implements List {
         int pagePart = (point % defSize);
         log.debug("pagePart="+pagePart);
         if (point < range.getFirst()) {
-            point = point + pagePart;
+            point = point - pagePart;
         } else {
-            point = point + defSize - pagePart - 1;
+            if (point > range.getLast()) {
+                point = point + defSize - pagePart - 1;
+            }
         }
         log.debug("point="+point);
         return point;
