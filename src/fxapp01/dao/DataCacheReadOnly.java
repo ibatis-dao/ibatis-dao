@@ -83,6 +83,7 @@ public class DataCacheReadOnly<T> implements List {
     }
 
     public boolean remove(int from, int to) {
+        log.trace("remove(from="+from+", to="+to+")");
         for (int i = from; i <= to; i++) {
             data.remove(i);
         }
@@ -164,9 +165,11 @@ public class DataCacheReadOnly<T> implements List {
 
     @Override
     public boolean addAll(int index, Collection c) {
+        log.trace(entering+"addAll(index="+index+", c)");
         if (c != null) {
             range.incLength(c.size());
         }
+        log.debug("before data.addAll()");
         return data.addAll(index, c);
     }
 
@@ -236,28 +239,33 @@ public class DataCacheReadOnly<T> implements List {
                 if (target < 0) {
                     dataFetcher.fetch(aRange, 0);
                 } else {
-                    dataFetcher.fetch(aRange, size()+1);
+                    dataFetcher.fetch(aRange, size());
                 }
             } else {
                 //если расстояние меньше удвоенного макс. размера кеша,
                 //сдвинем начало диапазона так, чтобы он включал в себя указанную точку
                 //сбросим часть кеша и дозагрузим новую часть 
                 if (dist < maxSize * 2) {
+                    log.debug("dist < maxSize * 2");
                     aRange = range.Complement(target);
                     if (target < 0) {
-                        //сбрасываем часть строк с левого края кеша
-                        remove(0, dist - aRange.getLength());
-                        //дозагружаем данные слева
-                        dataFetcher.fetch(aRange, 0);
-                    } else {
+                        log.debug("target < 0. before remove(x, len)");
                         //сбрасываем часть строк с правого края кеша
-                        remove(dist - maxSize, aRange.getLength());
+                        remove(dist - maxSize + 1, aRange.getLength());
+                        log.debug("before dataFetcher.fetch(aRange, size()+1);");
                         //дозагружаем данные справа
                         dataFetcher.fetch(aRange, size()+1);
+                    } else {
+                        log.debug("target >= 0. before remove(0, x). dist="+dist+", aRange.length="+aRange.getLength());
+                        //сбрасываем часть строк с левого края кеша
+                        remove(0, aRange.getLength());
+                        log.debug("before dataFetcher.fetch(aRange, 0);");
+                        //дозагружаем данные слева
+                        dataFetcher.fetch(aRange, 0);
                     }
                 } else {
                     //расстояние равно или больше удвоенного макс. размера кеша,
-                    //
+                    log.debug("dist >= maxSize * 2");
                     aRange = new LimitedIntRange(index, defSize);
                     //сбрасываем кеш полностью
                     clear(); 

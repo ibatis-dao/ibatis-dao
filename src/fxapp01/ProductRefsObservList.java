@@ -38,7 +38,7 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>, IData
         this.invListeners = new ArrayList<>();
         log.debug("before new DataCacheReadOnly");
         IDataRangeFetcher dps = this; // 
-        this.cache = new DataCacheReadOnly<>(dps, 20, 300);
+        this.cache = new DataCacheReadOnly<>(dps, 20, 40);
         log.debug("before FXCollections.observableList");
         this.dataFacade = FXCollections.observableList(cache);
         log.debug("before new ProductRefsDAO");
@@ -242,7 +242,7 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>, IData
     размер кеша, очищаем текущий кеш и загружаем данные запрошенного диапазона, 
     как при первоначальной загрузке
     */
-        log.trace(">>> fetch");
+        log.trace(">>> fetch(aRowsRange.first="+aRowsRange.getFirst()+", aRowsRange.length="+aRowsRange.getLength()+", pos="+pos+")");
         if (aRowsRange == null) {
             throw new ENullArgument("fetch");
         }
@@ -291,7 +291,7 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>, IData
             cache.addAll(l);
         }
         */
-        log.trace("<<< requestDataPage");
+        log.trace("<<< fetch");
     }
 
     @Override

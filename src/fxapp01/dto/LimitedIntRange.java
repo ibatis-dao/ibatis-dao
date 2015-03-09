@@ -14,6 +14,23 @@ import fxapp01.log.LogMgr;
 public class LimitedIntRange {
     
     private static final ILogger log = LogMgr.getLogger(LimitedIntRange.class);
+    private static final String entering = ">>> ";
+    private static final String contructorMthdName = "contructor";
+    private static final String setFirstMthdName = "setFirst";
+    private static final String setLengthMthdName = "setLength";
+    private static final String incLengthMthdName = "incLength";
+    private static final String setLeftLimitMthdName = "setLeftLimit";
+    private static final String setRightLimitMthdName = "setRightLimit";
+    private static final String equalsMthdName = "equals";
+    private static final String IsInboundMthdName = "IsInbound";
+    private static final String getMinDistanceMthdName = "getMinDistance";
+    private static final String getMaxDistanceMthdName = "getMaxDistance";
+    private static final String IsOverlappedMthdName = "IsOverlapped";
+    private static final String OverlapMthdName = "Overlap";
+    private static final String AddMthdName = "Add";
+    private static final String ExtendMthdName = "Extend";
+    private static final String ComplementMthdName = "Complement";
+    
     private int first;
     private int length;
     private int leftLimit;
@@ -28,13 +45,13 @@ public class LimitedIntRange {
     }
 
     public LimitedIntRange(int first, int length) {
-        log.trace(">>> contructor(first="+first+", length="+length+")");
+        log.trace(entering+contructorMthdName+"(first="+first+", length="+length+")");
         init(first, length);
     }
     
     public LimitedIntRange(int first, int length, int leftLimit, int rightLimit) {
         this(first, length);
-        log.trace(">>> contructor(first="+first+", length="+length+", leftLimit="+leftLimit+", rightLimit="+rightLimit+")");
+        log.trace(entering+contructorMthdName+"(first="+first+", length="+length+", leftLimit="+leftLimit+", rightLimit="+rightLimit+")");
         this.leftLimit = leftLimit;
         this.rightLimit = rightLimit;
     }
@@ -85,12 +102,25 @@ public class LimitedIntRange {
         }
         return true;
     }
+    
+    private static boolean IsIntRule6Ok(LimitedIntRange instance, final String callerMethodName, int first, int length, int leftLimit, int rightLimit) throws EArgumentBreaksRule {
+        if (instance == Singular) {
+            if ((first != 0) || (length != 0) || (leftLimit != 0) || (rightLimit != 0)) {
+                throw new EArgumentBreaksRule(callerMethodName, "Singular range can not have non zero params");
+            }
+        }
+        return true;
+    }
+    
+    
+    
 
     private boolean IsInternalRulesOk(final String callerMethodName) {
         IsIntRule1Ok(callerMethodName, leftLimit, first); // leftLimit <= first
         IsIntRule2Ok(callerMethodName, length); // length >= 0
         IsIntRule3Ok(callerMethodName, first, length, rightLimit); // first+length-1 <= rightLimit
         IsIntRule4Ok(callerMethodName, leftLimit, rightLimit); // leftLimit <= rightLimit
+        IsIntRule6Ok(this, callerMethodName, first, length, leftLimit, rightLimit); //check Singular for non-zeros
         return true;
     }
     /**
@@ -104,8 +134,9 @@ public class LimitedIntRange {
      * @param first the first to set
      */
     public void setFirst(int first) {
-        IsIntRule1Ok("setFirst", leftLimit, first); // leftLimit <= first
-        IsIntRule3Ok("setFirst", first, length, rightLimit); // first+length-1 <= rightLimit
+        IsIntRule1Ok(setFirstMthdName, leftLimit, first); // leftLimit <= first
+        IsIntRule3Ok(setFirstMthdName, first, length, rightLimit); // first+length-1 <= rightLimit
+        IsIntRule6Ok(this, setFirstMthdName, first, length, leftLimit, rightLimit); //check Singular for non-zeros
         this.first = first;
     }
 
@@ -120,17 +151,19 @@ public class LimitedIntRange {
      * @param length the length to set
      */
     public void setLength(int length) {
-        log.debug(">>> setLength("+length+")");
-        IsIntRule2Ok("setLength", length); // length >= 0
-        IsIntRule3Ok("setLength", first, length, rightLimit); // first+length-1 <= rightLimit
+        log.debug(entering+setLengthMthdName+"("+length+")");
+        IsIntRule2Ok(setLengthMthdName, length); // length >= 0
+        IsIntRule3Ok(setLengthMthdName, first, length, rightLimit); // first+length-1 <= rightLimit
+        IsIntRule6Ok(this, setLengthMthdName, first, length, leftLimit, rightLimit); //check Singular for non-zeros
         this.length = length;
     }
     
     public void incLength(int increment) {
-        log.debug(">>> incLength("+increment+"). old length="+length);
-        if (IsIntRule2Ok("incLength", length+increment)) { // length >= 0
-            IsIntRule3Ok("incLength", first, length+increment, rightLimit); // first+length-1 <= rightLimit
+        log.debug(entering+incLengthMthdName+"("+increment+"). old length="+length);
+        if (IsIntRule2Ok(incLengthMthdName, length+increment)) { // length >= 0
+            IsIntRule3Ok(incLengthMthdName, first, length+increment, rightLimit); // first+length-1 <= rightLimit
         }
+        IsIntRule6Ok(this, incLengthMthdName, first, length, leftLimit, rightLimit); //check Singular for non-zeros
         this.length = length + increment;
     }
     
@@ -139,8 +172,9 @@ public class LimitedIntRange {
     }
 
     public void setLeftLimit(int leftLimit) {
-        IsIntRule1Ok("setLeftLimit", leftLimit, first); // leftLimit <= first
-        IsIntRule4Ok("setLeftLimit", leftLimit, rightLimit); // leftLimit <= rightLimit
+        IsIntRule1Ok(setLeftLimitMthdName, leftLimit, first); // leftLimit <= first
+        IsIntRule4Ok(setLeftLimitMthdName, leftLimit, rightLimit); // leftLimit <= rightLimit
+        IsIntRule6Ok(this, setLeftLimitMthdName, first, length, leftLimit, rightLimit); //check Singular for non-zeros
         this.leftLimit = leftLimit;
     }
 
@@ -149,9 +183,10 @@ public class LimitedIntRange {
     }
 
     public void setRightLimit(int rightLimit) {
-        IsIntRule3Ok("setRightLimit", first, length, rightLimit); // first+length-1 <= rightLimit
-        IsIntRule4Ok("setRightLimit", leftLimit, rightLimit); // leftLimit <= rightLimit
-        log.debug("setRightLimit(rightLimit="+rightLimit+")");
+        IsIntRule3Ok(setRightLimitMthdName, first, length, rightLimit); // first+length-1 <= rightLimit
+        IsIntRule4Ok(setRightLimitMthdName, leftLimit, rightLimit); // leftLimit <= rightLimit
+        IsIntRule6Ok(this, setRightLimitMthdName, first, length, leftLimit, rightLimit); //check Singular for non-zeros
+        log.debug(setRightLimitMthdName+"(rightLimit="+rightLimit+")");
         this.rightLimit = rightLimit;
     }
     /**
@@ -191,7 +226,7 @@ public class LimitedIntRange {
             //если тип входного параметра нельзя присвоить текущему типу, 
             //то их нельзя сравнить. он не может быть равен текущему экземпляру
             if (! o.getClass().isAssignableFrom(this.getClass())) {
-                log.debug("!!! equals("+o.getClass().getName()+")=FALSE");
+                log.debug(equalsMthdName+"("+o.getClass().getName()+")=FALSE");
                 return false;
             } else {
                 return (hashCode() == o.hashCode());
@@ -223,7 +258,7 @@ public class LimitedIntRange {
      * @return 
      */
     public boolean IsInbound(int value) {
-        log.trace("IsInbound(value="+value+"). first="+first+", last="+getLast());
+        log.trace(IsInboundMthdName+"(value="+value+"). first="+first+", last="+getLast());
         return (first <= value) && (value <= getLast());
     }
     
@@ -235,7 +270,7 @@ public class LimitedIntRange {
      */
     public boolean IsInbound(LimitedIntRange aRange) {
         if (aRange == null) {
-            throw new ENullArgument("IsCoveredBy");
+            throw new ENullArgument(IsInboundMthdName);
         } 
         return ((aRange.getFirst() <= first) && (getLast() <= aRange.getLast()));
     }
@@ -246,8 +281,8 @@ public class LimitedIntRange {
     Если точка внутри самого диапазона, то расстояние = 0
     */
     public int getMinDistance(int to) {
-        log.trace("getMinDistance(to="+to+")");
-        IsIntRule5Ok("getMinDistance", leftLimit, to, rightLimit); // leftLimit >= to >= rightLimit
+        log.trace(getMinDistanceMthdName+"(to="+to+")");
+        IsIntRule5Ok(getMinDistanceMthdName, leftLimit, to, rightLimit); // leftLimit >= to >= rightLimit
         if (IsInbound(to)) {
             return 0;
         } else {
@@ -267,8 +302,8 @@ public class LimitedIntRange {
     Если точка внутри самого диапазона, то расстояние = 0
     */
     public int getMaxDistance(int to) {
-        log.trace("getMaxDistance(to="+to+")");
-        IsIntRule5Ok("getMaxDistance", leftLimit, to, rightLimit); // leftLimit >= to >= rightLimit
+        log.trace(getMaxDistanceMthdName+"(to="+to+")");
+        IsIntRule5Ok(getMaxDistanceMthdName, leftLimit, to, rightLimit); // leftLimit >= to >= rightLimit
         if (IsInbound(to)) {
             return 0;
         } else {
@@ -289,7 +324,7 @@ public class LimitedIntRange {
      */
     public boolean IsOverlapped(LimitedIntRange aRange) {
         if (aRange == null) {
-            throw new ENullArgument("IsOverlapped");
+            throw new ENullArgument(IsOverlappedMthdName);
         } 
         return !((getLast() < aRange.getFirst()) || (getFirst() > aRange.getLast()));
     }
@@ -300,12 +335,12 @@ public class LimitedIntRange {
      * @return 
    */
     public LimitedIntRange Overlap(LimitedIntRange aRange) {
-        log.trace("Overlap(aRange)");
+        log.trace(OverlapMthdName+"(aRange)");
         if (aRange == null) {
-            throw new ENullArgument("Overlap");
+            throw new ENullArgument(OverlapMthdName);
         }
         if (IsOverlapped(aRange)) {
-            log.debug("IsOverlapped");
+            log.debug("is overlapped");
             int maxStart = Math.max(first, aRange.getFirst());
             int minLast = Math.min(getLast(), aRange.getLast());
             return new LimitedIntRange(maxStart, minLast - maxStart + 1);
@@ -323,11 +358,11 @@ public class LimitedIntRange {
      */
     public LimitedIntRange Add(LimitedIntRange aRange) {
         if (aRange == null) {
-            throw new ENullArgument("Add");
+            throw new ENullArgument(AddMthdName);
         }
         int minStart = Math.max(leftLimit, Math.min(first, aRange.getFirst()));
         int maxLast = Math.min(Math.max(getLast(), aRange.getLast()), rightLimit);
-        log.debug("Add(). minStart="+minStart+", maxLast="+maxLast);
+        log.debug(AddMthdName+"(). minStart="+minStart+", maxLast="+maxLast);
         return new LimitedIntRange(minStart, maxLast - minStart + 1);
     }
 
@@ -337,13 +372,13 @@ public class LimitedIntRange {
      * @return 
      */
     public LimitedIntRange Extend(int to) {
-        IsIntRule5Ok("Extend", leftLimit, to, rightLimit); // leftLimit >= to >= rightLimit
+        IsIntRule5Ok(ExtendMthdName, leftLimit, to, rightLimit); // leftLimit >= to >= rightLimit
         if (IsInbound(to)) {
             return Singular;
         } else {
             int minStart = Math.max(leftLimit, Math.min(first, to));
             int maxLast = Math.min(Math.max(getLast(), to), rightLimit);
-            log.debug("Extend(). minStart="+minStart+", maxLast="+maxLast);
+            log.debug(ExtendMthdName+"(). minStart="+minStart+", maxLast="+maxLast);
             return new LimitedIntRange(minStart, maxLast - minStart + 1);
         }
     }
@@ -394,13 +429,13 @@ public class LimitedIntRange {
      * @return 
      */
     public LimitedIntRange Complement(int to) {
-        log.trace("Complement(to="+to+")");
+        log.trace(ComplementMthdName+"(to="+to+")");
         int dist = getMinDistance(to);
         if (dist < 0) {
             return new LimitedIntRange(first + dist, - dist);
         } else {
             if (dist > 0) {
-                return new LimitedIntRange(first + dist - 1, dist);
+                return new LimitedIntRange(first + length, dist);
             } else {
                 return Singular;
             }

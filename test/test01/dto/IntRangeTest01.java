@@ -35,7 +35,7 @@ public class IntRangeTest01 {
     @After
     public void tearDown() {
     }
-
+    
     @Test
     public void checkSetupBaseFilelds() {
         log.trace(">>> checkSetupBaseFilelds");
@@ -259,7 +259,7 @@ public class IntRangeTest01 {
         Assert.assertTrue(aRange2.getFirst() == 20);
         Assert.assertTrue(aRange2.getLength() == 5);
     }
-
+    
     @Test
     public void checkComplement() {
         log.trace(">>> checkComplement");
@@ -276,6 +276,12 @@ public class IntRangeTest01 {
         aRange2 = aRange1.Complement(15);
         Assert.assertTrue(aRange2.getFirst() == 10);
         Assert.assertTrue(aRange2.getLast() == 15);
+        log.debug("before aRange1.Complement(39)");
+        aRange1.setFirst(0);
+        aRange1.setLength(20);
+        aRange2 = aRange1.Complement(39);
+        Assert.assertTrue(aRange2.getFirst() == 20);
+        Assert.assertTrue(aRange2.getLast() == 39);
     }
     
     @Test
@@ -292,4 +298,5 @@ public class IntRangeTest01 {
         } catch (EUnsupported e) {
         }
     }
+    
 }

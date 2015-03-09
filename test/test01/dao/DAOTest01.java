@@ -1,5 +1,7 @@
 package test01.dao;
 
+import fxapp01.ProductRefsObservList;
+import fxapp01.dao.DataCacheReadOnly;
 import fxapp01.dao.ProductRefsDAO;
 import fxapp01.dto.LimitedIntRange;
 import fxapp01.dto.ProductRefs;
@@ -43,16 +45,43 @@ public class DAOTest01 {
 
     @Test
     public void testSelectByRange() {
+        log.trace(">>> testSelectByRange");
         ProductRefsDAO dao = new ProductRefsDAO();
         LimitedIntRange r = new LimitedIntRange(2, 3);
         List<ProductRefs> l = dao.select(r);
         int numRows = 0;
         Iterator<ProductRefs> itr = l.iterator();
         while (itr.hasNext()){
-                ProductRefs p = itr.next();
-                log.info(p.getName());
-                numRows = numRows + 1;
+            ProductRefs p = itr.next();
+            log.info(p.getName());
+            numRows = numRows + 1;
         }
         Assert.assertTrue("ProductRefs retrieved not in 3 rows", (numRows == 3));
+        log.trace("<<< testSelectByRange");
     }
+
+    @Test
+    public void testProductRefsObservList() {
+        log.trace(">>> testProductRefsObservList");
+        ProductRefsObservList pl = new ProductRefsObservList();
+        ProductRefs p = pl.get(0);
+        log.debug("p(0). Id="+p.getId()+", Name="+p.getName());
+        p = pl.get(20);
+        log.debug("p(20). Id="+p.getId()+", Name="+p.getName());
+        p = pl.get(40);
+        log.debug("p(40). Id="+p.getId()+", Name="+p.getName());
+        p = pl.get(60);
+        log.debug("p(60). Id="+p.getId()+", Name="+p.getName());
+        log.trace("<<< testProductRefsObservList");
+    }
+    /*
+    @Test
+    public void testDataCacheReadOnly() {
+        log.trace("testDataCacheReadOnly");
+        ProductRefsObservList pl = new ProductRefsObservList();
+        DataCacheReadOnly<ProductRefs> cache = new DataCacheReadOnly<ProductRefs>(pl, 20, 40);
+        ProductRefs p = cache.get(0);
+        log.debug("p(0). Id="+p.getId()+", Name="+p.getName());
+    }
+    */
 }
