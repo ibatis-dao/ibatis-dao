@@ -3,7 +3,7 @@ package fxapp01;
 import fxapp01.dao.DataCacheReadOnly;
 import fxapp01.dao.IDataRangeFetcher;
 import fxapp01.dao.ProductRefsDAO;
-import fxapp01.dto.IntRange;
+import fxapp01.dto.LimitedIntRange;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -214,7 +214,7 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>, IData
     }
 
     @Override
-    public void fetch(IntRange aRowsRange, int pos) {
+    public void fetch(LimitedIntRange aRowsRange, int pos) {
     /* мета-описание логики работы:
     1. проверяем, есть ли в кеше данные (первоначальная загрузка)
     если данных нет, а запрошенный диапазон равен дипазону кеша, то считаем, что это первая загрузка
@@ -248,7 +248,7 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>, IData
         cache.addAll(pos, l);
         /*
         // вычисляем новую порцию данных дя загрузки
-        IntRange aRange;
+        LimitedIntRange aRange;
         if ((cache.isEmpty()) && (cache.getRange().equals(aRowsRange))) {
         //если кеш пуст, а диапазоны совпадают, то это - первоначальная загрузка
             log.debug("initial cache loading");

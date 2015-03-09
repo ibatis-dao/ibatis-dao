@@ -1,7 +1,7 @@
 package test01.dao;
 
 import fxapp01.dao.ProductRefsDAO;
-import fxapp01.dto.IntRange;
+import fxapp01.dto.LimitedIntRange;
 import fxapp01.dto.ProductRefs;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
@@ -44,7 +44,7 @@ public class DAOTest01 {
     @Test
     public void testSelectByRange() {
         ProductRefsDAO dao = new ProductRefsDAO();
-        IntRange r = new IntRange(2, 3);
+        LimitedIntRange r = new LimitedIntRange(2, 3);
         List<ProductRefs> l = dao.select(r);
         int numRows = 0;
         Iterator<ProductRefs> itr = l.iterator();

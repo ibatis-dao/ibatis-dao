@@ -1,6 +1,7 @@
 package test01.dto;
 
-import fxapp01.dto.IntRange;
+import fxapp01.dto.LimitedIntRange;
+import fxapp01.excpt.EArgumentBreaksRule;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 import org.junit.After;
@@ -37,7 +38,7 @@ public class IntRangeTest01 {
     @Test
     public void checkSetupBaseFilelds() {
         log.trace(">>> checkSetupBaseFilelds");
-        IntRange aRange = new IntRange(1, 10);
+        LimitedIntRange aRange = new LimitedIntRange(1, 10);
         Assert.assertNotNull(aRange);
         Assert.assertTrue(aRange.getFirst() == 1);
         Assert.assertTrue(aRange.getLength() == 10);
@@ -49,7 +50,7 @@ public class IntRangeTest01 {
     @Test
     public void checkLengths() {
         log.trace(">>> checkLengths");
-        IntRange aRange = new IntRange(1, 10);
+        LimitedIntRange aRange = new LimitedIntRange(1, 10);
         Assert.assertNotNull(aRange);
         Assert.assertTrue(aRange.getLength() == 10);
         aRange.incLength(5);
@@ -62,18 +63,36 @@ public class IntRangeTest01 {
     @Test
     public void checkMoveLimits() {
         log.trace(">>> checkMoveLimits");
-        IntRange aRange = new IntRange(1, 10);
+        LimitedIntRange aRange = new LimitedIntRange(1, 10);
         Assert.assertNotNull(aRange);
         Assert.assertTrue(aRange.getLeftLimit() == 0);
-        aRange.setLeftLimit(5);
+        try {
+            aRange.setLeftLimit(5);
+            Assert.fail("wrong param value");
+        } catch (EArgumentBreaksRule e) {
+        }
+        Assert.assertTrue(aRange.getLeftLimit() == 0);
+        try {
+            aRange.setRightLimit(-1);
+            Assert.fail("wrong param value");
+        } catch (EArgumentBreaksRule e) {
+        }
+        Assert.assertTrue(aRange.getRightLimit()== Integer.MAX_VALUE);
+        
+        aRange.setRightLimit(10);
+        try {
+            aRange.setFirst(5);
+            Assert.fail("wrong param value");
+        } catch (EArgumentBreaksRule e) {
+        }
     }
     
     @Test
     public void checkClone() {
         log.trace(">>> checkClone");
-        IntRange aRange = new IntRange(1, 10);
+        LimitedIntRange aRange = new LimitedIntRange(1, 10);
         Assert.assertNotNull(aRange);
-        IntRange aRange2 = aRange.clone();
+        LimitedIntRange aRange2 = aRange.clone();
         Assert.assertTrue(aRange.equals(aRange2));
         aRange.setFirst(2);
         Assert.assertFalse(aRange.equals(aRange2));

@@ -3,7 +3,7 @@ package fxapp01.dao;
 import java.math.BigInteger;
 import java.util.List;
 import fxapp01.dto.ProductRefs;
-import fxapp01.dto.IntRange;
+import fxapp01.dto.LimitedIntRange;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 
@@ -52,7 +52,7 @@ public class ProductRefsDAO implements ProductRefsMapper{
     }
     
     @Override
-    public List<ProductRefs> select(IntRange rowsrange) {
+    public List<ProductRefs> select(LimitedIntRange rowsrange) {
         //throw new UnsupportedOperationException("Not supported yet.");
         log.trace(">>> select");
         BaseDao dao = new BaseDao();

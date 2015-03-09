@@ -1,6 +1,6 @@
 package fxapp01.dao;
 
-import fxapp01.dto.IntRange;
+import fxapp01.dto.LimitedIntRange;
 import fxapp01.excpt.ENullArgument;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
@@ -23,7 +23,7 @@ public class DataCacheReadOnly<T> implements List {
     // фактическое начало (порядковый номер первой строки) и фактический размер 
     // окна данных в рамках источника данных. 
     private IDataRangeFetcher dataFetcher;
-    private IntRange range;
+    private LimitedIntRange range;
     private int defSize;
     private int maxSize;
     private final List<T> data;
@@ -39,7 +39,7 @@ public class DataCacheReadOnly<T> implements List {
         this.maxSize = 300;
         this.data = new ArrayList<>();
         log.debug("before new IntRange");
-        this.range = new IntRange(0, this.defSize); 
+        this.range = new LimitedIntRange(0, this.defSize); 
         log.trace(exiting+methodName);
     }
     
@@ -53,7 +53,7 @@ public class DataCacheReadOnly<T> implements List {
         log.trace(exiting+methodName);
     }
 
-    public IntRange getRange() {
+    public LimitedIntRange getRange() {
         return range;
     }
     
@@ -80,6 +80,14 @@ public class DataCacheReadOnly<T> implements List {
         range.first=0, last=99
         */
         return range.IsInbound(index);
+    }
+
+    public boolean remove(int from, int to) {
+        for (int i = from; i <= to; i++) {
+            data.remove(i);
+        }
+        range.incLength(from-to-1);
+        return (from <= to);
     }
 
     @Override
@@ -174,17 +182,33 @@ public class DataCacheReadOnly<T> implements List {
     public boolean retainAll(Collection c) {
         return data.retainAll(c);
     }
+    
+    private int AlignToCacheDefSize(int point) {
+        /* округляем до ближайшего большего целого размера страницы кеша */
+        log.debug("AlignToCacheDefSize(point="+point+")");
+        int pagePart = defSize - (point % defSize);
+        if (pagePart != 0) {
+            if (point < 0) {
+                point =- pagePart;
+            } else {
+                point =+ pagePart;
+            }
+        }
+        log.debug("point="+point);
+        return point;
+    }
 
     @Override
     public T get(int index) {
     /***************************************************************************
      * 
     ***************************************************************************/
-        //внутренний адрес строки в кеше
-        int intIdx = index-range.getFirst();
-        log.debug("get(index="+index+"). intIdx="+intIdx);
+        log.debug("get(index="+index+")");
         //проверяем, находится ли строка в пределах текущего диапазона
         if (containsIndex(index)) {
+            //внутренний адрес строки в кеше
+            int intIdx = index-range.getFirst();
+            log.debug("intIdx="+intIdx);
             //если да, то возвращаем значение из этой строки
             assert((0 <= intIdx) && (intIdx < data.size()));
             return data.get(intIdx);
@@ -192,61 +216,57 @@ public class DataCacheReadOnly<T> implements List {
             log.debug("Out of cache. Try find new range");
             //если строка за пределами текущего диапазона
             //рассчитываем расстояние до указаной строки
-            int dist = range.getMaxDistance(index);
-            //вычисляем, сколько не хватает до полной страницы
-            int pagePart = defSize - (dist % defSize);
-            if (pagePart != 0) {
-                if (dist < 0) {
-                    index = dist - pagePart;
-                } else {
-                    index = dist + pagePart;
-                }
-            }
-            //теперь расстояние в целых страницах
-            //рассчитываем диапазон до указаной строки
-            IntRange aRange = range.Extend(index);
-            //если расчетный диапазон меньше максимального размера кеша
-            if (range.getLength() <= maxSize) {
+            int target = range.getMaxDistance(index);
+            // строка (позиция, точка), выровненная по границе страниц кеша
+            target = AlignToCacheDefSize(target);
+            // расстояние в целых страницах кеша
+            int dist = Math.abs(target);
+            LimitedIntRange aRange;
+            //если расчетная длина диапазона меньше максимально допустимого размера кеша
+            if (dist <= maxSize) {
                 //вычисляем диапазон строк, который требуется дозагрузить
                 //загружаем только новую порцию данных.  
                 //ту часть диапазона, что уже есть в кеше, исключаем из загрузки
-                aRange = aRange.Sub(range);
-                if (dist < 0) {
+                aRange = range.Complement(target);
+                if (target < 0) {
                     dataFetcher.fetch(aRange, 0);
                 } else {
-                    dataFetcher.fetch(aRange, data.size()+1);
+                    dataFetcher.fetch(aRange, size()+1);
                 }
             } else {
-                aRange = new IntRange(index, defSize);
-            // TODO: продолжить с этого места мета-описание логики из requestDataPage
-            }
-            /*
-            //проверяем прилегающий диапазон слева
-            IntRange l = range.Shift(- defSize);
-            if (l.IsInbound(index)) {
-                //если строка входит в диапазон слева, получаем данные для него
-                log.debug("Shift cache to left");
-                dps.fetch(l);
-            } else {
-                //проверяем прилегающий диапазон справа
-                IntRange r = range.Shift(defSize);
-                if (r.IsInbound(index)) {
-                    log.debug("Shift cache to right");
-                    //если строка входит в диапазон справа, получаем данные для него
-                    dps.fetch(r);
+                //если расстояние меньше удвоенного макс. размера кеша,
+                //сдвинем начало диапазона так, чтобы он включал в себя указанную точку
+                //сбросим часть кеша и дозагрузим новую часть 
+                if (dist < maxSize * 2) {
+                    aRange = range.Complement(target);
+                    if (target < 0) {
+                        //сбрасываем часть строк с левого края кеша
+                        remove(0, dist - aRange.getLength());
+                        //дозагружаем данные слева
+                        dataFetcher.fetch(aRange, 0);
+                    } else {
+                        //сбрасываем часть строк с правого края кеша
+                        remove(dist - maxSize, aRange.getLength());
+                        //дозагружаем данные справа
+                        dataFetcher.fetch(aRange, size()+1);
+                    }
                 } else {
-                    log.debug("Cache shift failed. Create new range");
-                    //строка находится за пределами прилегающих диапазонов
-                    //сместим его в новое место
-                    IntRange n = new IntRange(index, range.getLength());
-                    dps.fetch(n);
+                    //расстояние равно или больше удвоенного макс. размера кеша,
+                    //
+                    aRange = new LimitedIntRange(index, defSize);
+                    //сбрасываем кеш полностью
+                    clear(); 
+                    //загружаем данные 
+                    dataFetcher.fetch(aRange, 0);
                 }
             }
-            */
         }
         log.debug("Cache ranging finshed. Check asserts about range");
-
-        return data.get(index-range.getFirst());
+        int intIdx = index-range.getFirst();
+        log.debug("intIdx="+intIdx);
+        //если да, то возвращаем значение из этой строки
+        assert((0 <= intIdx) && (intIdx < data.size()));
+        return data.get(intIdx);
     }
 
     @Override
