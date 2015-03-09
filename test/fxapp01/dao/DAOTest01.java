@@ -1,6 +1,6 @@
 package fxapp01.dao;
 
-import fxapp01.ProductRefsObservList;
+import fxapp01.dao.sort.ProductRefsObservList;
 import fxapp01.dao.DataCacheReadOnly;
 import fxapp01.dao.ProductRefsDAO;
 import fxapp01.dto.INestedRange;
@@ -9,7 +9,7 @@ import fxapp01.dto.LimitedIntRange;
 import fxapp01.dto.NestedIntRange;
 import fxapp01.dto.ProductRefs;
 import fxapp01.dto.ProductRefsQBE;
-import fxapp01.dto.SortOrder;
+import fxapp01.dao.sort.SortOrder;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 import java.io.IOException;

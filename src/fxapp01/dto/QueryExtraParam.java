@@ -1,5 +1,7 @@
 package fxapp01.dto;
 
+import fxapp01.dao.sort.SortOrder;
+
 /**
  *
  * @author serg

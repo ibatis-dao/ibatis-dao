@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fxapp01.FXApp01Controller">
+   <children>
+      <MenuBar prefHeight="29.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="%MainMenu.File">
+            <items>
+              <MenuItem mnemonicParsing="false" text="%MainMenu.Close" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="%MainMenu.Edit">
+            <items>
+                  <MenuItem mnemonicParsing="false" text="%MainMenu.Copy" />
+                  <MenuItem mnemonicParsing="false" text="%MainMenu.Paste" />
+              <MenuItem mnemonicParsing="false" text="%MainMenu.Delete" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="%MainMenu.Help">
+            <items>
+              <MenuItem mnemonicParsing="false" text="%MainMenu.About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <ToolBar layoutY="29.0" prefHeight="40.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+        <items>
+          <Button mnemonicParsing="false" text="%ToolBar.Button01" />
+        </items>
+      </ToolBar>
+      <SplitPane dividerPositions="0.4" focusTraversable="true" layoutY="69.0" prefHeight="331.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="69.0">
+        <items>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="329.0" prefWidth="255.0">
+               <children>
+                  <Accordion prefHeight="259.0" prefWidth="235.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <panes>
+                      <TitledPane animated="false" text="%Accordion.TitledPane01">
+                        <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                        </content>
+                      </TitledPane>
+                      <TitledPane animated="false" text="%Accordion.TitledPane02">
+                        <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                        </content>
+                      </TitledPane>
+                      <TitledPane animated="false" text="%Accordion.TitledPane03">
+                        <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                              <Button layoutX="21.0" layoutY="31.0" mnemonicParsing="false" onAction="#handleButtonAction" text="%Accordion.Button01" />
+                              <Label fx:id="label" layoutX="35.0" layoutY="56.0" text="%Accordion.Label01" />
+                            </children>
+                          </AnchorPane>
+                        </content>
+                      </TitledPane>
+                    </panes>
+                  </Accordion>
+               </children>
+            </AnchorPane>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="329.0" prefWidth="332.0">
+               <children>
+                  <TableView id="table01" fx:id="table01" prefHeight="227.0" prefWidth="299.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <columns>
+                      <TableColumn fx:id="table01Column01" prefWidth="75.0" text="%TableColumn01" />
+                      <TableColumn fx:id="table01Column02" maxWidth="200.0" minWidth="120.0" prefWidth="150.0" text="%TableColumn02" />
+                    </columns>
+                  </TableView>
+               </children>
+            </AnchorPane>
+        </items>
+      </SplitPane>
+   </children>
+</AnchorPane>
