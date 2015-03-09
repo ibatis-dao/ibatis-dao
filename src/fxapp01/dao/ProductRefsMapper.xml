@@ -9,9 +9,9 @@
     </resultMap>
 
     <select id="select" databaseId="postgresql" parameterType="IntRange" resultMap="ProductRefsMap">
-    select id, 
-           name 
-      from "public"."test02" 
+    select "id", "name" 
+      from public."test02" 
+     order by "id" 
     offset #{first} limit #{length}
     </select>
 
