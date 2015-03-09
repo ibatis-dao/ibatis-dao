@@ -53,19 +53,47 @@ public class DAOTest01 {
         Iterator<ProductRefs> itr = l.iterator();
         while (itr.hasNext()){
             ProductRefs p = itr.next();
-            log.info(p.getName());
+            log.debug(p.getName());
             numRows = numRows + 1;
         }
         Assert.assertTrue("ProductRefs retrieved not in 3 rows", (numRows == 3));
         log.trace("<<< testSelectByRange");
     }
+    
+    @Test
+    public void testInsertRow() {
+        log.trace(">>> testInsertRow");
+        ProductRefs item = new ProductRefs();
+        item.setName("test_"+Math.random());
+        ProductRefsDAO dao = new ProductRefsDAO();
+        int numRows = dao.insertRow(item);
+        log.debug("Rows inserted="+numRows+", item:"+item);
+        ProductRefs exp = dao.selectByID(item.getId());
+        log.debug("Item selected:"+exp);
+        Assert.assertTrue(item.equals(exp));
+        log.trace("<<< testInsertRow");
+    }
     */
+    @Test
+    public void testInsertRowBySP() {
+        log.trace(">>> testInsertRowBySP");
+        ProductRefs item = new ProductRefs();
+        item.setName("test_"+Math.random());
+        ProductRefsDAO dao = new ProductRefsDAO();
+        int numRows = dao.insertRowBySP(item);
+        log.debug("Rows inserted="+numRows+", item:"+item);
+        ProductRefs exp = dao.selectByID(item.getId());
+        log.debug("Item selected:"+exp);
+        Assert.assertTrue(item.equals(exp));
+        log.trace("<<< testInsertRowBySP");
+    }
+    /*
     @Test
     public void testProductRefsObservList() {
         log.trace(">>> testProductRefsObservList");
         ProductRefsObservList pl = new ProductRefsObservList();
         ProductRefs p;
-        log.debug("p(0). "+pl.get(1).toString());
+        log.debug("p(0). "+pl.get(0).toString());
         //Oracle - при первом шаге фактически читается не 20 записей, 
         //а 19 из-за того, что rownum начинается с 1, не с 0.
         //поскольку в буфер загружается 19 строк, диапазон корректируется под эту длину
@@ -78,11 +106,16 @@ public class DAOTest01 {
         log.debug("p(60). "+pl.get(60).toString());
         log.debug("p(40). "+pl.get(40).toString());
         log.debug("p(20). "+pl.get(20).toString());
-        log.debug("p(0). "+pl.get(1).toString());
+        log.debug("p(0). "+pl.get(0).toString());
         log.debug("p(50). "+pl.get(50).toString());
         log.debug("p(150). "+pl.get(150).toString());
         pl.debugPrintAll();
         log.trace("<<< testProductRefsObservList");
     }
     
+    @Test
+    public void testDataCacheReadOnly() {
+        log.trace("testDataCacheReadOnly");
+    }
+    */
 }

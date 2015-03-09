@@ -96,4 +96,36 @@ public class ProductRefsDAO implements ProductRefsMapper{
         }
     }
 
+    @Override
+    public int insertRow(ProductRefs item) {
+        //throw new UnsupportedOperationException("Not supported yet.");
+        log.trace(">>> insertRow");
+        BaseDao dao = new BaseDao();
+        try {
+            ProductRefsMapper mapper = dao.getMapper(ProductRefsMapper.class);
+            int res = mapper.insertRow(item);
+            dao.commit();
+            log.trace("<<< insertRow");
+            return res;
+        } finally {
+            dao.closeDBSession();
+        }
+    }
+
+    @Override
+    public int insertRowBySP(ProductRefs item) {
+        //throw new UnsupportedOperationException("Not supported yet.");
+        log.trace(">>> insertRowBySP");
+        BaseDao dao = new BaseDao();
+        try {
+            ProductRefsMapper mapper = dao.getMapper(ProductRefsMapper.class);
+            int res = mapper.insertRowBySP(item);
+            dao.commit();
+            log.trace("<<< insertRowBySP");
+            return res;
+        } finally {
+            dao.closeDBSession();
+        }
+    }
+
 }

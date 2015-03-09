@@ -9,6 +9,12 @@ create or replace package TMP$ITEMS_PKG is
 procedure genTestData;
 ------------------------------------------------
 
+procedure insertData(
+    p_id in out tmp$items.id%type, 
+    p_name in out tmp$items.name%type
+    );
+------------------------------------------------
+
 end TMP$ITEMS_PKG;
 /
 create or replace package body TMP$ITEMS_PKG is
@@ -26,5 +32,18 @@ begin
   end loop;
 end;
 ------------------------------------------------
+
+procedure insertData(
+    p_id in out tmp$items.id%type, 
+    p_name in out tmp$items.name%type
+    )
+as
+begin
+  insert into lisa.tmp$items(id, name) 
+  values (tmp$items_sq.nextval, p_name)
+  returning id into p_id; 
+end;
+------------------------------------------------
+
 end TMP$ITEMS_PKG;
 /

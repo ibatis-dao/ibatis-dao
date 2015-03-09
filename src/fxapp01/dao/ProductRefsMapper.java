@@ -6,9 +6,9 @@ import fxapp01.dto.ProductRefs;
 import fxapp01.dto.LimitedIntRange;
 
 public interface ProductRefsMapper {
-	
-	List<ProductRefs> select(LimitedIntRange rowsrange);
-	ProductRefs selectByID(BigInteger id);
-        BigInteger selectCount();
-
+    List<ProductRefs> select(LimitedIntRange rowsrange);
+    ProductRefs selectByID(BigInteger id);
+    BigInteger selectCount();
+    int insertRow(ProductRefs item);
+    int insertRowBySP(ProductRefs item);
 }

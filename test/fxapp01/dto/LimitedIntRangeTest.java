@@ -114,11 +114,11 @@ public class LimitedIntRangeTest {
     @Test
     public void testSetLength() {
         log.debug("setLength");
-        int length = 10;
-        LimitedIntRange instance = createRange5_5();
+        int length = 0;
+        LimitedIntRange instance = null;
         instance.setLength(length);
-        int result = instance.getLength();
-        assertEquals(length, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 
     /**
@@ -127,11 +127,11 @@ public class LimitedIntRangeTest {
     @Test
     public void testIncLength() {
         log.debug("incLength");
-        int increment = 5;
-        LimitedIntRange instance = createRange5_5();
+        int increment = 0;
+        LimitedIntRange instance = null;
         instance.incLength(increment);
-        int result = instance.getLength();
-        assertEquals(10, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 
     /**
@@ -140,9 +140,12 @@ public class LimitedIntRangeTest {
     @Test
     public void testGetLeftLimit() {
         log.debug("getLeftLimit");
-        LimitedIntRange instance = createRange5_5();
+        LimitedIntRange instance = null;
+        int expResult = 0;
         int result = instance.getLeftLimit();
-        assertEquals(1, result);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 
     /**
@@ -152,10 +155,10 @@ public class LimitedIntRangeTest {
     public void testSetLeftLimit() {
         log.debug("setLeftLimit");
         int leftLimit = 0;
-        LimitedIntRange instance = createRange5_5();
+        LimitedIntRange instance = null;
         instance.setLeftLimit(leftLimit);
-        int result = instance.getLeftLimit();
-        assertEquals(leftLimit, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 
     /**
@@ -164,10 +167,12 @@ public class LimitedIntRangeTest {
     @Test
     public void testGetRightLimit() {
         log.debug("getRightLimit");
-        LimitedIntRange instance = createZeroRange();
-        int expResult = Integer.MAX_VALUE;
+        LimitedIntRange instance = null;
+        int expResult = 0;
         int result = instance.getRightLimit();
         assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 
     /**
@@ -176,11 +181,11 @@ public class LimitedIntRangeTest {
     @Test
     public void testSetRightLimit() {
         log.debug("setRightLimit");
-        int rightLimit = 10;
-        LimitedIntRange instance = createRange5_5();
+        int rightLimit = 0;
+        LimitedIntRange instance = null;
         instance.setRightLimit(rightLimit);
-        int result = instance.getRightLimit();
-        assertEquals(rightLimit, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 
     /**
@@ -189,10 +194,12 @@ public class LimitedIntRangeTest {
     @Test
     public void testGetLast() {
         log.debug("getLast");
-        LimitedIntRange instance = createRange5_5();
-        int expResult = 9;
+        LimitedIntRange instance = null;
+        int expResult = 0;
         int result = instance.getLast();
         assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 
     /**
@@ -201,10 +208,12 @@ public class LimitedIntRangeTest {
     @Test
     public void testClone() {
         log.debug("clone");
-        LimitedIntRange instance = createRange5_5();
-        LimitedIntRange expResult = createRange5_5();
+        LimitedIntRange instance = null;
+        LimitedIntRange expResult = null;
         LimitedIntRange result = instance.clone();
         assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 
     /**
@@ -213,13 +222,13 @@ public class LimitedIntRangeTest {
     @Test
     public void testEquals() {
         log.debug("equals");
-        Object o = createRange5_5();
-        LimitedIntRange instance = createRange5_5();
+        Object o = null;
+        LimitedIntRange instance = null;
+        boolean expResult = false;
         boolean result = instance.equals(o);
-        assertTrue(result);
-        instance = createRange10_10();
-        result = instance.equals(o);
-        assertFalse(result);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 
     /**
@@ -228,10 +237,12 @@ public class LimitedIntRangeTest {
     @Test
     public void testHashCode() {
         log.debug("hashCode");
-        LimitedIntRange instance = createRange1_10();
-        int expResult = (((89 * 5 + 1) * 89 + 10) * 89 + 1) * 89 + Integer.MAX_VALUE;
+        LimitedIntRange instance = null;
+        int expResult = 0;
         int result = instance.hashCode();
         assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 
     /**
@@ -240,10 +251,12 @@ public class LimitedIntRangeTest {
     @Test
     public void testToString() {
         log.debug("toString");
-        LimitedIntRange instance = createZeroRange();
-        String expResult = "first=0, length=0, leftLimit=0, rightLimit="+Integer.MAX_VALUE;
+        LimitedIntRange instance = null;
+        String expResult = "";
         String result = instance.toString();
         assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 
     /**
@@ -252,10 +265,12 @@ public class LimitedIntRangeTest {
     @Test
     public void testIsSingular() {
         log.debug("IsSingular");
-        LimitedIntRange instance = createZeroRange();
-        assertTrue(instance.IsSingular());
-        instance = createRange100();
-        assertFalse(instance.IsSingular());
+        LimitedIntRange instance = null;
+        boolean expResult = false;
+        boolean result = instance.IsSingular();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 
     /**
@@ -264,9 +279,13 @@ public class LimitedIntRangeTest {
     @Test
     public void testIsInbound_int() {
         log.debug("IsInbound");
-        LimitedIntRange instance = createRange1_10();
-        assertFalse(instance.IsInbound(0));
-        assertTrue(instance.IsInbound(5));
+        int value = 0;
+        LimitedIntRange instance = null;
+        boolean expResult = false;
+        boolean result = instance.IsInbound(value);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 
     /**
@@ -275,10 +294,13 @@ public class LimitedIntRangeTest {
     @Test
     public void testIsInbound_LimitedIntRange() {
         log.debug("IsInbound");
-        LimitedIntRange aRange = createRange1_10();
-        LimitedIntRange instance = createRange5_5();
-        assertTrue(instance.IsInbound(aRange));
-        assertFalse(aRange.IsInbound(instance));
+        LimitedIntRange aRange = null;
+        LimitedIntRange instance = null;
+        boolean expResult = false;
+        boolean result = instance.IsInbound(aRange);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 
     /**
@@ -287,11 +309,13 @@ public class LimitedIntRangeTest {
     @Test
     public void testGetMinDistance() {
         log.debug("getMinDistance");
-        int to = 10;
-        LimitedIntRange instance = createRange5_5();
-        int expResult = 1;
+        int to = 0;
+        LimitedIntRange instance = null;
+        int expResult = 0;
         int result = instance.getMinDistance(to);
         assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 
     /**
@@ -300,11 +324,13 @@ public class LimitedIntRangeTest {
     @Test
     public void testGetMaxDistance() {
         log.debug("getMaxDistance");
-        int to = 10;
-        LimitedIntRange instance = createRange5_5();
-        int expResult = 5;
+        int to = 0;
+        LimitedIntRange instance = null;
+        int expResult = 0;
         int result = instance.getMaxDistance(to);
         assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 
     /**
@@ -313,10 +339,13 @@ public class LimitedIntRangeTest {
     @Test
     public void testIsOverlapped() {
         log.debug("IsOverlapped");
-        LimitedIntRange aRange = createRange5_5();
-        LimitedIntRange instance = createRange1_10();
-        assertTrue(instance.IsOverlapped(aRange));
-        assertTrue(aRange.IsOverlapped(instance));
+        LimitedIntRange aRange = null;
+        LimitedIntRange instance = null;
+        boolean expResult = false;
+        boolean result = instance.IsOverlapped(aRange);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 
     /**
@@ -325,11 +354,13 @@ public class LimitedIntRangeTest {
     @Test
     public void testOverlap() {
         log.debug("Overlap");
-        LimitedIntRange aRange = createRange5_5();
-        LimitedIntRange instance = createRange1_10();
-        LimitedIntRange expResult = createRange5_5();
+        LimitedIntRange aRange = null;
+        LimitedIntRange instance = null;
+        LimitedIntRange expResult = null;
         LimitedIntRange result = instance.Overlap(aRange);
         assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 
     /**
@@ -338,11 +369,13 @@ public class LimitedIntRangeTest {
     @Test
     public void testAdd() {
         log.debug("Add");
-        LimitedIntRange aRange = createRange5_5();
-        LimitedIntRange instance = createRange10_10();
-        LimitedIntRange expResult = new LimitedIntRange(5, 15, 1, Integer.MAX_VALUE);
+        LimitedIntRange aRange = null;
+        LimitedIntRange instance = null;
+        LimitedIntRange expResult = null;
         LimitedIntRange result = instance.Add(aRange);
         assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 
     /**
@@ -351,11 +384,13 @@ public class LimitedIntRangeTest {
     @Test
     public void testExtend() {
         log.debug("Extend");
-        int to = 49;
-        LimitedIntRange instance = createZeroRange();
-        LimitedIntRange expResult = createRange50();
+        int to = 0;
+        LimitedIntRange instance = null;
+        LimitedIntRange expResult = null;
         LimitedIntRange result = instance.Extend(to);
         assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 
     /**
@@ -364,11 +399,13 @@ public class LimitedIntRangeTest {
     @Test
     public void testShift() {
         log.debug("Shift");
-        int value = 10;
-        LimitedIntRange instance = createRange10_10();
-        LimitedIntRange expResult = new LimitedIntRange(20, 10, 1, Integer.MAX_VALUE);
+        int value = 0;
+        LimitedIntRange instance = null;
+        LimitedIntRange expResult = null;
         LimitedIntRange result = instance.Shift(value);
         assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 
     /**
@@ -377,14 +414,13 @@ public class LimitedIntRangeTest {
     @Test
     public void testSub() {
         log.debug("Sub");
-        LimitedIntRange aRange = createRange5_5();
-        LimitedIntRange instance = createRange10_10();
-        
-        try {
-            LimitedIntRange result = instance.Sub(aRange);
-            fail("wrong operation");
-        } catch (EUnsupported e) {
-        }
+        LimitedIntRange aRange = null;
+        LimitedIntRange instance = null;
+        LimitedIntRange expResult = null;
+        LimitedIntRange result = instance.Sub(aRange);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 
     /**
@@ -393,11 +429,13 @@ public class LimitedIntRangeTest {
     @Test
     public void testComplement() {
         log.debug("Complement");
-        int to = 99;
-        LimitedIntRange instance = createRange50();
-        LimitedIntRange expResult = new LimitedIntRange(50, 50, 0, Integer.MAX_VALUE);
+        int to = 0;
+        LimitedIntRange instance = null;
+        LimitedIntRange expResult = null;
         LimitedIntRange result = instance.Complement(to);
         assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
     
     @Test
@@ -408,7 +446,7 @@ public class LimitedIntRangeTest {
         assertTrue(aRange.getFirst() == 1);
         assertTrue(aRange.getLength() == 10);
         assertTrue(aRange.getLast()== 10);
-        assertTrue(aRange.getLeftLimit() == 1);
+        assertTrue(aRange.getLeftLimit() == 0);
         assertTrue(aRange.getRightLimit() == Integer.MAX_VALUE);
     }
 
@@ -430,13 +468,13 @@ public class LimitedIntRangeTest {
         log.trace(">>> checkMoveLimits");
         LimitedIntRange aRange = createRange1_10();
         assertNotNull(aRange);
-        assertTrue(aRange.getLeftLimit() == 1);
+        assertTrue(aRange.getLeftLimit() == 0);
         try {
             aRange.setLeftLimit(5);
             fail("wrong param value");
         } catch (EArgumentBreaksRule e) {
         }
-        assertTrue(aRange.getLeftLimit() == 1);
+        assertTrue(aRange.getLeftLimit() == 0);
         try {
             aRange.setRightLimit(-1);
             fail("wrong param value");
@@ -523,8 +561,8 @@ public class LimitedIntRangeTest {
         LimitedIntRange aRange2 = createRange10_10();
         assertNotNull(aRange2);
         assertTrue(aRange1.IsOverlapped(aRange2));
-        aRange2.setFirst(1);
-        assertTrue(aRange1.IsOverlapped(aRange2));
+        aRange2.setFirst(0);
+        assertFalse(aRange1.IsOverlapped(aRange2));
         aRange2.setFirst(5);
         assertTrue(aRange1.IsOverlapped(aRange2));
         aRange2.setFirst(10);
@@ -552,7 +590,7 @@ public class LimitedIntRangeTest {
         assertTrue(aRange3.getFirst() == 10);
         assertTrue(aRange3.getLength()== 5);
         log.debug("before aRange2.setFirst(1)");
-        aRange2.setFirst(100);
+        aRange2.setFirst(0);
         aRange3 = aRange1.Overlap(aRange2);
         assertTrue(aRange3.IsSingular());
     }
@@ -574,12 +612,12 @@ public class LimitedIntRangeTest {
         assertNotNull(aRange2);
         LimitedIntRange aRange3 = aRange1.Add(aRange2);
         assertTrue(aRange3.getFirst() == 5);
-        assertTrue(aRange3.getLength()== 15);
+        assertTrue(aRange3.getLength()== 10);
         log.debug("before aRange2.setFirst(0)");
-        aRange1.setFirst(1);
+        aRange1.setFirst(0);
         aRange3 = aRange1.Add(aRange2);
-        assertTrue(aRange3.getFirst() == 1);
-        assertTrue(aRange3.getLength()== 19);
+        assertTrue(aRange3.getFirst() == 0);
+        assertTrue(aRange3.getLength()== 15);
         log.debug("before aRange2.setFirst(20)");
         aRange1.setFirst(20);
         aRange3 = aRange1.Add(aRange2);
@@ -641,10 +679,10 @@ public class LimitedIntRangeTest {
         assertTrue(aRange2.getFirst() == 10);
         assertTrue(aRange2.getLast() == 15);
         log.debug("before aRange1.Complement(39)");
-        aRange1.setFirst(1);
+        aRange1.setFirst(0);
         aRange1.setLength(20);
         aRange2 = aRange1.Complement(39);
-        assertTrue(aRange2.getFirst() == 21);
+        assertTrue(aRange2.getFirst() == 20);
         assertTrue(aRange2.getLast() == 39);
     }
     

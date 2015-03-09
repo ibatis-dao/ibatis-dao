@@ -24,7 +24,7 @@
           )
     select id, name
       from (
-        select rownum as rn, 
+        select rownum - 1 as rn, 
                id, 
                name
           from t001
@@ -53,4 +53,21 @@
     select count(id) from public."test02"
     </select>
     
+    <insert id="insertRow" databaseId="oracle" statementType="CALLABLE" parameterType="ProductRefs">
+    begin 
+      insert into lisa.tmp$items(id, name) 
+      values (tmp$items_sq.nextval, #{name})
+      returning id into #{id,mode=OUT,jdbcType=BIGINT}; 
+    end;
+    </insert>
+    
+    <insert id="insertRowBySP" databaseId="oracle" statementType="CALLABLE" parameterType="ProductRefs">
+    begin 
+      TMP$ITEMS_PKG.insertData(#{id,mode=INOUT,jdbcType=BIGINT}, #{name,mode=INOUT,jdbcType=VARCHAR});
+    end;
+    </insert>
+    
+    <insert id="insertRow" databaseId="postgresql" statementType="CALLABLE" parameterType="ProductRefs">
+        //TODO
+    </insert>
 </mapper>

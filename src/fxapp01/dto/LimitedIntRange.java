@@ -6,7 +6,6 @@ import fxapp01.excpt.ENullArgument;
 import fxapp01.excpt.EUnsupported;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
-import java.util.Objects;
 
 /**
  *
@@ -229,29 +228,19 @@ public class LimitedIntRange {
                 log.debug(equalsMthdName+"("+o.getClass().getName()+")=FALSE");
                 return false;
             } else {
-                LimitedIntRange r = (LimitedIntRange)o;
-                return (
-                    Objects.equals(first, r.getFirst()) && 
-                    Objects.equals(length, r.getLength()) && 
-                    Objects.equals(leftLimit, r.getLeftLimit()) && 
-                    Objects.equals(rightLimit, r.getRightLimit())
-                );
-                //return (hashCode() == o.hashCode());
+                return (hashCode() == o.hashCode());
             }
         }
     }
 
     @Override
     public int hashCode() {
-        //return Objects.hash(first, length, leftLimit, rightLimit);
-        
         int hash = 5;
         hash = 89 * hash + this.first;
         hash = 89 * hash + this.length;
         hash = 89 * hash + this.leftLimit;
         hash = 89 * hash + this.rightLimit;
         return hash;
-        
     }
     
     @Override

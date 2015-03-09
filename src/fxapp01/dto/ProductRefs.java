@@ -1,5 +1,6 @@
 package fxapp01.dto;
 
+import com.sun.org.apache.xpath.internal.operations.Equals;
 import java.io.Serializable;
 import java.math.BigInteger;
 import javafx.beans.property.IntegerProperty;
@@ -38,6 +39,26 @@ public class ProductRefs implements Serializable {
     @Override
     public String toString() {
         return "Id="+IdProperty().get()+", Name="+NameProperty().get();
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+        //если параметр = null, то он не может быть равен текущему экземпляру
+            return false;
+        } else {
+            //если тип входного параметра нельзя присвоить текущему типу, 
+            //то их нельзя сравнить. он не может быть равен текущему экземпляру
+            if (! o.getClass().isAssignableFrom(this.getClass())) {
+                return false;
+            } else {
+                ProductRefs p = (ProductRefs)o;
+                return (
+                    (IdProperty().get() == p.IdProperty().get()) &&
+                    (NameProperty().get().equals(p.NameProperty().get()))
+                );
+            }
+        }
     }
 
 }

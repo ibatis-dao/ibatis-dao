@@ -6,7 +6,6 @@ import fxapp01.excpt.ENullArgument;
 import fxapp01.excpt.EUnsupported;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
-import java.util.Objects;
 
 /**
  *
@@ -218,9 +217,7 @@ public class NestedIntRange implements INestedRange<java.lang.Integer> {
                 log.debug(equalsMthdName+"("+o.getClass().getName()+")=FALSE");
                 return false;
             } else {
-                NestedIntRange r = (NestedIntRange)o;
-                return (Objects.equals(parentRange, r.getParentRange()) && Objects.equals(first, r.getFirst()) && Objects.equals(length, r.getLength()));
-                //return (hashCode() == o.hashCode());
+                return (hashCode() == o.hashCode());
             }
         }
     }
