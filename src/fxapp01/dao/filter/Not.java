@@ -7,7 +7,7 @@ package fxapp01.dao.filter;
 public class Not extends SqlFilterBaseImpl {
     
     public Not() {
-        super("not", 0);
+        super("not {1}", 1);
     }
     
 }

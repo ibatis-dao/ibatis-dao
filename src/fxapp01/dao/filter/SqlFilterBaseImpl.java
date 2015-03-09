@@ -6,12 +6,13 @@ import java.util.Iterator;
 
 public class SqlFilterBaseImpl extends FilterImpl implements ISqlFilterable {
 
-    private String text;
+    private String template;
+
     private Object[] args;
     private int argCount;
 
-    protected SqlFilterBaseImpl(String text, int argCount) {
-        this.text = text;
+    protected SqlFilterBaseImpl(String template, int argCount) {
+        this.template = template;
         this.argCount = argCount;
     }
     
@@ -26,15 +27,19 @@ public class SqlFilterBaseImpl extends FilterImpl implements ISqlFilterable {
                 sb.append(((ISqlFilterable)f).getText());
             }
         }
-        sb.append(MessageFormat.format(text, args));
+        sb.append(MessageFormat.format(template, args));
         return sb.toString();
     }
 
+    public String getTemplate() {
+        return template;
+    }
+
     /**
-     * @param text the text to set
+     * @param text of the template to set
      */
-    protected void setText(String text) {
-        this.text = text;
+    protected void setTemplate(String template) {
+        this.template = template;
     }
 
     /**

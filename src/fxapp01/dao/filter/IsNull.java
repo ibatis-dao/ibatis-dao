@@ -6,8 +6,11 @@ package fxapp01.dao.filter;
  */
 public class IsNull extends SqlFilterBaseImpl {
 
-    public IsNull() {
+    private final Object arg;
+    
+    public IsNull(Object arg) {
         super("{0} is null", 1);
+        this.arg = arg;
     }
     
 }
