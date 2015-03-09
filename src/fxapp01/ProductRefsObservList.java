@@ -1,6 +1,7 @@
 package fxapp01;
 
 import fxapp01.dao.DataCacheReadOnly;
+import fxapp01.dao.IDataPageSource;
 import fxapp01.dao.ProductRefsDAO;
 import fxapp01.dto.IntRange;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ import fxapp01.log.LogMgr;
  *
  * @author serg
  */
-public class ProductRefsObservList implements ObservableList<ProductRefs>{
+public class ProductRefsObservList implements ObservableList<ProductRefs>, IDataPageSource {
     
     private static final ILogger log = LogMgr.getLogger(ProductRefsObservList.class);
     private final DataCacheReadOnly<ProductRefs> cache;
@@ -36,7 +37,8 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>{
         this.changeListeners = new ArrayList<>();
         this.invListeners = new ArrayList<>();
         log.debug("before new DataCacheReadOnly");
-        this.cache = new DataCacheReadOnly<>(20, 300);
+        IDataPageSource dps = this; // 
+        this.cache = new DataCacheReadOnly<>(dps, 20, 300);
         log.debug("before FXCollections.observableList");
         this.dataFacade = FXCollections.observableList(cache);
         log.debug("before new ProductRefsDAO");
@@ -46,7 +48,7 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>{
         this.cache.addAll(l);
         */
         log.debug("before requestDataPage");
-        requestDataPage(cache.getRange());
+        dps.fetchDataPage(cache.getRange());
         log.trace("<<< constructor");
     }
     
@@ -204,51 +206,15 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>{
     public ProductRefs get(int index) {
         //********************************************************
         //TODO сделать скользящий кеш
-        log.trace(">>> get(index="+index+")");
-        //проверяем, находится ли строка в пределах диапазона
-        if (cache.containsIndex(index)) {
-            //если да, то возвращаем значение из этой строки
-            return cache.get(index);
-        } else {
-            log.debug("Out of cache. Try find new range");
-            //если строка за пределами диапазона
-            //определяем расстояние от дальнего края текущего диапазона до указаной строки
-            int dist = cache.getRange().getMaxDistance(index);
-            //если расстояние меньше максимального размера кеша
-            
-            // TODO: продолжить с этого места мета-описание логики из requestDataPage
-            
-            
-            //проверяем прилегающий диапазон слева
-            IntRange l = cache.getRange().Shift(- cache.getDefSize());
-            if (l.IsInbound(index)) {
-                //если строка входит в диапазон слева, получаем данные для него
-                log.debug("Shift cache to left");
-                requestDataPage(l);
-            } else {
-                //проверяем прилегающий диапазон справа
-                IntRange r = cache.getRange().Shift(cache.getDefSize());
-                if (r.IsInbound(index)) {
-                    log.debug("Shift cache to right");
-                    //если строка входит в диапазон справа, получаем данные для него
-                    requestDataPage(r);
-                } else {
-                    log.debug("Cache shift failed. Create new range");
-                    //строка находится за пределами прилегающих диапазонов
-                    //сместим его в новое место
-                    IntRange n = new IntRange(index, cache.getRange().getLength());
-                    requestDataPage(n);
-                }
-            }
-        }
-        log.debug("Cache ranging finshed. Check asserts about range");
+        //log.trace(">>> get(index="+index+")");
         //проверяем, находится ли теперь строка в пределах диапазона
-        assert(cache.containsIndex(index));
+        //assert(cache.containsIndex(index));
         //возвращаем значение из этой строки
         return cache.get(index);
     }
 
-    private void requestDataPage(IntRange aRowsRange) {
+    @Override
+    public void fetchDataPage(IntRange aRowsRange) {
     /* мета-описание логики работы:
     1. проверяем, есть ли в кеше данные (первоначальная загрузка)
     если данных нет, а запрошенный диапазон равен дипазону кеша, то считаем, что это первая загрузка

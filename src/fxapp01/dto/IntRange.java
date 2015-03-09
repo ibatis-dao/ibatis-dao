@@ -5,6 +5,8 @@ import fxapp01.excpt.ENegativeArgument;
 import fxapp01.excpt.ENullArgument;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -31,10 +33,7 @@ public class IntRange {
         if ((first < 0) || (length < 0)) {
             throw new ENegativeArgument("Constructor");
         }
-        this.first = first;
-        this.length = length;
-        leftLimit = 0;
-        rightLimit = Integer.MAX_VALUE;
+        init(first, length);
     }
     
     public IntRange(int first, int length, int leftLimit, int rightLimit) {
@@ -46,6 +45,17 @@ public class IntRange {
         if (first+length > rightLimit) {
             throw new EArgumentBreaksRule("Constructor", "first+length <= rightLimit");
         }
+        this.leftLimit = leftLimit;
+        this.rightLimit = rightLimit;
+    }
+    
+    private void init(int first, int length) {
+        init(first, length, 0, Integer.MAX_VALUE);
+    }
+    
+    private void init(int first, int length, int leftLimit, int rightLimit) {
+        this.first = first;
+        this.length = length;
         this.leftLimit = leftLimit;
         this.rightLimit = rightLimit;
     }
@@ -137,8 +147,14 @@ public class IntRange {
     
     @Override
     public IntRange clone() {
-        //IntRange n = (IntRange) super.clone();
-        return new IntRange(first, length, leftLimit, rightLimit);
+        try {
+            IntRange n = (IntRange) super.clone();
+            n.init(first, length, leftLimit, rightLimit);
+            return n;
+        } catch (CloneNotSupportedException ex) {
+            log.error(null, ex);
+            return new IntRange(first, length, leftLimit, rightLimit);
+        }
     }
     
     /**
@@ -275,6 +291,18 @@ public class IntRange {
         }
         int minStart = Math.max(leftLimit, Math.min(first, aRange.getFirst()));
         int maxLast = Math.min(Math.max(getLast(), aRange.getLast()), rightLimit);
+        log.debug("Add(). minStart="+minStart+", maxLast="+maxLast);
+        return new IntRange(minStart, maxLast - minStart);
+    }
+
+    /**
+     * Продлевает текущий диапазон до указанной точки. 
+     * @param point
+     * @return 
+     */
+    public IntRange Extend(int point) {
+        int minStart = Math.max(leftLimit, Math.min(first, point));
+        int maxLast = Math.min(Math.max(getLast(), point), rightLimit);
         log.debug("Add(). minStart="+minStart+", maxLast="+maxLast);
         return new IntRange(minStart, maxLast - minStart);
     }

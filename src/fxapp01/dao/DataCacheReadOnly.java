@@ -19,13 +19,15 @@ public class DataCacheReadOnly<T> implements List {
     private static final ILogger log = LogMgr.getLogger(DataCacheReadOnly.class);
     // фактическое начало (порядковый номер первой строки) и фактический размер 
     // окна данных в рамках источника данных. 
+    private IDataPageSource dps;
     private IntRange range;
     private int defSize;
     private int maxSize;
     private final List<T> data;
     
-    public DataCacheReadOnly() {
+    public DataCacheReadOnly(IDataPageSource dps) {
         log.trace(">>> constructor()");
+        this.dps = dps;
         this.defSize = 100; //defaults
         this.maxSize = 300;
         this.data = new ArrayList<>();
@@ -34,8 +36,8 @@ public class DataCacheReadOnly<T> implements List {
         log.trace("<<< constructor()");
     }
     
-    public DataCacheReadOnly(int defSize, int maxSize) {
-        this();
+    public DataCacheReadOnly(IDataPageSource dps, int defSize, int maxSize) {
+        this(dps);
         log.trace(">>> constructor(defSize, maxSize)");
         this.defSize = defSize;
         this.maxSize = maxSize;
@@ -170,6 +172,67 @@ public class DataCacheReadOnly<T> implements List {
     /***************************************************************************
      * 
     ***************************************************************************/
+        //внутренний адрес строки в кеше
+        int intIdx = index-range.getFirst();
+        log.debug("get(index="+index+"). intIdx="+intIdx);
+        //проверяем, находится ли строка в пределах текущего диапазона
+        if (containsIndex(index)) {
+            //если да, то возвращаем значение из этой строки
+            assert((0 <= intIdx) && (intIdx < data.size()));
+            return data.get(intIdx);
+        } else {
+            log.debug("Out of cache. Try find new range");
+            //если строка за пределами текущего диапазона
+            //рассчитываем расстояние до указаной строки
+            int dist = range.getMaxDistance(index);
+            //вычисляем, сколько не хватает до полной страницы
+            int pagePart = defSize - (dist % defSize);
+            if (pagePart != 0) {
+                if (dist < 0) {
+                    index = dist - pagePart;
+                } else {
+                    index = dist + pagePart;
+                }
+            }
+            //теперь расстояние в целых страницах
+            //рассчитываем диапазон до указаной строки
+            IntRange aRange = range.Extend(index);
+            //если расчетный диапазон меньше максимального размера кеша
+            if (range.getLength() <= maxSize) {
+                //вычисляем диапазон строк, который требуется дозагрузить
+                //загружаем только новую порцию данных.  
+                //ту часть диапазона, что уже есть в кеше, исключаем из загрузки
+                aRange = aRange.Sub(range);
+                dps.fetchDataPage(aRange);
+            } else {
+                aRange = new IntRange(index, defSize);
+            // TODO: продолжить с этого места мета-описание логики из requestDataPage
+            }
+            
+            //проверяем прилегающий диапазон слева
+            IntRange l = range.Shift(- defSize);
+            if (l.IsInbound(index)) {
+                //если строка входит в диапазон слева, получаем данные для него
+                log.debug("Shift cache to left");
+                dps.fetchDataPage(l);
+            } else {
+                //проверяем прилегающий диапазон справа
+                IntRange r = range.Shift(defSize);
+                if (r.IsInbound(index)) {
+                    log.debug("Shift cache to right");
+                    //если строка входит в диапазон справа, получаем данные для него
+                    dps.fetchDataPage(r);
+                } else {
+                    log.debug("Cache shift failed. Create new range");
+                    //строка находится за пределами прилегающих диапазонов
+                    //сместим его в новое место
+                    IntRange n = new IntRange(index, range.getLength());
+                    dps.fetchDataPage(n);
+                }
+            }
+        }
+        log.debug("Cache ranging finshed. Check asserts about range");
+
         return data.get(index-range.getFirst());
     }
 
