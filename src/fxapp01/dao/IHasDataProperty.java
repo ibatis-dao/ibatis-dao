@@ -15,7 +15,6 @@
  */
 package fxapp01.dao;
 
-import data.Property;
 import java.io.Serializable;
 import java.util.Collection;
 
@@ -23,26 +22,26 @@ import java.util.Collection;
  *
  * @author serg
  */
-public interface IDataRow extends Serializable {
+public interface IHasDataProperty extends Serializable {
     
     /*
     * Tries to add a new Property into the Item.
     */
-    boolean addDataRowProperty(Object id, Property property);
+    boolean addDataProperty(Object id, IDataProperty property);
 
     /*
     * Gets the Property corresponding to the given Property ID stored in the Item.
     */
-    Property getDataRowProperty(Object id);
+    IDataProperty getDataProperty(Object id);
 
     /*
     * Gets the collection of IDs of all Properties stored in the Item.
     */
-    Collection<?> getDataRowPropertyIds();
+    Collection<?> getDataPropertyIds();
 
     /*
     * Removes the Property identified by ID from the Item.
     */
-    boolean removeDataRowProperty(Object id);
+    boolean removeDataProperty(Object id);
           
 }
