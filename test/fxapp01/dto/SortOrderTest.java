@@ -1,5 +1,7 @@
 package fxapp01.dto;
 
+import fxapp01.log.ILogger;
+import fxapp01.log.LogMgr;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -13,6 +15,8 @@ import static org.junit.Assert.*;
  */
 public class SortOrderTest {
     
+    private final ILogger log = LogMgr.getLogger(this.getClass()); 
+
     public SortOrderTest() {
     }
     
@@ -37,13 +41,22 @@ public class SortOrderTest {
      */
     @Test
     public void testBuild() {
-        System.out.println("build");
+        log.debug("build");
         SortOrder instance = new SortOrder();
-        String expResult = "";
+        String expResult;
         String result = instance.build();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertTrue(result.isEmpty());
+        expResult = "test01 ASC";
+        instance.add("test01", ISortOrder.Direction.ASC);
+        result = instance.build();
+        assertTrue(result.contentEquals(expResult));
+        instance.add("test02", ISortOrder.Direction.DESC);
+        expResult = "test01 ASC, test02 DESC";
+        result = instance.build();
+        assertTrue(result.contentEquals(expResult));
+        instance.add("test03", ISortOrder.Direction.NONE);
+        result = instance.build();
+        assertTrue(result.contentEquals(expResult));
     }
 
     /**
@@ -51,13 +64,15 @@ public class SortOrderTest {
      */
     @Test
     public void testSize() {
-        System.out.println("size");
+        log.debug("size");
         SortOrder instance = new SortOrder();
         int expResult = 0;
         int result = instance.size();
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        instance.add("test01", ISortOrder.Direction.ASC);
+        expResult = 1;
+        result = instance.size();
+        assertEquals(expResult, result);
     }
 
     /**
@@ -65,14 +80,13 @@ public class SortOrderTest {
      */
     @Test
     public void testGetName() {
-        System.out.println("getName");
+        log.debug("getName");
         int index = 0;
         SortOrder instance = new SortOrder();
-        String expResult = "";
+        String expResult = "test01";
+        instance.add(expResult, ISortOrder.Direction.ASC);
         String result = instance.getName(index);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertTrue(expResult.contentEquals(result));
     }
 
     /**
@@ -80,14 +94,13 @@ public class SortOrderTest {
      */
     @Test
     public void testGetDirection() {
-        System.out.println("getDirection");
+        log.debug("getDirection");
         int index = 0;
         SortOrder instance = new SortOrder();
-        ISortOrder.Direction expResult = null;
+        ISortOrder.Direction expResult = ISortOrder.Direction.ASC;
+        instance.add("test01", expResult);
         ISortOrder.Direction result = instance.getDirection(index);
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -95,13 +108,20 @@ public class SortOrderTest {
      */
     @Test
     public void testAdd() {
-        System.out.println("add");
-        String columnName = "";
-        ISortOrder.Direction direction = null;
+        log.debug("add");
         SortOrder instance = new SortOrder();
-        instance.add(columnName, direction);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        int result = instance.size();
+        assertEquals(0, result);
+        try {
+            instance.add("", ISortOrder.Direction.NONE);
+            fail("add() with empty columnName");
+        } catch (IllegalArgumentException ex) {
+        }
+        result = instance.size();
+        assertEquals(0, result);
+        instance.add("test01", ISortOrder.Direction.NONE);
+        result = instance.size();
+        assertEquals(1, result);
     }
 
     /**
@@ -109,14 +129,12 @@ public class SortOrderTest {
      */
     @Test
     public void testDel() {
-        System.out.println("del");
+        log.debug("del");
         int index = 0;
         SortOrder instance = new SortOrder();
-        boolean expResult = false;
+        instance.add("test01", ISortOrder.Direction.NONE);
         boolean result = instance.del(index);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertTrue(result);
     }
 
     /**
@@ -124,11 +142,35 @@ public class SortOrderTest {
      */
     @Test
     public void testClear() {
-        System.out.println("clear");
+        log.debug("clear");
         SortOrder instance = new SortOrder();
+        instance.add("test01", ISortOrder.Direction.NONE);
         instance.clear();
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        int result = instance.size();
+        assertEquals(0, result);
+    }
+    
+    /**
+     * Test of clear method, of class SortOrder.
+     */
+    @Test
+    public void testToggle() {
+        log.debug("toggle");
+        SortOrder instance = new SortOrder();
+        instance.add("test01", ISortOrder.Direction.NONE);
+        int index = 0;
+        instance.toggle(index);
+        ISortOrder.Direction expected = ISortOrder.Direction.ASC;
+        ISortOrder.Direction result = instance.getDirection(index);
+        assertEquals(expected, result);
+        instance.toggle(index);
+        expected = ISortOrder.Direction.DESC;
+        result = instance.getDirection(index);
+        assertEquals(expected, result);
+        instance.toggle(index);
+        expected = ISortOrder.Direction.NONE;
+        result = instance.getDirection(index);
+        assertEquals(expected, result);
     }
     
 }

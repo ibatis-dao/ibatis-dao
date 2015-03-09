@@ -36,9 +36,9 @@ public class NestedIntRange implements INestedRange<Integer> {
     private Integer first;
     private Integer length;
     private INestedRange<Integer> parentRange;
-    private static final INestedRange Singular = new SingularIntRange();
+    private static final INestedRange<Integer> Singular = new SingularIntRange();
     
-    public NestedIntRange(Integer first, Integer length, INestedRange parentRange) {
+    public NestedIntRange(Integer first, Integer length, INestedRange<Integer> parentRange) {
         init(first, length, null);
         log.trace(entering+contructorMthdName+"(first="+first+", length="+length+", parentRange="+parentRange+")");
         this.parentRange = parentRange;
@@ -48,7 +48,7 @@ public class NestedIntRange implements INestedRange<Integer> {
         init(first, length, null);
     }
     */
-    private void init(Integer first, Integer length, INestedRange parentRange) {
+    private void init(Integer first, Integer length, INestedRange<Integer> parentRange) {
         this.first = first;
         this.length = length;
         this.parentRange = parentRange;
@@ -154,11 +154,11 @@ public class NestedIntRange implements INestedRange<Integer> {
     }
     
     @Override
-    public INestedRange getParentRange() {
+    public INestedRange<Integer> getParentRange() {
         return parentRange;
     }
     
-    private static NestedIntRange castItf(INestedRange itf) {
+    private static NestedIntRange castItf(INestedRange<Integer> itf) {
         if (itf != null) {
             if (itf.getClass().isAssignableFrom(NestedIntRange.class)) {
                 return (NestedIntRange)itf;
@@ -171,7 +171,7 @@ public class NestedIntRange implements INestedRange<Integer> {
     }
 
     @Override
-    public void setParentRange(INestedRange parentRange) {
+    public void setParentRange(INestedRange<Integer> parentRange) {
         NestedIntRange p = castItf(parentRange);
         IsIntRule1Ok(setLeftLimitMthdName, p, first); // leftLimit <= first
         IsIntRule3Ok(setLeftLimitMthdName, first, length, p); // first+length-1 <= rightLimit
@@ -341,7 +341,7 @@ public class NestedIntRange implements INestedRange<Integer> {
      * @return 
    */
     @Override
-    public INestedRange Overlap(INestedRange<Integer> aRange) {
+    public INestedRange<Integer> Overlap(INestedRange<Integer> aRange) {
         log.trace(OverlapMthdName+"(aRange)");
         if (aRange == null) {
             throw new ENullArgument(OverlapMthdName);
@@ -364,7 +364,7 @@ public class NestedIntRange implements INestedRange<Integer> {
      * @return 
      */
     @Override
-    public INestedRange Add(INestedRange<Integer> aRange) {
+    public INestedRange<Integer> Add(INestedRange<Integer> aRange) {
         if (aRange == null) {
             throw new ENullArgument(AddMthdName);
         }
@@ -382,7 +382,7 @@ public class NestedIntRange implements INestedRange<Integer> {
      * @return 
      */
     @Override
-    public INestedRange Extend(Integer to) {
+    public INestedRange<Integer> Extend(Integer to) {
         IsIntRule5Ok(ExtendMthdName, parentRange, to); // leftLimit >= to >= rightLimit
         if (IsInbound(to)) {
             return Singular;
@@ -399,7 +399,7 @@ public class NestedIntRange implements INestedRange<Integer> {
     * смещает начало диапазона на указанную величину
     */
     @Override
-    public INestedRange Shift(Integer value) {
+    public INestedRange<Integer> Shift(Integer value) {
         //setFirst(first+value);
         IsIntRule5Ok(ShiftMthdName, parentRange, first+value); // leftLimit >= first+value >= rightLimit
         return new NestedIntRange(first+value, length, parentRange);
@@ -411,7 +411,7 @@ public class NestedIntRange implements INestedRange<Integer> {
      * @return 
      */
     @Override
-    public INestedRange Complement(Integer to) {
+    public INestedRange<Integer> Complement(Integer to) {
         log.trace(ComplementMthdName+"(to="+to+")");
         Integer dist = getMinDistance(to);
         if (dist < 0) {
@@ -427,7 +427,7 @@ public class NestedIntRange implements INestedRange<Integer> {
     
     /*
     @Override
-    public INestedRange Complement(INestedRange<Integer> aRange) {
+    public INestedRange<Integer> Complement(INestedRange<Integer> aRange) {
         log.trace(ComplementMthdName+"(aRange="+aRange+")");
         if (IsInbound(aRange)) {
             //если текущий диапазон помещается целиком внутри указанного

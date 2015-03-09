@@ -16,7 +16,7 @@ import java.util.ListIterator;
  *
  * @author StarukhSA
  */
-public class DataCacheReadOnly<T> implements List {
+public class DataCacheReadOnly<T> implements List<T> {
     //TODO после отладки заменить реализацию интерфейса List на расширение класса ArrayList
     
     private static final ILogger log = LogMgr.getLogger(DataCacheReadOnly.class);
@@ -59,7 +59,7 @@ public class DataCacheReadOnly<T> implements List {
 
     public void debugPrintAll() {
         log.debug("----- printAll -----");
-        Iterator<Object> itr = iterator();
+        Iterator<T> itr = iterator();
         while (itr.hasNext()) {
             Object o = itr.next();
             log.debug(o.toString());
@@ -146,11 +146,11 @@ public class DataCacheReadOnly<T> implements List {
 
     @Override
     public boolean contains(Object o) {
-        return data.contains((T)o);
+        return data.contains(o);
     }
 
     @Override
-    public Iterator iterator() {
+    public Iterator<T> iterator() {
         return data.iterator();
     }
 
@@ -160,13 +160,13 @@ public class DataCacheReadOnly<T> implements List {
     }
 
     @Override
-    public Object[] toArray(Object[] a) {
+    public <T>T[] toArray(T[] a) {
         return data.toArray(a);
     }
 
     @Override
-    public boolean add(Object e) {
-        boolean res = data.add((T)e);
+    public boolean add(T e) {
+        boolean res = data.add(e);
         if (res) {
             range.incLength(1);
         }
@@ -188,7 +188,7 @@ public class DataCacheReadOnly<T> implements List {
     }
 
     @Override
-    public boolean addAll(Collection c) {
+    public boolean addAll(Collection<? extends T> c) {
         if (c != null) {
             range.incLength(c.size());
         }
@@ -196,7 +196,7 @@ public class DataCacheReadOnly<T> implements List {
     }
 
     @Override
-    public boolean addAll(int index, Collection c) {
+    public boolean addAll(int index, Collection<? extends T> c) {
         log.trace(entering+"addAll(index="+index+", c)");
         if (c != null) {
             range.incLength(c.size());
@@ -317,18 +317,18 @@ public class DataCacheReadOnly<T> implements List {
     }
 
     @Override
-    public Object set(int index, Object element) {
-        return data.set(index, (T)element);
+    public T set(int index, T element) {
+        return data.set(index, element);
     }
 
     @Override
-    public void add(int index, Object element) {
+    public void add(int index, T element) {
         range.incLength(1);
-        data.add(index, (T)element);
+        data.add(index, element);
     }
 
     @Override
-    public Object remove(int index) {
+    public T remove(int index) {
         range.incLength(-1);
         return data.remove(index);
     }
@@ -344,17 +344,17 @@ public class DataCacheReadOnly<T> implements List {
     }
 
     @Override
-    public ListIterator listIterator() {
+    public ListIterator<T> listIterator() {
         return data.listIterator();
     }
 
     @Override
-    public ListIterator listIterator(int index) {
+    public ListIterator<T> listIterator(int index) {
         return data.listIterator(index);
     }
 
     @Override
-    public List subList(int fromIndex, int toIndex) {
+    public List<T> subList(int fromIndex, int toIndex) {
         return data.subList(fromIndex, toIndex);
     }
 }

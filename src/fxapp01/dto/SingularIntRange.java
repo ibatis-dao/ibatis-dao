@@ -37,12 +37,12 @@ public class SingularIntRange implements INestedRange<Integer> {
     }
 
     @Override
-    public INestedRange getParentRange() {
+    public INestedRange<Integer> getParentRange() {
         return null;
     }
 
     @Override
-    public void setParentRange(INestedRange parentRange) {
+    public void setParentRange(INestedRange<Integer> parentRange) {
         throw new UnsupportedOperationException(ns);
     }
 
@@ -62,7 +62,7 @@ public class SingularIntRange implements INestedRange<Integer> {
     }
 
     @Override
-    public boolean IsInbound(INestedRange aRange) {
+    public boolean IsInbound(INestedRange<Integer> aRange) {
         throw new UnsupportedOperationException(ns);
     }
 
@@ -77,32 +77,32 @@ public class SingularIntRange implements INestedRange<Integer> {
     }
 
     @Override
-    public boolean IsOverlapped(INestedRange aRange) {
+    public boolean IsOverlapped(INestedRange<Integer> aRange) {
         throw new UnsupportedOperationException(ns);
     }
 
     @Override
-    public INestedRange Overlap(INestedRange aRange) {
+    public INestedRange<Integer> Overlap(INestedRange<Integer> aRange) {
         throw new UnsupportedOperationException(ns);
     }
 
     @Override
-    public INestedRange Add(INestedRange aRange) {
+    public INestedRange<Integer> Add(INestedRange<Integer> aRange) {
         throw new UnsupportedOperationException(ns);
     }
 
     @Override
-    public INestedRange Extend(Integer to) {
+    public INestedRange<Integer> Extend(Integer to) {
         throw new UnsupportedOperationException(ns);
     }
 
     @Override
-    public INestedRange Shift(Integer value) {
+    public INestedRange<Integer> Shift(Integer value) {
         throw new UnsupportedOperationException(ns);
     }
 
     @Override
-    public INestedRange Complement(Integer to) {
+    public INestedRange<Integer> Complement(Integer to) {
         throw new UnsupportedOperationException(ns);
     }
 

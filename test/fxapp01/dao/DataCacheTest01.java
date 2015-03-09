@@ -4,6 +4,7 @@ import fxapp01.ProductRefsObservList;
 import fxapp01.dto.ProductRefs;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
+import java.io.IOException;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -38,7 +39,7 @@ public class DataCacheTest01 {
     }
     
     @Test
-    public void testProductRefsObservList() {
+    public void testProductRefsObservList() throws IOException {
         log.trace(">>> testProductRefsObservList");
         ProductRefsObservList pl = new ProductRefsObservList();
         ProductRefs p;

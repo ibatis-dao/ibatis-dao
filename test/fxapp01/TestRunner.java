@@ -2,7 +2,7 @@ package fxapp01;
 
 import fxapp01.dao.DAOAllTests;
 import fxapp01.dto.GeoLocationTest;
-import fxapp01.dto.IntRangeAllTests;
+import fxapp01.dto.DTOAllTests;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 import org.junit.runner.JUnitCore;
@@ -18,7 +18,7 @@ public class TestRunner {
     private static final ILogger log = LogMgr.getLogger(TestRunner.class); 
     
     public static void main(String[] args) {
-        run(IntRangeAllTests.class);
+        run(DTOAllTests.class);
         run(DAOAllTests.class);
         run(GeoLocationTest.class);
     }

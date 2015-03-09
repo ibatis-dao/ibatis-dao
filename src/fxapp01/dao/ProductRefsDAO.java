@@ -208,9 +208,6 @@ public class ProductRefsDAO implements ProductRefsMapper{
                 List<ProductRefs> res = mapper.selectBE(qbe);
                 log.trace("<<< selectBE");
                 return res;
-            } catch (Exception e) {
-                log.error(null, e);
-                throw e;
             } finally {
                 dao.closeDBSession();
             }

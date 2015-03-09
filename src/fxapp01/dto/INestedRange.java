@@ -41,15 +41,15 @@ public interface INestedRange<T extends Number> {
 
     public boolean IsOverlapped(INestedRange<T> aRange);
     
-    public INestedRange Overlap(INestedRange<T> aRange);
+    public INestedRange<T> Overlap(INestedRange<T> aRange);
     
-    public INestedRange Add(INestedRange<T> aRange);
+    public INestedRange<T> Add(INestedRange<T> aRange);
     
-    public INestedRange Extend(T to);
+    public INestedRange<T> Extend(T to);
     
-    public INestedRange Shift(T value);
+    public INestedRange<T> Shift(T value);
     
-    public INestedRange Complement(T to);
+    public INestedRange<T> Complement(T to);
 
     //public INestedRange Complement(INestedRange<T> aRange);
 }

@@ -12,7 +12,7 @@ public class ProductRefsQBE extends QueryExtraParam {
         this(example, rowsrange, null);
     }
 
-    public ProductRefsQBE(ProductRefs example, NestedIntRange rowsrange, String sortOrder) {
+    public ProductRefsQBE(ProductRefs example, NestedIntRange rowsrange, SortOrder sortOrder) {
         super(rowsrange, sortOrder);
         this.example = example;
     }

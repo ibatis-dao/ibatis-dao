@@ -6,13 +6,13 @@ package fxapp01.dto;
  */
 public class QueryExtraParam {
     private NestedIntRange rowsrange;
-    private String sortOrder;
+    private SortOrder sortOrder;
 
     public QueryExtraParam(NestedIntRange rowsrange){
         this(rowsrange, null);
     }
     
-    public QueryExtraParam(NestedIntRange rowsrange, String sortOrder){
+    public QueryExtraParam(NestedIntRange rowsrange, SortOrder sortOrder){
         this.rowsrange = rowsrange;
         this.sortOrder = sortOrder;
     }
@@ -25,11 +25,11 @@ public class QueryExtraParam {
         this.rowsrange = rowsrange;
     }
 
-    public String getSortOrder() {
+    public SortOrder getSortOrder() {
         return sortOrder;
     }
 
-    public void setSortOrder(String sortOrder) {
+    public void setSortOrder(SortOrder sortOrder) {
         this.sortOrder = sortOrder;
     }
 

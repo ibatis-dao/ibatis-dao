@@ -40,7 +40,7 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>, IData
         this.invListeners = new ArrayList<>();
         log.debug("before new DataCacheReadOnly");
         IDataRangeFetcher dps = this; // 
-        this.cache = new DataCacheReadOnly<>(dps, 20, 40);
+        this.cache = new DataCacheReadOnly<ProductRefs>(dps, 20, 40);
         log.debug("before FXCollections.observableList");
         this.dataFacade = FXCollections.observableList(cache);
         log.debug("before new ProductRefsDAO");
@@ -50,7 +50,7 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>, IData
         this.cache.addAll(l);
         */
         log.debug("before requestDataPage");
-        INestedRange initRange = cache.getRange().clone();
+        INestedRange<Integer> initRange = cache.getRange().clone();
         initRange.setLength(20);
         dps.fetch(initRange, 0);
         log.trace("<<< constructor");

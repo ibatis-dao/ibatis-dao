@@ -64,7 +64,7 @@
                 AND name like '%'||#{example.name}||'%'
             </if>
         </where>
-        <if test="sortOrder != null and (!sortOrder.isEmpty())">
+        <if test="(sortOrder != null) and (!sortOrder.toString().isEmpty())">
         order by ${sortOrder}
         </if>
     offset #{rowsRange.first} limit #{rowsRange.length}

@@ -4,10 +4,12 @@ import fxapp01.ProductRefsObservList;
 import fxapp01.dao.DataCacheReadOnly;
 import fxapp01.dao.ProductRefsDAO;
 import fxapp01.dto.INestedRange;
+import fxapp01.dto.ISortOrder;
 import fxapp01.dto.LimitedIntRange;
 import fxapp01.dto.NestedIntRange;
 import fxapp01.dto.ProductRefs;
 import fxapp01.dto.ProductRefsQBE;
+import fxapp01.dto.SortOrder;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 import java.io.IOException;
@@ -27,7 +29,7 @@ import org.junit.Test;
  */
 public class DAOTest01 {
     
-    private ILogger log = LogMgr.getLogger(this.getClass()); 
+    private final ILogger log = LogMgr.getLogger(this.getClass()); 
 
     public DAOTest01() {
     }
@@ -94,6 +96,18 @@ public class DAOTest01 {
             numRows = numRows + 1;
         }
         Assert.assertTrue("ProductRefs retrieved more than one row", (numRows > 0));
+        SortOrder so = new SortOrder();
+        ContainerProperties cp = dao.getContainerProperties();
+        List<String> colNames = cp.getColumnNames();
+        String s;
+        for (int i = 0; i < colNames.size(); i++) {
+            s = colNames.get(i);
+            so.add(s, ISortOrder.Direction.ASC);
+        }
+        
+        qbe = new ProductRefsQBE(example, range, so);
+        l = dao.selectBE(qbe);
+        
         log.trace("<<< testSelectBE");
     }
     /*

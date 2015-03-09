@@ -146,20 +146,20 @@ public class ProductRefsTblMdl extends AbstractTableModel {
         } else {
             //если строка за пределами диапазона
             //проверяем прилегающий диапазон слева
-            INestedRange l = cacheRowsRange.Shift(- baseDataPageSize);
+            INestedRange<Integer> l = cacheRowsRange.Shift(- baseDataPageSize);
             if (l.IsInbound(row)) {
                 //если строка входит в диапазон слева, получаем данные для него
                 requestDataPage(l);
             } else {
                 //проверяем прилегающий диапазон справа
-                INestedRange r = cacheRowsRange.Shift(baseDataPageSize);
+                INestedRange<Integer> r = cacheRowsRange.Shift(baseDataPageSize);
                 if (r.IsInbound(row)) {
                     //если строка входит в диапазон справа, получаем данные для него
                     requestDataPage(r);
                 } else {
                     //строка находится за пределами прилегающих диапазонов
                     //сместим его в новое место
-                    INestedRange n = cacheRowsRange.Complement(row);
+                    INestedRange<Integer> n = cacheRowsRange.Complement(row);
                     requestDataPage(n);
                 }
             }
@@ -209,9 +209,9 @@ public class ProductRefsTblMdl extends AbstractTableModel {
         if (bcData == null) {
             bcData = FXCollections.<BarChart.Series>observableArrayList();
             for (int row = 0; row < getRowCount(); row++) {
-                ObservableList<BarChart.Data> series = FXCollections.<BarChart.Data>observableArrayList();
+                ObservableList<BarChart.Data<String,Object>> series = FXCollections.<BarChart.Data<String,Object>>observableArrayList();
                 for (int column = 0; column < getColumnCount(); column++) {
-                    series.add(new BarChart.Data(getColumnName(column), getValueAt(row, column)));
+                    series.add(new BarChart.Data<String,Object>(getColumnName(column), getValueAt(row, column)));
                 }
                 bcData.add(new BarChart.Series(series));
             }

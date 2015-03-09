@@ -1,14 +1,13 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fxapp01;
 
+import fxapp01.dto.ProductRefs;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -32,11 +31,11 @@ public class FXApp01Controller implements Initializable {
     @FXML
     private Label label;
     @FXML
-    private TableView table01;
+    private TableView<ProductRefs> table01;
     @FXML
-    private TableColumn table01Column01;
+    private TableColumn<ProductRefs,Integer> table01Column01;
     @FXML
-    private TableColumn table01Column02;
+    private TableColumn<ProductRefs,String> table01Column02;
     
     private ProductRefsObservList dataOL;
     
@@ -49,37 +48,41 @@ public class FXApp01Controller implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        log.trace(">>> initialize");
-        dataOL = new ProductRefsObservList();
-        if (table01 == null) {
-            log.debug("table01 == null");
-            table01 = new TableView(dataOL);
-        } else {
-            log.debug("table01 != null");
-            table01.setItems(dataOL);
-        }
-        table01.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        //table01.getSortOrder();
-        table01Column01.setCellValueFactory(
-            //new PropertyValueFactory<ProductRefs, Integer>("id")
-            new PropertyValueFactory("id")
-        );
-        /*
-        table01Column01.setCellValueFactory(
-            new Callback<CellDataFeatures<ProductRefs, Integer>, ObservableValue<Integer>>() {
-             public ObservableValue<Integer> call(CellDataFeatures<ProductRefs, Integer> p) {
-                 // p.getValue() returns the ProductRefs instance for a particular TableView row
-                 return p.getValue().getId().intValue();
-             }
+        try {
+            log.trace(">>> initialize");
+            dataOL = new ProductRefsObservList();
+            if (table01 == null) {
+                log.debug("table01 == null");
+                table01 = new TableView<ProductRefs>(dataOL);
+            } else {
+                log.debug("table01 != null");
+                table01.setItems(dataOL);
             }
-        );
-        */
-        table01Column02.setCellValueFactory(
-            //new PropertyValueFactory<ProductRefs, String>("name")
-            new PropertyValueFactory("name")
-        );
-        //getVisibleRows();
-        log.trace("<<< initialize");
+            table01.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+            //table01.getSortOrder();
+            table01Column01.setCellValueFactory(
+                    //new PropertyValueFactory<ProductRefs, Integer>("id")
+                    new PropertyValueFactory<>("id")
+            );
+            /*
+            table01Column01.setCellValueFactory(
+            new Callback<CellDataFeatures<ProductRefs, Integer>, ObservableValue<Integer>>() {
+            public ObservableValue<Integer> call(CellDataFeatures<ProductRefs, Integer> p) {
+            // p.getValue() returns the ProductRefs instance for a particular TableView row
+            return p.getValue().getId().intValue();
+            }
+            }
+            );
+            */
+            table01Column02.setCellValueFactory(
+                    //new PropertyValueFactory<ProductRefs, String>("name")
+                    new PropertyValueFactory<>("name")
+            );
+            //getVisibleRows();
+            log.trace("<<< initialize");
+        } catch (IOException ex) {
+            log.error(null, ex);
+        }
     }
     
     /*

@@ -1,6 +1,5 @@
 package fxapp01.jasperreport;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -11,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -48,7 +46,7 @@ public class JRtest01 {
     private JasperPrint fillReport (List dataList) throws JRException, FileNotFoundException {
 
         // this map could be filled with parameters defined in the report
-        Map parameters = new HashMap();
+        Map<String,Object> parameters = new HashMap<>();
 
         // make sure the .jasper file (a compiled version of the .jrxml template file) exists
         String reportFileName = "reports\\templates\\monthly_sales_java_beans.jasper";
