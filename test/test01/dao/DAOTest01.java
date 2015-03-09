@@ -47,7 +47,7 @@ public class DAOTest01 {
     public void testSelectByRange() {
         log.trace(">>> testSelectByRange");
         ProductRefsDAO dao = new ProductRefsDAO();
-        LimitedIntRange r = new LimitedIntRange(2, 3);
+        LimitedIntRange r = new LimitedIntRange(2, 3, 0, Integer.MAX_VALUE);
         List<ProductRefs> l = dao.select(r);
         int numRows = 0;
         Iterator<ProductRefs> itr = l.iterator();

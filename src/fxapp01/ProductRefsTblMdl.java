@@ -42,7 +42,7 @@ public class ProductRefsTblMdl extends AbstractTableModel {
     public ProductRefsTblMdl() {
         dao = new ProductRefsDAO();
         dataCacheFactor = 3.0; //defaul cache factor
-        cacheRowsRange = new LimitedIntRange(1, 100); //default data window start and size
+        cacheRowsRange = new LimitedIntRange(1, 100, 1, Integer.MAX_VALUE); //default data window start and size
     }
     
     public double getTickUnit() {
@@ -166,7 +166,12 @@ public class ProductRefsTblMdl extends AbstractTableModel {
                 } else {
                     //строка находится за пределами прилегающих диапазонов
                     //сместим его в новое место
-                    LimitedIntRange n = new LimitedIntRange(row, cacheRowsRange.getLength());
+                    LimitedIntRange n = new LimitedIntRange(
+                            row, 
+                            cacheRowsRange.getLength(), 
+                            cacheRowsRange.getLeftLimit(),
+                            cacheRowsRange.getRightLimit()
+                    );
                     requestDataPage(n);
                 }
             }
@@ -206,7 +211,7 @@ public class ProductRefsTblMdl extends AbstractTableModel {
 
     @Override
     public void setValueAt(Object value, int row, int column) {
-        List<ProductRefs> l = dao.select(new LimitedIntRange(row, 1));
+        List<ProductRefs> l = dao.select(new LimitedIntRange(row, 1, cacheRowsRange.getLeftLimit() , cacheRowsRange.getRightLimit()));
         ProductRefs rowData = l.get(1);
         dao.setBeanProperty(rowData, column, value);
         fireTableCellUpdated(row, column);

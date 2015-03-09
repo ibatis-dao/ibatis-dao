@@ -41,7 +41,7 @@ public class DataCacheReadOnly<T> implements List {
         this.maxSize = 300;
         this.data = new ArrayList<>();
         log.debug("before new IntRange");
-        this.range = new LimitedIntRange(0, 0); 
+        this.range = new LimitedIntRange(1, 0, 1, Integer.MAX_VALUE); 
         log.trace(exiting+methodName);
     }
     
@@ -291,7 +291,7 @@ public class DataCacheReadOnly<T> implements List {
                 } else {
                     //расстояние равно или больше удвоенного макс. размера кеша,
                     log.debug("dist >= maxSize * 2");
-                    aRange = new LimitedIntRange(index, defSize);
+                    aRange = new LimitedIntRange(index, defSize, range.getLeftLimit(), range.getRightLimit());
                     //сбрасываем кеш полностью
                     clear(); 
                     //загружаем данные 

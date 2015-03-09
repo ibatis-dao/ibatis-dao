@@ -37,6 +37,7 @@ public class LimitedIntRange {
     private int rightLimit;
     private static final LimitedIntRange Singular = new LimitedIntRange(0, 0, 0, 0);
 
+    /*
     public LimitedIntRange() {
         first = 0;
         length = 0;
@@ -48,18 +49,18 @@ public class LimitedIntRange {
         log.trace(entering+contructorMthdName+"(first="+first+", length="+length+")");
         init(first, length);
     }
-    
+    */
     public LimitedIntRange(int first, int length, int leftLimit, int rightLimit) {
-        this(first, length);
+        init(first, length, leftLimit, rightLimit);
         log.trace(entering+contructorMthdName+"(first="+first+", length="+length+", leftLimit="+leftLimit+", rightLimit="+rightLimit+")");
         this.leftLimit = leftLimit;
         this.rightLimit = rightLimit;
     }
-    
+    /*
     private void init(int first, int length) {
         init(first, length, 0, Integer.MAX_VALUE);
     }
-    
+    */
     private void init(int first, int length, int leftLimit, int rightLimit) {
         this.first = first;
         this.length = length;
@@ -346,7 +347,7 @@ public class LimitedIntRange {
             log.debug("is overlapped");
             int maxStart = Math.max(first, aRange.getFirst());
             int minLast = Math.min(getLast(), aRange.getLast());
-            return new LimitedIntRange(maxStart, minLast - maxStart + 1);
+            return new LimitedIntRange(maxStart, minLast - maxStart + 1, leftLimit, rightLimit);
         } else {
             log.debug("Is not overlapped. returns Singular");
             return Singular;
@@ -366,7 +367,7 @@ public class LimitedIntRange {
         int minStart = Math.max(leftLimit, Math.min(first, aRange.getFirst()));
         int maxLast = Math.min(Math.max(getLast(), aRange.getLast()), rightLimit);
         log.debug(AddMthdName+"(). minStart="+minStart+", maxLast="+maxLast);
-        return new LimitedIntRange(minStart, maxLast - minStart + 1);
+        return new LimitedIntRange(minStart, maxLast - minStart + 1, leftLimit, rightLimit);
     }
 
     /**
@@ -382,7 +383,7 @@ public class LimitedIntRange {
             int minStart = Math.max(leftLimit, Math.min(first, to));
             int maxLast = Math.min(Math.max(getLast(), to), rightLimit);
             log.debug(ExtendMthdName+"(). minStart="+minStart+", maxLast="+maxLast);
-            return new LimitedIntRange(minStart, maxLast - minStart + 1);
+            return new LimitedIntRange(minStart, maxLast - minStart + 1, leftLimit, rightLimit);
         }
     }
 
@@ -391,7 +392,7 @@ public class LimitedIntRange {
     */
     public LimitedIntRange Shift(int value) {
         //setFirst(first+value);
-        return new LimitedIntRange(Math.max(leftLimit, first+value), length);
+        return new LimitedIntRange(Math.max(leftLimit, first+value), length, leftLimit, rightLimit);
     }
     
     /**
@@ -435,10 +436,10 @@ public class LimitedIntRange {
         log.trace(ComplementMthdName+"(to="+to+")");
         int dist = getMinDistance(to);
         if (dist < 0) {
-            return new LimitedIntRange(first + dist, - dist);
+            return new LimitedIntRange(first + dist, - dist, leftLimit, rightLimit);
         } else {
             if (dist > 0) {
-                return new LimitedIntRange(first + length, dist);
+                return new LimitedIntRange(first + length, dist, leftLimit, rightLimit);
             } else {
                 return Singular;
             }
