@@ -5,8 +5,6 @@ import fxapp01.excpt.ENegativeArgument;
 import fxapp01.excpt.ENullArgument;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -147,6 +145,8 @@ public class IntRange {
     
     @Override
     public IntRange clone() {
+        return new IntRange(first, length, leftLimit, rightLimit);
+        /*
         try {
             IntRange n = (IntRange) super.clone();
             n.init(first, length, leftLimit, rightLimit);
@@ -155,6 +155,7 @@ public class IntRange {
             log.error(null, ex);
             return new IntRange(first, length, leftLimit, rightLimit);
         }
+        */
     }
     
     /**
@@ -297,12 +298,12 @@ public class IntRange {
 
     /**
      * Продлевает текущий диапазон до указанной точки. 
-     * @param point
+     * @param to
      * @return 
      */
-    public IntRange Extend(int point) {
-        int minStart = Math.max(leftLimit, Math.min(first, point));
-        int maxLast = Math.min(Math.max(getLast(), point), rightLimit);
+    public IntRange Extend(int to) {
+        int minStart = Math.max(leftLimit, Math.min(first, to));
+        int maxLast = Math.min(Math.max(getLast(), to), rightLimit);
         log.debug("Add(). minStart="+minStart+", maxLast="+maxLast);
         return new IntRange(minStart, maxLast - minStart);
     }
@@ -341,6 +342,18 @@ public class IntRange {
     public IntRange Shift(int value) {
         //setFirst(first+value);
         return new IntRange(Math.max(leftLimit, first+value), length);
+    }
+    
+    /**
+     * Возвращает диапазон, который дополняет текущий диапазон до указанной точки. 
+     * @param to
+     * @return 
+     */
+    public IntRange Complement(int to) {
+        int minStart = Math.max(leftLimit, Math.min(first, to));
+        int maxLast = Math.min(Math.max(getLast(), to), rightLimit);
+        log.debug("Add(). minStart="+minStart+", maxLast="+maxLast);
+        return new IntRange(minStart, maxLast - minStart);
     }
 
 }

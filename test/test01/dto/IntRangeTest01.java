@@ -35,12 +35,47 @@ public class IntRangeTest01 {
     }
 
     @Test
-    public void baseFilelds() {
+    public void checkSetupBaseFilelds() {
+        log.trace(">>> checkSetupBaseFilelds");
         IntRange aRange = new IntRange(1, 10);
         Assert.assertNotNull(aRange);
         Assert.assertTrue(aRange.getFirst() == 1);
         Assert.assertTrue(aRange.getLength() == 10);
         Assert.assertTrue(aRange.getLast()== 10);
-        //aRowsRange.Sub(cache.getRange());
+        Assert.assertTrue(aRange.getLeftLimit() == 0);
+        Assert.assertTrue(aRange.getRightLimit() == Integer.MAX_VALUE);
+    }
+
+    @Test
+    public void checkLengths() {
+        log.trace(">>> checkLengths");
+        IntRange aRange = new IntRange(1, 10);
+        Assert.assertNotNull(aRange);
+        Assert.assertTrue(aRange.getLength() == 10);
+        aRange.incLength(5);
+        Assert.assertTrue(aRange.getLength() == 15);
+        aRange.incLength(-10);
+        Assert.assertTrue(aRange.getLength() == 5);
+        Assert.assertTrue(aRange.getLast() == 5);
+    }
+
+    @Test
+    public void checkMoveLimits() {
+        log.trace(">>> checkMoveLimits");
+        IntRange aRange = new IntRange(1, 10);
+        Assert.assertNotNull(aRange);
+        Assert.assertTrue(aRange.getLeftLimit() == 0);
+        aRange.setLeftLimit(5);
+    }
+    
+    @Test
+    public void checkClone() {
+        log.trace(">>> checkClone");
+        IntRange aRange = new IntRange(1, 10);
+        Assert.assertNotNull(aRange);
+        IntRange aRange2 = aRange.clone();
+        Assert.assertTrue(aRange.equals(aRange2));
+        aRange.setFirst(2);
+        Assert.assertFalse(aRange.equals(aRange2));
     }
 }

@@ -1,6 +1,7 @@
 package fxapp01.dao;
 
 import fxapp01.dto.IntRange;
+import fxapp01.excpt.ENullArgument;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 import java.util.ArrayList;
@@ -17,32 +18,39 @@ public class DataCacheReadOnly<T> implements List {
     //TODO после отладки заменить реализацию интерфейса List на расширение класса ArrayList
     
     private static final ILogger log = LogMgr.getLogger(DataCacheReadOnly.class);
+    private static final String entering = ">>> ";
+    private static final String exiting = "<<< ";
     // фактическое начало (порядковый номер первой строки) и фактический размер 
     // окна данных в рамках источника данных. 
-    private IDataPageSource dps;
+    private IDataRangeFetcher dataFetcher;
     private IntRange range;
     private int defSize;
     private int maxSize;
     private final List<T> data;
     
-    public DataCacheReadOnly(IDataPageSource dps) {
-        log.trace(">>> constructor()");
-        this.dps = dps;
+    public DataCacheReadOnly(IDataRangeFetcher dataFetcher) {
+        String methodName = "constructor(dataFetcher)";
+        log.trace(entering+methodName);
+        if (dataFetcher == null) {
+            throw new ENullArgument(methodName);
+        } 
+        this.dataFetcher = dataFetcher;
         this.defSize = 100; //defaults
         this.maxSize = 300;
         this.data = new ArrayList<>();
         log.debug("before new IntRange");
         this.range = new IntRange(0, this.defSize); 
-        log.trace("<<< constructor()");
+        log.trace(exiting+methodName);
     }
     
-    public DataCacheReadOnly(IDataPageSource dps, int defSize, int maxSize) {
-        this(dps);
-        log.trace(">>> constructor(defSize, maxSize)");
+    public DataCacheReadOnly(IDataRangeFetcher dataFetcher, int defSize, int maxSize) {
+        this(dataFetcher);
+        String methodName = "constructor(dataFetcher, defSize, maxSize)";
+        log.trace(entering+methodName);
         this.defSize = defSize;
         this.maxSize = maxSize;
         range.setLength(this.defSize);
-        log.trace("<<< constructor(defSize, maxSize)");
+        log.trace(exiting+methodName);
     }
 
     public IntRange getRange() {
@@ -203,33 +211,38 @@ public class DataCacheReadOnly<T> implements List {
                 //загружаем только новую порцию данных.  
                 //ту часть диапазона, что уже есть в кеше, исключаем из загрузки
                 aRange = aRange.Sub(range);
-                dps.fetchDataPage(aRange);
+                if (dist < 0) {
+                    dataFetcher.fetch(aRange, 0);
+                } else {
+                    dataFetcher.fetch(aRange, data.size()+1);
+                }
             } else {
                 aRange = new IntRange(index, defSize);
             // TODO: продолжить с этого места мета-описание логики из requestDataPage
             }
-            
+            /*
             //проверяем прилегающий диапазон слева
             IntRange l = range.Shift(- defSize);
             if (l.IsInbound(index)) {
                 //если строка входит в диапазон слева, получаем данные для него
                 log.debug("Shift cache to left");
-                dps.fetchDataPage(l);
+                dps.fetch(l);
             } else {
                 //проверяем прилегающий диапазон справа
                 IntRange r = range.Shift(defSize);
                 if (r.IsInbound(index)) {
                     log.debug("Shift cache to right");
                     //если строка входит в диапазон справа, получаем данные для него
-                    dps.fetchDataPage(r);
+                    dps.fetch(r);
                 } else {
                     log.debug("Cache shift failed. Create new range");
                     //строка находится за пределами прилегающих диапазонов
                     //сместим его в новое место
                     IntRange n = new IntRange(index, range.getLength());
-                    dps.fetchDataPage(n);
+                    dps.fetch(n);
                 }
             }
+            */
         }
         log.debug("Cache ranging finshed. Check asserts about range");
 

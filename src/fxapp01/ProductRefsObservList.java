@@ -1,7 +1,7 @@
 package fxapp01;
 
 import fxapp01.dao.DataCacheReadOnly;
-import fxapp01.dao.IDataPageSource;
+import fxapp01.dao.IDataRangeFetcher;
 import fxapp01.dao.ProductRefsDAO;
 import fxapp01.dto.IntRange;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import fxapp01.log.LogMgr;
  *
  * @author serg
  */
-public class ProductRefsObservList implements ObservableList<ProductRefs>, IDataPageSource {
+public class ProductRefsObservList implements ObservableList<ProductRefs>, IDataRangeFetcher {
     
     private static final ILogger log = LogMgr.getLogger(ProductRefsObservList.class);
     private final DataCacheReadOnly<ProductRefs> cache;
@@ -37,7 +37,7 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>, IData
         this.changeListeners = new ArrayList<>();
         this.invListeners = new ArrayList<>();
         log.debug("before new DataCacheReadOnly");
-        IDataPageSource dps = this; // 
+        IDataRangeFetcher dps = this; // 
         this.cache = new DataCacheReadOnly<>(dps, 20, 300);
         log.debug("before FXCollections.observableList");
         this.dataFacade = FXCollections.observableList(cache);
@@ -48,7 +48,7 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>, IData
         this.cache.addAll(l);
         */
         log.debug("before requestDataPage");
-        dps.fetchDataPage(cache.getRange());
+        dps.fetch(cache.getRange(), 0);
         log.trace("<<< constructor");
     }
     
@@ -214,7 +214,7 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>, IData
     }
 
     @Override
-    public void fetchDataPage(IntRange aRowsRange) {
+    public void fetch(IntRange aRowsRange, int pos) {
     /* мета-описание логики работы:
     1. проверяем, есть ли в кеше данные (первоначальная загрузка)
     если данных нет, а запрошенный диапазон равен дипазону кеша, то считаем, что это первая загрузка
@@ -240,10 +240,13 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>, IData
     размер кеша, очищаем текущий кеш и загружаем данные запрошенного диапазона, 
     как при первоначальной загрузке
     */
-        log.trace(">>> requestDataPage");
+        log.trace(">>> fetch");
         if (aRowsRange == null) {
-            throw new ENullArgument("requestDataPage");
+            throw new ENullArgument("fetch");
         }
+        List<ProductRefs> l = dao.select(aRowsRange);
+        cache.addAll(pos, l);
+        /*
         // вычисляем новую порцию данных дя загрузки
         IntRange aRange;
         if ((cache.isEmpty()) && (cache.getRange().equals(aRowsRange))) {
@@ -253,7 +256,6 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>, IData
             cache.getRange().setLength(0);
         } else {
             throw new EUnsupported();
-            /*
             //если диапазоны пересекаются
             if (cache.getRange().IsOverlapped(aRowsRange)) {
                 log.debug("cache range overlapped");
@@ -266,15 +268,15 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>, IData
                 //а затем вычтем из него исходный
                 aRange = cache.getRange().Sub(aRange);
             }
-            */
         }
+        */
         /*
         //ограничим длину запрашиваемого диапазона
         aRange.setLength(Math.min(aRange.getLength(), cache.getMaxSize()));
         log.debug("define new cache range. first="+aRange.getFirst()+", length="+aRange.getLength());
         // фактически запрашиваем данные для вычисленного диапазона
         */
-        
+        /*
         List<ProductRefs> l = dao.select(aRange);
         //смотрим, куда добавлять полученные данные - в начало кеша или в конец
         if (aRange.getFirst() < cache.getRange().getFirst()) {
@@ -286,6 +288,7 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>, IData
             log.debug("add at end. Range.first >= cache.first.");
             cache.addAll(l);
         }
+        */
         log.trace("<<< requestDataPage");
     }
 
