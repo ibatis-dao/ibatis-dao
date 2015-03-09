@@ -72,7 +72,10 @@
     values (DEFAULT, #{name})
     </insert>
 
-    <insert id="insertRowBySP" databaseId="postgresql" statementType="CALLABLE" parameterType="ProductRefs">
-    select public."test02_insertRow3"(#{id,mode=IN,jdbcType=BIGINT}, #{name,mode=IN,jdbcType=VARCHAR})
-    </insert>
+    <select id="insertRowBySP" databaseId="postgresql" statementType="CALLABLE" parameterType="ProductRefs" resultMap="ProductRefsMap">
+    select * from test02_insertrow(#{id}, #{name}) as t2;
+    </select>
+    <!--  
+    select * from test02_insertrow(#{id,mode=IN,javaType=BigInteger,jdbcType=BIGINT}, #{name,mode=IN,jdbcType=VARCHAR}) as t2;
+    -->
 </mapper>

@@ -1,14 +1,17 @@
+-- DROP TABLE test02;
+
 CREATE TABLE test02
 (
-  id serial NOT NULL,
+  id bigserial NOT NULL,
   name character varying(150),
   CONSTRAINT test02_pkey PRIMARY KEY (id)
 )
 WITH (
   OIDS=FALSE
 );
-ALTER TABLE test01
+ALTER TABLE test02
   OWNER TO postgres;
+
 
 -- DROP FUNCTION test02datagenerator();
 
@@ -27,19 +30,25 @@ ALTER FUNCTION test01datagenerator()
 
 SELECT test02datagenerator();
 
--- DROP FUNCTION "test02_insertRow"(bigint, character varying);
+-- DROP FUNCTION test02_insertrow(bigint, character varying);
 
-CREATE OR REPLACE FUNCTION "test02_insertRow"("pId" bigint, "pName" character varying)
+CREATE OR REPLACE FUNCTION test02_insertrow(pid bigint, pname character varying)
   RETURNS test02 AS
-$BODY$begin
+$BODY$
+declare
+  t2 test02;
+begin
   insert into test02 (id, name)
-  values (pId, pName)
-  returning *;
-end;$BODY$
+  values (pid, pname)
+  returning * into t2;
+  return t2;
+end;
+$BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
-ALTER FUNCTION "test02_insertRow"(bigint, character varying)
+ALTER FUNCTION test02_insertrow(bigint, character varying)
   OWNER TO postgres;
+
 
 -- DROP FUNCTION "test02_insertRow2"(test02);
 
@@ -55,16 +64,3 @@ end;$BODY$
 ALTER FUNCTION "test02_insertRow2"(test02)
   OWNER TO postgres;
 
--- DROP FUNCTION "test02_insertRow3"(bigint, character varying);
-
-CREATE OR REPLACE FUNCTION "test02_insertRow3"("pId" bigint, "pName" character varying)
-  RETURNS test02 AS
-$BODY$begin
-  insert into test02 
-  values (pRow)
-  returning *;
-end;$BODY$
-  LANGUAGE plpgsql VOLATILE
-  COST 100;
-ALTER FUNCTION "test02_insertRow3"(bigint, character varying)
-  OWNER TO postgres;

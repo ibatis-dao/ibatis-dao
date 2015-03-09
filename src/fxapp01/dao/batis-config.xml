@@ -3,9 +3,7 @@
   PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
-  <properties resource="fxapp01/dao/batis-config.properties">
-  </properties>
-    <settings>
+  <settings>
   	<setting name="logImpl" value="LOG4J"/>
   	<setting name="logPrefix" value="fxapp01"/>
   	<!-- setting name="lazyLoadingEnabled" value="true"/ -->
@@ -14,7 +12,6 @@
   <typeAliases>
     <typeAlias alias="ProductRefs" type="fxapp01.dto.ProductRefs"/>
     <typeAlias alias="IntRange" type="fxapp01.dto.NestedIntRange"/>
-    <typeAlias alias="ProductRefsQBE" type="fxapp01.dto.ProductRefsQBE"/>
   </typeAliases>
   <environments default="development-postgresql">
     <environment id="development-oracle">
@@ -23,10 +20,10 @@
       	<!-- property name="autocommit" value="true"/ -->
       </transactionManager>
       <dataSource type="POOLED">
-        <property name="driver" value="${jdbc-oracle-dev-driver}"/>
-        <property name="url" value="${jdbc-oracle-dev-url}"/>
-        <property name="username" value="${jdbc-oracle-dev-username}"/>
-        <property name="password" value="${jdbc-oracle-dev-password}"/>
+        <property name="driver" value="oracle.jdbc.driver.OracleDriver"/>
+        <property name="url" value="jdbc:oracle:thin:@msk02altst1s:1521:LISA1"/>
+        <property name="username" value="LISA"/>
+        <property name="password" value="lisatest"/>
       </dataSource>
     </environment>
     <environment id="development-postgresql">
@@ -35,38 +32,34 @@
       	<!-- property name="autocommit" value="true"/ -->
       </transactionManager>
       <dataSource type="POOLED">
-        <property name="driver" value="${jdbc-postgresql-dev-driver}"/>
-        <property name="url" value="${jdbc-postgresql-dev-url}"/>
-        <property name="username" value="${jdbc-postgresql-dev-username}"/>
-        <property name="password" value="${jdbc-postgresql-dev-password}"/>
-        <!-- set pg_stat_activity.application_name for this connection -->
-        <property name="driver.ApplicationName" value="FXApp01"/>
+        <property name="driver" value="org.postgresql.Driver"/>
+        <property name="url" value="jdbc:postgresql://server1:5432/postgres"/>
+        <property name="username" value="postgres"/>
+        <property name="password" value="hfpldfnhb"/>
       </dataSource>
     </environment>
     <environment id="development-msaccess">
-      <!-- not used yet. TBD -->
       <transactionManager type="JDBC" >
       	<!-- property name="commitRequired" value="true"/ -->
       	<!-- property name="autocommit" value="true"/ -->
       </transactionManager>
       <dataSource type="POOLED">
-        <property name="driver" value="${jdbc-msaccess-dev-driver}"/>
-        <property name="url" value="${jdbc-msaccess-dev-url}"/>
-        <property name="username" value="${jdbc-msaccess-dev-username}"/>
-        <property name="password" value="${jdbc-msaccess-dev-password}"/>
+        <property name="driver" value="sun.jdbc.odbc.JdbcOdbcDriver"/>
+        <property name="url" value="jdbc:odbc:Driver={Microsoft Access Driver (*.mdb)};DBQ=Inventario.mdb;"/>
+        <property name="username" value=""/>
+        <property name="password" value=""/>
       </dataSource>
     </environment>
     <environment id="development-h2">
-      <!-- not used yet. TBD -->
       <transactionManager type="JDBC" >
       	<!-- property name="commitRequired" value="true"/ -->
       	<!-- property name="autocommit" value="true"/ -->
       </transactionManager>
       <dataSource type="POOLED">
-        <property name="driver" value="${jdbc-h2-dev-driver}"/>
-        <property name="url" value="${jdbc-h2-dev-url}"/>
-        <property name="username" value="${jdbc-h2-dev-username}"/>
-        <property name="password" value="${jdbc-h2-dev-password}"/>
+        <property name="driver" value="org.h2.Driver"/>
+        <property name="url" value="jdbc:h2:~/test"/>
+        <property name="username" value="sa"/>
+        <property name="password" value=""/>
       </dataSource>
     </environment>
   </environments>

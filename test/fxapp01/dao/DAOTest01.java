@@ -44,7 +44,7 @@ public class DAOTest01 {
     @After
     public void tearDown() {
     }
-    
+    /*
     @Test
     public void testSelectByRange() {
         log.trace(">>> testSelectByRange");
@@ -75,7 +75,7 @@ public class DAOTest01 {
         Assert.assertTrue(item.equals(exp));
         log.trace("<<< testInsertRow");
     }
-    
+    */
     @Test
     public void testInsertRowBySP() {
         log.trace(">>> testInsertRowBySP");
