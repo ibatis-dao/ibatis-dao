@@ -1,4 +1,4 @@
-package fxapp01.dto;
+package fxapp01.dao.filter;
 
 import fxapp01.dao.filter.SqlFilterCondition;
 import fxapp01.log.ILogger;

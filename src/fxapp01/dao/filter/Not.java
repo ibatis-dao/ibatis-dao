@@ -6,8 +6,9 @@ package fxapp01.dao.filter;
  */
 public class Not extends SqlFilterBaseImpl {
     
-    public Not() {
-        super("not {1}", 1);
+    public Not(Object arg) {
+        super("not ({0})", 1);
+        setOneArg(arg);
     }
     
 }

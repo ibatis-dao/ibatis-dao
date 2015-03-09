@@ -1,5 +1,6 @@
 package fxapp01.dao.filter;
 
+import fxapp01.excpt.EArgumentBreaksRule;
 import java.text.MessageFormat;
 import java.util.Iterator;
 
@@ -19,6 +20,7 @@ public class SqlFilterBaseImpl extends FilterImpl implements ISqlFilterable {
     @Override
     public String getText() {
         StringBuilder sb = new StringBuilder();
+        sb.append(format(template, args));
         Filterable f;
         Iterator<Filterable> i = getFilters().iterator();
         while (i.hasNext()){
@@ -27,8 +29,16 @@ public class SqlFilterBaseImpl extends FilterImpl implements ISqlFilterable {
                 sb.append(((ISqlFilterable)f).getText());
             }
         }
-        sb.append(MessageFormat.format(template, args));
         return sb.toString();
+    }
+
+    @Override
+    public String toString() {
+        return getText();
+    }
+    
+    protected String format(String pattern, Object... arguments) {
+        return MessageFormat.format(pattern, arguments);
     }
 
     public String getTemplate() {
@@ -36,7 +46,7 @@ public class SqlFilterBaseImpl extends FilterImpl implements ISqlFilterable {
     }
 
     /**
-     * @param text of the template to set
+     * @param template of the template to set
      */
     protected void setTemplate(String template) {
         this.template = template;
@@ -53,7 +63,17 @@ public class SqlFilterBaseImpl extends FilterImpl implements ISqlFilterable {
      * @param args the args to set
      */
     public void setArgs(Object[] args) {
+        if (((args == null) && (argCount != 0)) || ((args != null) && (args.length != argCount))) {
+            throw new EArgumentBreaksRule("setArgs", "args.length == argCount");
+        }
         this.args = args;
+    }
+
+    /**
+     * @param arg the arg to set
+     */
+    protected void setOneArg(Object arg) {
+        setArgs(new Object[]{arg});
     }
 
     public int getArgCount() {

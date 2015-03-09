@@ -6,7 +6,9 @@ package fxapp01.dao.filter;
  */
 public class And extends SqlFilterBaseImpl {
     
-    public And() {
-        super("{0} and {1}", 2);
+    public And(Object... arg) {
+        super("({0}) and ({1})", 2);
+        setArgs(arg);
     }
+    
 }

@@ -1,6 +1,7 @@
-package fxapp01.dto;
+package fxapp01.dao.sort;
 
 import fxapp01.dao.sort.SortOrder;
+import fxapp01.dto.ISortOrder;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 import org.junit.After;
