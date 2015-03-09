@@ -12,6 +12,7 @@
   <typeAliases>
     <typeAlias alias="ProductRefs" type="fxapp01.dto.ProductRefs"/>
     <typeAlias alias="IntRange" type="fxapp01.dto.NestedIntRange"/>
+    <typeAlias alias="ProductRefsQBE" type="fxapp01.dto.ProductRefsQBE"/>
   </typeAliases>
   <environments default="development-postgresql">
     <environment id="development-oracle">
@@ -36,6 +37,8 @@
         <property name="url" value="jdbc:postgresql://server1:5432/postgres"/>
         <property name="username" value="postgres"/>
         <property name="password" value="hfpldfnhb"/>
+        <!-- set pg_stat_activity.application_name for this connection -->
+        <property name="driver.ApplicationName" value="FXApp01"/>
       </dataSource>
     </environment>
     <environment id="development-msaccess">

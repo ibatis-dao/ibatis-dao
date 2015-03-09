@@ -19,6 +19,7 @@ import fxapp01.dto.LimitedIntRange;
 import fxapp01.dto.NestedIntRange;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
+import java.io.IOException;
 
 /**
  * data model for swing JTable
@@ -42,7 +43,7 @@ public class ProductRefsTblMdl extends AbstractTableModel {
     // размер кеша данных относительно размера окна данных
     private Double dataCacheFactor; 
 
-    public ProductRefsTblMdl() {
+    public ProductRefsTblMdl() throws IOException {
         dao = new ProductRefsDAO();
         dataCacheFactor = 3.0; //defaul cache factor
         outerLimits = new NestedIntRange(1, Integer.MAX_VALUE, null); 

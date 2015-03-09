@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import org.apache.ibatis.exceptions.PersistenceException;
 
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.mapping.ResultMap;
@@ -29,7 +30,7 @@ public class BatisORM {
     protected static ILogger log = LogMgr.getLogger(BatisORM.class);
     private SqlSessionFactory sqlSessionFactory;
 
-    public BatisORM (String configURI) throws IOException {
+    public BatisORM (String configURI) throws IOException, PersistenceException {
         log.trace(">>> constructor");
         if ((configURI == null) || configURI.length() == 0) {
             //String fs = System.getProperty("file.separator"); //не работает для чтения из ресурсов

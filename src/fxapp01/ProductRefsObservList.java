@@ -19,6 +19,7 @@ import fxapp01.excpt.ENullArgument;
 import fxapp01.excpt.EUnsupported;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
+import java.io.IOException;
 
 /**
  *
@@ -33,7 +34,7 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>, IData
     private final List<ListChangeListener<? super ProductRefs>> changeListeners;
     private final List<InvalidationListener> invListeners;
 
-    public ProductRefsObservList() {
+    public ProductRefsObservList() throws IOException {
         log.trace(">>> constructor");
         this.changeListeners = new ArrayList<>();
         this.invListeners = new ArrayList<>();

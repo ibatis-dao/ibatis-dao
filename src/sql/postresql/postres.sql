@@ -39,7 +39,7 @@ declare
   t2 test02;
 begin
   insert into test02 (id, name)
-  values (pid, pname)
+  values (DEFAULT, pname)
   returning * into t2;
   return t2;
 end;
@@ -49,18 +49,43 @@ $BODY$
 ALTER FUNCTION test02_insertrow(bigint, character varying)
   OWNER TO postgres;
 
+-- DROP FUNCTION test02_insertrow(numeric, character varying);
 
--- DROP FUNCTION "test02_insertRow2"(test02);
-
-CREATE OR REPLACE FUNCTION "test02_insertRow2"("pRow" test02)
+CREATE OR REPLACE FUNCTION test02_insertrow(pid numeric, pname character varying)
   RETURNS test02 AS
-$BODY$begin
-  insert into test02 
-  values (pRow)
-  returning *;
-end;$BODY$
+$BODY$
+declare
+  t2 test02;
+begin
+  insert into test02 (id, name)
+  values (DEFAULT, pname)
+  returning * into t2;
+  return t2;
+end;
+$BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
-ALTER FUNCTION "test02_insertRow2"(test02)
+ALTER FUNCTION test02_insertrow(numeric, character varying)
   OWNER TO postgres;
 
+-- DROP FUNCTION test02_insertrow2(test02);
+
+CREATE OR REPLACE FUNCTION test02_insertrow2(prow test02)
+  RETURNS test02 AS
+$BODY$
+declare
+  result test02;
+begin
+  if (prow.id is null) or (prow.id = 0) then
+    prow.id = nextval('test02_id_seq');
+  end if;
+  insert into test02 
+  values (prow.*)
+  returning * into result;
+  return result;
+end;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION test02_insertrow2(test02)
+  OWNER TO postgres;

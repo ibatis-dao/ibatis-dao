@@ -4,7 +4,7 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="fxapp01.dao.ProductRefsMapper">
     <resultMap type="ProductRefs" id="ProductRefsMap">
-        <id column="ID" property="id"/>
+        <id column="ID" property="id" jdbcType="BIGINT"/>
         <result column="NAME" property="name"/>
     </resultMap>
 
@@ -53,6 +53,20 @@
     select count(id) from public."test02"
     </select>
     
+    <select id="selectBE" databaseId="postgresql" parameterType="ProductRefsQBE" resultMap="ProductRefsMap">
+    select "id", "name" 
+      from public."test02" 
+        <where>
+            <if test="example.id != null and example.id != 0">
+                id = #{example.id}
+            </if>
+            <if test="example.name != null">
+                AND name like '%'||#{example.name}||'%'
+            </if>
+        </where>
+    offset #{rowsRange.first} limit #{rowsRange.length}
+    </select>
+
     <insert id="insertRow" databaseId="oracle" statementType="CALLABLE" parameterType="ProductRefs">
     begin 
       insert into lisa.tmp$items(id, name) 
@@ -75,7 +89,12 @@
     <select id="insertRowBySP" databaseId="postgresql" statementType="CALLABLE" parameterType="ProductRefs" resultMap="ProductRefsMap">
     select * from test02_insertrow(#{id}, #{name}) as t2;
     </select>
+
+    <select id="insertRowBySP2" databaseId="postgresql" statementType="CALLABLE" parameterType="ProductRefs" resultMap="ProductRefsMap">
+    select * from test02_insertrow2(ROW(#{id}, #{name})::test02) as t2;
+    </select>
     <!--  
-    select * from test02_insertrow(#{id,mode=IN,javaType=BigInteger,jdbcType=BIGINT}, #{name,mode=IN,jdbcType=VARCHAR}) as t2;
+select * from test02_insertrow(#{id}, #{name}) as t2;    
+select * from test02_insertrow(#{id,mode=IN,javaType=BigInteger,jdbcType=BIGINT}, #{name,mode=IN,jdbcType=VARCHAR}) as t2;
     -->
 </mapper>

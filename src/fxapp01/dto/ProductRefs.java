@@ -14,7 +14,6 @@ public class ProductRefs implements Serializable {
     private BigInteger id;
     private String name;
     */
-    
     private IntegerProperty id;
     public BigInteger getId() { return BigInteger.valueOf(IdProperty().get());  }
     public void setId(BigInteger id) { IdProperty().set(id.intValue());    }

@@ -8,6 +8,7 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
+import org.apache.ibatis.exceptions.PersistenceException;
 
 public class BaseDao {
 
@@ -15,18 +16,19 @@ public class BaseDao {
     private static BatisORM borm = null;
     private SqlSession session; 
 
-    public BaseDao(){
+    public BaseDao() throws IOException, PersistenceException {
         log.trace(">>> constructor");
         createDaoFactory();
     }
 
-    private void createDaoFactory(){
+    private void createDaoFactory() throws IOException, PersistenceException {
         log.trace(">>> createDaoFactory");
         if (borm == null) {
             try {
                 borm = new BatisORM(null);
-            } catch (IOException e) {
+            } catch (IOException | PersistenceException e ) {
                 log.error("createDaoFactory() failed", e);
+                throw e;
             }
         }
     }
@@ -65,13 +67,13 @@ public class BaseDao {
         return getDBSession().getConnection();
     }
 
-    public Configuration getConfiguration() {
+    public Configuration getConfiguration() throws IOException {
         log.trace(">>> getConfiguration");
         if (borm == null) { createDaoFactory(); }
         return borm.getConfiguration();
     }
     
-    public List<BeanPropertyMapping> getBeanPropertiesMapping(Class beanClass) {
+    public List<BeanPropertyMapping> getBeanPropertiesMapping(Class beanClass) throws IOException {
         log.trace(">>> getBeanPropertiesMapping");
         if (borm == null) { createDaoFactory(); }
         return borm.getBeanPropertiesMapping(beanClass);

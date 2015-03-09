@@ -1,6 +1,7 @@
 package fxapp01;
 
 import fxapp01.dao.DAOAllTests;
+import fxapp01.dto.GeoLocationTest;
 import fxapp01.dto.IntRangeAllTests;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
@@ -19,14 +20,15 @@ public class TestRunner {
     public static void main(String[] args) {
         run(IntRangeAllTests.class);
         run(DAOAllTests.class);
-        
+        run(GeoLocationTest.class);
     }
     
     private static void run(Class clazz) {
+        log.debug("---------------Start tests of: "+clazz.getName()+"---------------");
         Result result = JUnitCore.runClasses(clazz);
         for (Failure failure : result.getFailures()) {
             log.debug(failure.toString());
         }
-        log.debug((result.wasSuccessful()) ? "Successful" : "Failed");
+        log.debug("===============Tests of: "+clazz.getName()+" was "+((result.wasSuccessful()) ? "Successful" : "Failed"));
     }
 }

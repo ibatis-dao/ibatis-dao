@@ -4,8 +4,13 @@ import fxapp01.dto.INestedRange;
 import java.math.BigInteger;
 import java.util.List;
 import fxapp01.dto.ProductRefs;
+import fxapp01.dto.ProductRefsQBE;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.ibatis.exceptions.PersistenceException;
 
 /**
  *
@@ -18,7 +23,7 @@ public class ProductRefsDAO implements ProductRefsMapper{
     private final ContainerProperties properties;
     private int pageSize;
     
-    public ProductRefsDAO() {
+    public ProductRefsDAO() throws IOException {
         log.trace(">>> constructor");
         BaseDao dao = new BaseDao();
         List<BeanPropertyMapping> beanPropertiesMap = dao.getBeanPropertiesMapping(ProductRefs.class);
@@ -53,10 +58,10 @@ public class ProductRefsDAO implements ProductRefsMapper{
     
     @Override
     public List<ProductRefs> select(INestedRange rowsrange) {
-        //throw new UnsupportedOperationException("Not supported yet.");
-        log.trace(">>> select");
-        BaseDao dao = new BaseDao();
         try {
+            //throw new UnsupportedOperationException("Not supported yet.");
+            log.trace(">>> select");
+            BaseDao dao = new BaseDao();
             try {
                 ProductRefsMapper mapper = dao.getMapper(ProductRefsMapper.class);
                 List<ProductRefs> res = mapper.select(rowsrange);
@@ -65,18 +70,21 @@ public class ProductRefsDAO implements ProductRefsMapper{
             } catch (Exception e) {
                 log.error(null, e);
                 throw e;
+            } finally {
+                dao.closeDBSession();
             }
-        } finally {
-            dao.closeDBSession();
+        } catch (IOException | PersistenceException ex) {
+            log.error(null, ex);
+            return null;
         }
     }
 
     @Override
     public ProductRefs selectByID(BigInteger id) {
-        //throw new UnsupportedOperationException("Not supported yet.");
-        log.trace(">>> selectByID");
-        BaseDao dao = new BaseDao();
         try {
+            //throw new UnsupportedOperationException("Not supported yet.");
+            log.trace(">>> selectByID");
+            BaseDao dao = new BaseDao();
             try {
                 ProductRefsMapper mapper = dao.getMapper(ProductRefsMapper.class);
                 ProductRefs res = mapper.selectByID(id);
@@ -85,18 +93,21 @@ public class ProductRefsDAO implements ProductRefsMapper{
             } catch (Exception e) {
                 log.error(null, e);
                 throw e;
+            } finally {
+                dao.closeDBSession();
             }
-        } finally {
-            dao.closeDBSession();
+        } catch (IOException | PersistenceException ex) {
+            log.error(null, ex);
+            return null;
         }
     }
 
     @Override
     public BigInteger selectCount() {
-        //throw new UnsupportedOperationException("Not supported yet.");
-        log.trace(">>> selectCount");
-        BaseDao dao = new BaseDao();
         try {
+            //throw new UnsupportedOperationException("Not supported yet.");
+            log.trace(">>> selectCount");
+            BaseDao dao = new BaseDao();
             try {
                 ProductRefsMapper mapper = dao.getMapper(ProductRefsMapper.class);
                 BigInteger res = mapper.selectCount();
@@ -105,18 +116,21 @@ public class ProductRefsDAO implements ProductRefsMapper{
             } catch (Exception e) {
                 log.error(null, e);
                 throw e;
+            } finally {
+                dao.closeDBSession();
             }
-        } finally {
-            dao.closeDBSession();
+        } catch (IOException | PersistenceException ex) {
+            log.error(null, ex);
+            return null;
         }
     }
 
     @Override
     public int insertRow(ProductRefs item) {
-        //throw new UnsupportedOperationException("Not supported yet.");
-        log.trace(">>> insertRow");
-        BaseDao dao = new BaseDao();
         try {
+            //throw new UnsupportedOperationException("Not supported yet.");
+            log.trace(">>> insertRow");
+            BaseDao dao = new BaseDao();
             try {
                 ProductRefsMapper mapper = dao.getMapper(ProductRefsMapper.class);
                 int res = mapper.insertRow(item);
@@ -126,30 +140,83 @@ public class ProductRefsDAO implements ProductRefsMapper{
             } catch (Exception e) {
                 log.error(null, e);
                 throw e;
+            } finally {
+                dao.closeDBSession();
             }
-        } finally {
-            dao.closeDBSession();
+        } catch (IOException | PersistenceException ex) {
+            log.error(null, ex);
+            return 0;
         }
     }
 
     @Override
-    public int insertRowBySP(ProductRefs item) {
-        //throw new UnsupportedOperationException("Not supported yet.");
-        log.trace(">>> insertRowBySP");
-        BaseDao dao = new BaseDao();
+    public ProductRefs insertRowBySP(ProductRefs item) {
         try {
+            //throw new UnsupportedOperationException("Not supported yet.");
+            log.trace(">>> insertRowBySP");
+            BaseDao dao = new BaseDao();
             try {
                 ProductRefsMapper mapper = dao.getMapper(ProductRefsMapper.class);
-                int res = mapper.insertRowBySP(item);
+                item = mapper.insertRowBySP(item);
                 dao.commit();
                 log.trace("<<< insertRowBySP");
+                return item;
+            } catch (Exception e) {
+                log.error(null, e);
+                throw e;
+            } finally {
+                dao.closeDBSession();
+            }
+        } catch (IOException | PersistenceException ex) {
+            log.error(null, ex);
+            return null;
+        }
+    }
+
+    @Override
+    public ProductRefs insertRowBySP2(ProductRefs item) {
+        try {
+            //throw new UnsupportedOperationException("Not supported yet.");
+            log.trace(">>> insertRowBySP2");
+            BaseDao dao = new BaseDao();
+            try {
+                ProductRefsMapper mapper = dao.getMapper(ProductRefsMapper.class);
+                item = mapper.insertRowBySP2(item);
+                dao.commit();
+                log.trace("<<< insertRowBySP2");
+                return item;
+            } catch (Exception e) {
+                log.error(null, e);
+                throw e;
+            } finally {
+                dao.closeDBSession();
+            }
+        } catch (IOException | PersistenceException ex) {
+            log.error(null, ex);
+            return null;
+        }
+    }
+
+    @Override
+    public List<ProductRefs> selectBE(ProductRefsQBE qbe) {
+        try {
+            //throw new UnsupportedOperationException("Not supported yet.");
+            log.trace(">>> selectBE");
+            BaseDao dao = new BaseDao();
+            try {
+                ProductRefsMapper mapper = dao.getMapper(ProductRefsMapper.class);
+                List<ProductRefs> res = mapper.selectBE(qbe);
+                log.trace("<<< selectBE");
                 return res;
             } catch (Exception e) {
                 log.error(null, e);
                 throw e;
+            } finally {
+                dao.closeDBSession();
             }
-        } finally {
-            dao.closeDBSession();
+        } catch (IOException | PersistenceException ex) {
+            log.error(null, ex);
+            return null;
         }
     }
 
