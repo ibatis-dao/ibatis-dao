@@ -64,6 +64,9 @@
                 AND name like '%'||#{example.name}||'%'
             </if>
         </where>
+        <if test="sortOrder != null and (!sortOrder.isEmpty())">
+        order by ${sortOrder}
+        </if>
     offset #{rowsRange.first} limit #{rowsRange.length}
     </select>
 
@@ -94,6 +97,7 @@
     select * from test02_insertrow2(ROW(#{id}, #{name})::test02) as t2;
     </select>
     <!--  
+
 select * from test02_insertrow(#{id}, #{name}) as t2;    
 select * from test02_insertrow(#{id,mode=IN,javaType=BigInteger,jdbcType=BIGINT}, #{name,mode=IN,jdbcType=VARCHAR}) as t2;
     -->

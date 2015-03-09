@@ -21,9 +21,25 @@ getSortOrder, AddSortOrder, DelSortOrder, ClearSortOrder
 время. желательно, чтобы на это время интерфейс не блокировался и была возможность 
 отмены длительной операции. Как минимум, нужно, чтобы эта ситуация обозначалась 
 в интерфейсе пользователя - появлялся курсор "ожидания", индикатор загрузки и т.п.
+интерфейс javafx.concurrent.Worker
 --------------------------------------------------------------------------------
 источник данных нужен для доступа к: 
 * БД (MyBatis, (?)jdbc)
 * web - сервисам (xml, json, soap, ...)
 * ldap (MS AD)
+--------------------------------------------------------------------------------
+аутентификация ldap, ntlm 
+пример реализации был в проекте калькулятора тарифов GWT + Oracle Java stored procedure
+а также
+http://waffle.codeplex.com/
+http://dblock.github.io/waffle/README.html
+https://github.com/dblock/waffle/blob/master/Docs/tomcat/TomcatMixedSingleSignOnAndFormAuthenticatorValve.md
+http://dblock.github.io/waffle/
+http://sourceforge.net/projects/ntlmv2auth/
+http://spnego.sourceforge.net/
+http://tomcatspnego.codeplex.com/
+https://jcifs.samba.org/src/docs/ntlmhttpauth.html
+http://www.ioplex.com/jespa.html
+--------------------------------------------------------------------------------
+добавить загрузку валют ЦБ из проекта FXApp02
 --------------------------------------------------------------------------------

@@ -64,15 +64,15 @@ public class DAOTest01 {
         Assert.assertTrue("ProductRefs retrieved not in 3 rows", (numRows == 3));
         log.trace("<<< testSelectByRange");
     }
-    */  
+    */
     @Test
     public void testSelectBE() throws IOException {
         log.trace(">>> testSelectBE");
         ProductRefsDAO dao = new ProductRefsDAO();
-        INestedRange range = new NestedIntRange(1, 10, null);
+        NestedIntRange range = new NestedIntRange(0, 10, null);
         ProductRefs example = new ProductRefs();
         example.setId(BigInteger.ONE);
-        ProductRefsQBE qbe = new ProductRefsQBE(example, range);
+        ProductRefsQBE qbe = new ProductRefsQBE(example, range, null);
         List<ProductRefs> l = dao.selectBE(qbe);
         int numRows = 0;
         Iterator<ProductRefs> itr = l.iterator();
@@ -96,7 +96,6 @@ public class DAOTest01 {
         Assert.assertTrue("ProductRefs retrieved more than one row", (numRows > 0));
         log.trace("<<< testSelectBE");
     }
-    
     /*
     @Test
     public void testInsertRow() throws IOException {

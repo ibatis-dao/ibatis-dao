@@ -4,10 +4,25 @@ package fxapp01.dto;
  *
  * @author serg
  */
-public class ProductRefsQBE extends QueryBEParamWithRange<ProductRefs> {
+public class ProductRefsQBE extends QueryExtraParam {
 
-    public ProductRefsQBE(ProductRefs example, INestedRange rowsrange) {
-        super(example, rowsrange);
+    private ProductRefs example;
+    
+    public ProductRefsQBE(ProductRefs example, NestedIntRange rowsrange) {
+        this(example, rowsrange, null);
+    }
+
+    public ProductRefsQBE(ProductRefs example, NestedIntRange rowsrange, String sortOrder) {
+        super(rowsrange, sortOrder);
+        this.example = example;
     }
     
+    public ProductRefs getExample() {
+        return this.example;
+    }
+
+    public void setExample(ProductRefs example) {
+        this.example = example;
+    }
+
 }
