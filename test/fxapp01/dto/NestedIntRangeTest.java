@@ -151,8 +151,8 @@ public class NestedIntRangeTest {
     @Test
     public void testGetParentRange() {
         log.debug("getParentRange");
-        NestedIntRange instance = createZeroRange();
-        NestedIntRange result = instance.getParentRange();
+        INestedRange instance = createZeroRange();
+        INestedRange result = instance.getParentRange();
         assertEquals(null, result);
     }
 
@@ -162,10 +162,10 @@ public class NestedIntRangeTest {
     @Test
     public void testSetParentRange() {
         log.debug("setParentRange");
-        NestedIntRange instance = createNestedRange();
-        NestedIntRange parentRange = null;
+        INestedRange instance = createNestedRange();
+        INestedRange parentRange = null;
         instance.setParentRange(parentRange);
-        NestedIntRange result = instance.getParentRange();
+        INestedRange result = instance.getParentRange();
         assertEquals(parentRange, result);
     }
 

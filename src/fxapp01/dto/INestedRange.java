@@ -17,31 +17,39 @@ public interface INestedRange<T extends Number> {
     
     public void incLength(T increment);
     
-    public INestedRange getParentRange();
+    public INestedRange<T> getParentRange();
     
-    public void setParentRange(INestedRange parentRange);
+    public void setParentRange(INestedRange<T> parentRange);
     
     public T getLast();
+    
+    public INestedRange<T> clone();
     
     public boolean IsSingular();
     
     public boolean IsInbound(T value);
     
-    public boolean IsInbound(INestedRange aRange);
+    public boolean IsInbound(INestedRange<T> aRange);
     
     public T getMinDistance(T to);
     
+    //public T getMinDistance(INestedRange<T> aRange);
+    
     public T getMaxDistance(T to);
     
-    public boolean IsOverlapped(INestedRange aRange);
+    //public T getMaxDistance(INestedRange<T> aRange);
+
+    public boolean IsOverlapped(INestedRange<T> aRange);
     
-    public INestedRange Overlap(INestedRange aRange);
+    public INestedRange Overlap(INestedRange<T> aRange);
     
-    public INestedRange Add(INestedRange aRange);
+    public INestedRange Add(INestedRange<T> aRange);
     
     public INestedRange Extend(T to);
     
     public INestedRange Shift(T value);
     
     public INestedRange Complement(T to);
+
+    //public INestedRange Complement(INestedRange<T> aRange);
 }

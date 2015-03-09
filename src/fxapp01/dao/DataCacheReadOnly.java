@@ -1,6 +1,7 @@
 package fxapp01.dao;
 
-import fxapp01.dto.LimitedIntRange;
+import fxapp01.dto.INestedRange;
+import fxapp01.dto.NestedIntRange;
 import fxapp01.excpt.EArgumentBreaksRule;
 import fxapp01.excpt.ENullArgument;
 import fxapp01.log.ILogger;
@@ -24,7 +25,8 @@ public class DataCacheReadOnly<T> implements List {
     // фактическое начало (порядковый номер первой строки) и фактический размер 
     // окна данных в рамках источника данных. 
     private IDataRangeFetcher dataFetcher;
-    private LimitedIntRange range;
+    private INestedRange<Integer> outerLimits;
+    private INestedRange<Integer> range;
     private int defSize;
     private int maxSize;
     private final List<T> data;
@@ -40,7 +42,8 @@ public class DataCacheReadOnly<T> implements List {
         this.maxSize = 300;
         this.data = new ArrayList<>();
         log.debug("before new IntRange");
-        this.range = new LimitedIntRange(1, 0, 1, Integer.MAX_VALUE); 
+        this.outerLimits = new NestedIntRange(0, Integer.MAX_VALUE, null); 
+        this.range = new NestedIntRange(0, 0, this.outerLimits); 
         log.trace(exiting+methodName);
     }
     
@@ -64,10 +67,14 @@ public class DataCacheReadOnly<T> implements List {
         log.debug("----- printAll -----");
     }
 
-    public LimitedIntRange getRange() {
+    public INestedRange<Integer> getRange() {
         return range;
     }
     
+    public int getLeftLimit() {
+        return outerLimits.getFirst();
+    }
+
     public int getDefSize() {
         return defSize;
     }
@@ -252,7 +259,7 @@ public class DataCacheReadOnly<T> implements List {
             //рассчитываем расстояние до указаной строки в целых страницах кеша
             int dist = Math.abs(range.getMaxDistance(target));
             log.debug("dist="+dist);
-            LimitedIntRange aRange;
+            INestedRange<Integer> aRange;
             //если расчетная длина диапазона меньше максимально допустимого размера кеша
             if (dist <= maxSize) {
                 log.debug("dist <= maxSize");
@@ -291,7 +298,7 @@ public class DataCacheReadOnly<T> implements List {
                 } else {
                     //расстояние равно или больше удвоенного макс. размера кеша,
                     log.debug("dist >= maxSize * 2");
-                    aRange = new LimitedIntRange(index, defSize, range.getLeftLimit(), range.getRightLimit());
+                    aRange = new NestedIntRange(index, defSize, outerLimits);
                     //сбрасываем кеш полностью
                     clear(); 
                     //загружаем данные 

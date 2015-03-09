@@ -3,6 +3,7 @@ package fxapp01;
 import fxapp01.dao.DataCacheReadOnly;
 import fxapp01.dao.IDataRangeFetcher;
 import fxapp01.dao.ProductRefsDAO;
+import fxapp01.dto.INestedRange;
 import fxapp01.dto.LimitedIntRange;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,7 +49,7 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>, IData
         this.cache.addAll(l);
         */
         log.debug("before requestDataPage");
-        LimitedIntRange initRange = cache.getRange().clone();
+        INestedRange initRange = cache.getRange().clone();
         initRange.setLength(20);
         dps.fetch(initRange, 0);
         log.trace("<<< constructor");
@@ -211,16 +212,16 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>, IData
     @Override
     public ProductRefs get(int index) {
         //********************************************************
-        //TODO сделать скользящий кеш
         //log.trace(">>> get(index="+index+")");
-        //проверяем, находится ли теперь строка в пределах диапазона
-        //assert(cache.containsIndex(index));
+        //индекс List всегда начинается от 0. Индекс данных начинается от нижней границы диапазона данных
+        //конвертируем индекс списка в номер строки диапазона
         //возвращаем значение из этой строки
-        return cache.get(index);
+        //assert(cache.containsIndex(index));
+        return cache.get(index+cache.getLeftLimit());
     }
 
     @Override
-    public void fetch(LimitedIntRange aRowsRange, int pos) {
+    public void fetch(INestedRange aRowsRange, int pos) {
     /* мета-описание логики работы:
     1. проверяем, есть ли в кеше данные (первоначальная загрузка)
     если данных нет, а запрошенный диапазон равен дипазону кеша, то считаем, что это первая загрузка
@@ -321,5 +322,5 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>, IData
         log.trace(">>> removeListener(InvalidationListener)");
         invListeners.remove(listener);
     }
-    
+
 }

@@ -13,8 +13,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.BarChart;
 import fxapp01.dao.ProductRefsDAO;
+import fxapp01.dto.INestedRange;
 import fxapp01.dto.ProductRefs;
 import fxapp01.dto.LimitedIntRange;
+import fxapp01.dto.NestedIntRange;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 
@@ -33,7 +35,8 @@ public class ProductRefsTblMdl extends AbstractTableModel {
     
     // фактическое начало (порядковый номер первой строки) и фактический размер 
     // окна данных в рамках источника данных. 
-    private final LimitedIntRange cacheRowsRange; 
+    private final INestedRange<Integer> outerLimits; 
+    private final INestedRange<Integer> cacheRowsRange; 
     // базовый размер окна 
     private int baseDataPageSize;
     // размер кеша данных относительно размера окна данных
@@ -42,7 +45,8 @@ public class ProductRefsTblMdl extends AbstractTableModel {
     public ProductRefsTblMdl() {
         dao = new ProductRefsDAO();
         dataCacheFactor = 3.0; //defaul cache factor
-        cacheRowsRange = new LimitedIntRange(1, 100, 1, Integer.MAX_VALUE); //default data window start and size
+        outerLimits = new NestedIntRange(1, Integer.MAX_VALUE, null); 
+        cacheRowsRange = new NestedIntRange(1, 100, outerLimits); //default data window start and size
     }
     
     public double getTickUnit() {
@@ -100,7 +104,7 @@ public class ProductRefsTblMdl extends AbstractTableModel {
         throw new IllegalArgumentException("Method "+getClass().getName()+"."+methodName+"() arguments must be not null");
     }
     
-    public void requestDataPage(LimitedIntRange aRowsRange) {
+    public void requestDataPage(INestedRange<Integer> aRowsRange) {
         log.trace(">>> requestDataPage");
         /*
         * если ранее загруженная и запрошенная сейчас страницы пересекаются 
@@ -112,24 +116,12 @@ public class ProductRefsTblMdl extends AbstractTableModel {
         if (aRowsRange == null) {
             ThrowNullArg("requestDataPage");
         }
-        // вычисляем новую порцию данных дя загрузки
-        LimitedIntRange aRange;
-        //если диапазоны пересекаются
-        if (cacheRowsRange.IsOverlapped(aRowsRange)) {
-            //загружаем только новую порцию данных. ту часть, что уже есть, не загружаем
-            aRange = aRowsRange.Sub(cacheRowsRange);
-        } else {
-            // если диапазоны не пересекаются, вычислим диапазон, включающий оба 
-            aRange = aRowsRange.Add(cacheRowsRange);
-            //а затем вычтем из него исходный
-            aRange = aRange.Sub(cacheRowsRange);
-        }
         //ограничим длину запрашиваемого диапазона
-        aRange.setLength(Math.min(aRange.getLength(), calcDataPageSize()));
+        aRowsRange.setLength(Math.min(aRowsRange.getLength(), calcDataPageSize()));
         // фактически запрашиваем данные для вычисленного диапазона
-        List<ProductRefs> l = dao.select(aRange);
+        List<ProductRefs> l = dao.select(aRowsRange);
         //смотрим, куда добавлять полученные данные - в начало кеша или в конец
-        if (aRange.getFirst() <= cacheRowsRange.getFirst()) {
+        if (aRowsRange.getFirst() <= cacheRowsRange.getFirst()) {
             //добавляем в начало
             l.addAll(data);
             data.setAll(l);
@@ -153,25 +145,20 @@ public class ProductRefsTblMdl extends AbstractTableModel {
         } else {
             //если строка за пределами диапазона
             //проверяем прилегающий диапазон слева
-            LimitedIntRange l = cacheRowsRange.Shift(- baseDataPageSize);
+            INestedRange l = cacheRowsRange.Shift(- baseDataPageSize);
             if (l.IsInbound(row)) {
                 //если строка входит в диапазон слева, получаем данные для него
                 requestDataPage(l);
             } else {
                 //проверяем прилегающий диапазон справа
-                LimitedIntRange r = cacheRowsRange.Shift(baseDataPageSize);
+                INestedRange r = cacheRowsRange.Shift(baseDataPageSize);
                 if (r.IsInbound(row)) {
                     //если строка входит в диапазон справа, получаем данные для него
                     requestDataPage(r);
                 } else {
                     //строка находится за пределами прилегающих диапазонов
                     //сместим его в новое место
-                    LimitedIntRange n = new LimitedIntRange(
-                            row, 
-                            cacheRowsRange.getLength(), 
-                            cacheRowsRange.getLeftLimit(),
-                            cacheRowsRange.getRightLimit()
-                    );
+                    INestedRange n = cacheRowsRange.Complement(row);
                     requestDataPage(n);
                 }
             }
@@ -185,7 +172,7 @@ public class ProductRefsTblMdl extends AbstractTableModel {
     @Override
     public int getRowCount() {
         int rc = dao.getRowCount();
-        cacheRowsRange.setRightLimit(rc);
+        outerLimits.setLength(rc);
         return rc;
     }
 
@@ -211,7 +198,7 @@ public class ProductRefsTblMdl extends AbstractTableModel {
 
     @Override
     public void setValueAt(Object value, int row, int column) {
-        List<ProductRefs> l = dao.select(new LimitedIntRange(row, 1, cacheRowsRange.getLeftLimit() , cacheRowsRange.getRightLimit()));
+        List<ProductRefs> l = dao.select(new NestedIntRange(row, 1, outerLimits));
         ProductRefs rowData = l.get(1);
         dao.setBeanProperty(rowData, column, value);
         fireTableCellUpdated(row, column);

@@ -105,5 +105,10 @@ public class SingularIntRange implements INestedRange<Integer> {
     public INestedRange Complement(Integer to) {
         throw new UnsupportedOperationException(ns);
     }
+
+    @Override
+    public INestedRange<Integer> clone() {
+        throw new UnsupportedOperationException(ns);
+    }
     
 }

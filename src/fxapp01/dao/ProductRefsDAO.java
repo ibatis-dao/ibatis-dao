@@ -1,9 +1,9 @@
 package fxapp01.dao;
 
+import fxapp01.dto.INestedRange;
 import java.math.BigInteger;
 import java.util.List;
 import fxapp01.dto.ProductRefs;
-import fxapp01.dto.LimitedIntRange;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 
@@ -52,15 +52,20 @@ public class ProductRefsDAO implements ProductRefsMapper{
     }
     
     @Override
-    public List<ProductRefs> select(LimitedIntRange rowsrange) {
+    public List<ProductRefs> select(INestedRange rowsrange) {
         //throw new UnsupportedOperationException("Not supported yet.");
         log.trace(">>> select");
         BaseDao dao = new BaseDao();
         try {
-            ProductRefsMapper mapper = dao.getMapper(ProductRefsMapper.class);
-            List<ProductRefs> res = mapper.select(rowsrange);
-            log.trace("<<< select");
-            return res;
+            try {
+                ProductRefsMapper mapper = dao.getMapper(ProductRefsMapper.class);
+                List<ProductRefs> res = mapper.select(rowsrange);
+                log.trace("<<< select");
+                return res;
+            } catch (Exception e) {
+                log.error(null, e);
+                throw e;
+            }
         } finally {
             dao.closeDBSession();
         }
@@ -72,10 +77,15 @@ public class ProductRefsDAO implements ProductRefsMapper{
         log.trace(">>> selectByID");
         BaseDao dao = new BaseDao();
         try {
-            ProductRefsMapper mapper = dao.getMapper(ProductRefsMapper.class);
-            ProductRefs res = mapper.selectByID(id);
-            log.trace("<<< selectByID");
-            return res;
+            try {
+                ProductRefsMapper mapper = dao.getMapper(ProductRefsMapper.class);
+                ProductRefs res = mapper.selectByID(id);
+                log.trace("<<< selectByID");
+                return res;
+            } catch (Exception e) {
+                log.error(null, e);
+                throw e;
+            }
         } finally {
             dao.closeDBSession();
         }
@@ -87,10 +97,15 @@ public class ProductRefsDAO implements ProductRefsMapper{
         log.trace(">>> selectCount");
         BaseDao dao = new BaseDao();
         try {
-            ProductRefsMapper mapper = dao.getMapper(ProductRefsMapper.class);
-            BigInteger res = mapper.selectCount();
-            log.trace("<<< selectCount");
-            return res;
+            try {
+                ProductRefsMapper mapper = dao.getMapper(ProductRefsMapper.class);
+                BigInteger res = mapper.selectCount();
+                log.trace("<<< selectCount");
+                return res;
+            } catch (Exception e) {
+                log.error(null, e);
+                throw e;
+            }
         } finally {
             dao.closeDBSession();
         }
@@ -102,11 +117,16 @@ public class ProductRefsDAO implements ProductRefsMapper{
         log.trace(">>> insertRow");
         BaseDao dao = new BaseDao();
         try {
-            ProductRefsMapper mapper = dao.getMapper(ProductRefsMapper.class);
-            int res = mapper.insertRow(item);
-            dao.commit();
-            log.trace("<<< insertRow");
-            return res;
+            try {
+                ProductRefsMapper mapper = dao.getMapper(ProductRefsMapper.class);
+                int res = mapper.insertRow(item);
+                dao.commit();
+                log.trace("<<< insertRow");
+                return res;
+            } catch (Exception e) {
+                log.error(null, e);
+                throw e;
+            }
         } finally {
             dao.closeDBSession();
         }
@@ -118,11 +138,16 @@ public class ProductRefsDAO implements ProductRefsMapper{
         log.trace(">>> insertRowBySP");
         BaseDao dao = new BaseDao();
         try {
-            ProductRefsMapper mapper = dao.getMapper(ProductRefsMapper.class);
-            int res = mapper.insertRowBySP(item);
-            dao.commit();
-            log.trace("<<< insertRowBySP");
-            return res;
+            try {
+                ProductRefsMapper mapper = dao.getMapper(ProductRefsMapper.class);
+                int res = mapper.insertRowBySP(item);
+                dao.commit();
+                log.trace("<<< insertRowBySP");
+                return res;
+            } catch (Exception e) {
+                log.error(null, e);
+                throw e;
+            }
         } finally {
             dao.closeDBSession();
         }
