@@ -1,5 +1,8 @@
 package fxapp01.dto;
 
+import fxapp01.excpt.EArgumentBreaksRule;
+import fxapp01.excpt.ENegativeArgument;
+import fxapp01.excpt.ENullArgument;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 
@@ -24,8 +27,9 @@ public class IntRange {
     }
 
     public IntRange(int first, int length) {
+        log.trace(">>> contructor(first="+first+", length="+length+")");
         if ((first < 0) || (length < 0)) {
-            ThrowNegativeArg("Constructor");
+            throw new ENegativeArgument("Constructor");
         }
         this.first = first;
         this.length = length;
@@ -36,31 +40,13 @@ public class IntRange {
     public IntRange(int first, int length, int leftLimit, int rightLimit) {
         this(first, length);
         if (first < leftLimit) {
-            ThrowArgBreaksRule("Constructor", "leftLimit <= first");
+            throw new EArgumentBreaksRule("Constructor", "leftLimit <= first");
         }
         if (first+length > rightLimit) {
-            ThrowArgBreaksRule("Constructor", "first+length <= rightLimit");
+            throw new EArgumentBreaksRule("Constructor", "first+length <= rightLimit");
         }
         this.leftLimit = leftLimit;
         this.rightLimit = rightLimit;
-    }
-    
-    private void ThrowArgBreaksRule(String methodName, String rule) {
-        IllegalArgumentException e = new IllegalArgumentException("Method "+getClass().getName()+"."+methodName+"() arguments should match rule ("+rule+")");
-        log.error("", e);
-        throw e;
-    }
-    
-    private void ThrowNegativeArg(String methodName) {
-        IllegalArgumentException e = new IllegalArgumentException("Method "+getClass().getName()+"."+methodName+"() arguments must be great than zero");
-        log.error("", e);
-        throw e;
-    }
-    
-    private void ThrowNullArg(String methodName) {
-        IllegalArgumentException e = new IllegalArgumentException("Method "+getClass().getName()+"."+methodName+"() arguments must be not null");
-        log.error("", e);
-        throw e;
     }
     
     /**
@@ -75,7 +61,7 @@ public class IntRange {
      */
     public void setFirst(int first) {
         if (first < leftLimit) {
-            ThrowArgBreaksRule("setFirst", "leftLimit <= first");
+            throw new EArgumentBreaksRule("setFirst", "leftLimit <= first");
         }
         this.first = first;
     }
@@ -91,11 +77,12 @@ public class IntRange {
      * @param length the length to set
      */
     public void setLength(int length) {
+        log.debug(">>> setLength("+length+")");
         if (length < 0) {
-            ThrowNegativeArg("setLength");
+            throw new ENegativeArgument("setLength");
         }
         if (first+length > rightLimit) {
-            ThrowArgBreaksRule("setLength", "first+length <= rightLimit");
+            throw new EArgumentBreaksRule("setLength", "first+length <= rightLimit");
         }
         this.length = length;
     }
@@ -106,10 +93,10 @@ public class IntRange {
 
     public void setLeftLimit(int leftLimit) {
         if (leftLimit <= 0) {
-            ThrowNegativeArg("setLeftLimit");
+            throw new ENegativeArgument("setLeftLimit");
         }
         if (first < leftLimit) {
-            ThrowArgBreaksRule("setLeftLimit", "leftLimit <= first");
+            throw new EArgumentBreaksRule("setLeftLimit", "leftLimit <= first");
         }
         this.leftLimit = leftLimit;
     }
@@ -120,10 +107,10 @@ public class IntRange {
 
     public void setRightLimit(int rightLimit) {
         if (rightLimit <= 0) {
-            ThrowNegativeArg("setRightLimit");
+            throw new ENegativeArgument("setRightLimit");
         }
         if (first+length > rightLimit) {
-            ThrowArgBreaksRule("setRightLimit", "first+length <= rightLimit");
+            throw new EArgumentBreaksRule("setRightLimit", "first+length <= rightLimit");
         }
         this.rightLimit = rightLimit;
     }
@@ -141,7 +128,7 @@ public class IntRange {
      */
     public boolean IsEqual(IntRange aRange) {
         if (aRange == null) {
-            ThrowNullArg("IsEqual");
+            throw new ENullArgument("IsEqual");
         }
         return (first == aRange.getFirst()) && (length == aRange.getLength());
     }
@@ -152,7 +139,8 @@ public class IntRange {
      * @return 
      */
     public boolean IsInbound(int value) {
-        return (first <= value) && (getLast() >= value);
+        log.trace("IsInbound(value="+value+"). first="+first+", last="+getLast());
+        return (first <= value) && (value <= getLast());
     }
     
     /**
@@ -162,7 +150,7 @@ public class IntRange {
      */
     public boolean IsOverlapped(IntRange aRange) {
         if (aRange == null) {
-            ThrowNullArg("IsOverlapped");
+            throw new ENullArgument("IsOverlapped");
         } 
         return !((getLast() < aRange.getFirst()) || (getFirst() > aRange.getLast()));
     }
@@ -182,7 +170,7 @@ public class IntRange {
    */
     public IntRange Overlap(IntRange aRange) {
         if (aRange == null) {
-            ThrowNullArg("Overlap");
+            throw new ENullArgument("Overlap");
         }
         if (IsOverlapped(aRange)) {
             int maxStart = Math.max(first, aRange.getFirst());
@@ -201,10 +189,11 @@ public class IntRange {
      */
     public IntRange Add(IntRange aRange) {
         if (aRange == null) {
-            ThrowNullArg("Add");
+            throw new ENullArgument("Add");
         }
         int minStart = Math.max(leftLimit, Math.min(first, aRange.getFirst()));
         int maxLast = Math.min(Math.max(getLast(), aRange.getLast()), rightLimit);
+        log.debug("Add(). minStart="+minStart+", maxLast="+maxLast);
         return new IntRange(minStart, maxLast - minStart);
     }
 
@@ -219,15 +208,19 @@ public class IntRange {
      */
     public IntRange Sub(IntRange aRange) {
         if (aRange == null) {
-            ThrowNullArg("Sub");
+            throw new ENullArgument("Sub");
         }
         if (IsOverlapped(aRange)) {
             //если диапазоны пересекаются
             int maxStart = Math.max(first, aRange.getFirst());
             int minLast = Math.min(getLast(), aRange.getLast());
+            log.debug("Sub(). IsOverlapped. this.first="+first+", this.last="+getLast()+
+                ", aRange.first="+aRange.getFirst()+", aRange.last="+aRange.getLast()+
+                ", maxStart="+maxStart+", minLast="+minLast);
             return new IntRange(maxStart, minLast - maxStart);
         } else {
             //если диапазоны не пересекаются
+            log.debug("Sub(). Not overlapped. first="+first+", length="+length);
             return new IntRange(first, length);
         }
     }

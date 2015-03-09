@@ -17,10 +17,10 @@
 
     <select id="select" databaseId="oracle" parameterType="IntRange" resultMap="ProductRefsMap">
     with t001 as (
-            select s.id, 
-                   trim(substr(s.name, 1, 70)) as name 
-              from lisa.insurancescheme s 
-             order by s.id
+            select i.id, 
+                   i.name
+              from lisa.tmp$items i 
+             order by i.id
           )
     select rn, id, name
       from (
@@ -29,28 +29,28 @@
                name
           from t001
       )
-     where rn between #{first} and #{last}
+     where rn between #{first}+1 and #{last}+1
     </select>
 
     <select id="selectByID" databaseId="oracle" parameterType="BigInteger" resultMap="ProductRefsMap">
-    select s.id, trim(substr(s.name, 1, 70)) as name 
-      from lisa.insurancescheme s
-     where s.ID = #{id}
+    select i.id, i.name
+      from lisa.tmp$items i
+     where i.id = #{id}
     </select>
     
     <select id="selectByID" databaseId="postgresql" parameterType="BigInteger" resultMap="ProductRefsMap">
     select id, 
            name 
-      from "public"."test02"
+      from public."test02"
      where id = #{id}
     </select>
     
     <select id="selectCount" databaseId="oracle" resultType="BigInteger">
-    select count(s.id) from lisa.insurancescheme s
+    select count(i.id) from lisa.tmp$items i
     </select>
     
     <select id="selectCount" databaseId="postgresql" resultType="BigInteger">
-    select count(id) from "public"."test02"
+    select count(id) from public."test02"
     </select>
     
 </mapper>

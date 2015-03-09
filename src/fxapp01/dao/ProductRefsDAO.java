@@ -27,7 +27,7 @@ public class ProductRefsDAO implements ProductRefsMapper{
     }
     
     public int getRowCount() {
-        log.trace(">>> getRowCount");
+        //log.trace(">>> getRowCount");
         if (rowCount == null) {
             rowCount = selectCount();
         }

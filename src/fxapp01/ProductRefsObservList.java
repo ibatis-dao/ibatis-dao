@@ -1,5 +1,6 @@
 package fxapp01;
 
+import fxapp01.dao.DataCacheReadOnly;
 import fxapp01.dao.ProductRefsDAO;
 import fxapp01.dto.IntRange;
 import java.util.ArrayList;
@@ -12,6 +13,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import fxapp01.dto.ProductRefs;
+import fxapp01.excpt.ENullArgument;
+import fxapp01.excpt.EUnsupported;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 
@@ -22,30 +25,21 @@ import fxapp01.log.LogMgr;
 public class ProductRefsObservList implements ObservableList<ProductRefs>{
     
     private static final ILogger log = LogMgr.getLogger(ProductRefsObservList.class);
-    private final List<ProductRefs> data;
+    private final DataCacheReadOnly<ProductRefs> cache;
     private final ObservableList<ProductRefs> dataFacade;
     private final ProductRefsDAO dao;
     private final List<ListChangeListener<? super ProductRefs>> changeListeners;
     private final List<InvalidationListener> invListeners;
-    // фактическое начало (порядковый номер первой строки) и фактический размер 
-    // окна данных в рамках источника данных. 
-    private final IntRange cacheRowsRange; 
-    // базовый размер окна 
-    private int dataPageBaseSize;
-    // размер кеша данных относительно размера окна данных
-    private Double dataCacheFactor; 
 
     public ProductRefsObservList() {
         log.trace(">>> constructor");
         this.changeListeners = new ArrayList<>();
         this.invListeners = new ArrayList<>();
-        this.data = new ArrayList<>();
-        this.dataFacade = FXCollections.observableList(data);
+        this.cache = new DataCacheReadOnly<>(20, 300);
+        this.dataFacade = FXCollections.observableList(cache);
         this.dao = new ProductRefsDAO();
-        this.dataCacheFactor = 3.0; //default cache factor
-        this.cacheRowsRange = new IntRange(1, 50);
-        List<ProductRefs> l = dao.select(cacheRowsRange);
-        this.data.addAll(l);
+        List<ProductRefs> l = dao.select(cache.getRange());
+        this.cache.addAll(l);
         log.trace("<<< constructor");
     }
     
@@ -53,52 +47,13 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>{
         return dao.getContainerProperties().getColumnNames();
     }
 
-    private int calcDataPageSize() {
-        return (int)Math.floor(dataPageBaseSize * dataCacheFactor);
-    }
- 
-    public void requestDataPage(IntRange aRowsRange) {
-        log.trace(">>> requestDataPage");
-        /*
-        * если ранее загруженная и запрошенная сейчас страницы пересекаются 
-        * (имеют общий диапазон), загружаем только ту часть запрошенной страницы, 
-        * которая выходит за рамки ранее загруженной и добавляем её в начало или 
-        * в конец кеша - в зависимости от того, с какой стороны находится запрошенная
-        * страница по отношению к ранее загруженной
-        */
-        if (aRowsRange == null) {
-            throw new IllegalArgumentException("Method "+getClass().getName()+".requestDataPage() arguments must be not null");
-        }
-        // вычисляем новую порцию данных дя загрузки
-        IntRange aRange;
-        //если диапазоны пересекаются
-        if (cacheRowsRange.IsOverlapped(aRowsRange)) {
-            //загружаем только новую порцию данных. ту часть, что уже есть, не загружаем
-            aRange = aRowsRange.Sub(cacheRowsRange);
-        } else {
-            // если диапазоны не пересекаются, вычислим диапазон, включающий оба 
-            aRange = aRowsRange.Add(cacheRowsRange);
-            //а затем вычтем из него исходный
-            aRange = aRange.Sub(cacheRowsRange);
-        }
-        //ограничим длину запрашиваемого диапазона
-        aRange.setLength(Math.min(aRange.getLength(), calcDataPageSize()));
-        // фактически запрашиваем данные для вычисленного диапазона
-        List<ProductRefs> l = dao.select(aRange);
-        //смотрим, куда добавлять полученные данные - в начало кеша или в конец
-        if (aRange.getFirst() <= cacheRowsRange.getFirst()) {
-            //добавляем в начало
-            l.addAll(data);
-            data.clear();
-            data.addAll(l);
-        } else {
-            //добавляем в конец
-            data.addAll(l);
-        }
-        log.trace("<<< requestDataPage");
-    }
-
     /******************* javafx.collections.ObservableList *******************/
+    
+    /**
+     * javafx.collections.ObservableList
+     * @param elements
+     * @return 
+     */
     @Override
     public boolean addAll(ProductRefs[] elements) {
         log.trace(">>> addAll");
@@ -243,37 +198,86 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>{
         //********************************************************
         //TODO сделать скользящий кеш
         log.trace(">>> get(index="+index+")");
-        return dataFacade.get(index);
-        /*
         //проверяем, находится ли строка в пределах диапазона
-        if (cacheRowsRange.IsInbound(index)) {
+        if (cache.containsIndex(index)) {
             //если да, то возвращаем значение из этой строки
-            return dataFacade.get(index);
+            return cache.get(index);
         } else {
+            log.debug("Out of cache. Try find new range");
             //если строка за пределами диапазона
             //проверяем прилегающий диапазон слева
-            IntRange l = cacheRowsRange.Shift(- dataPageBaseSize);
+            IntRange l = cache.getRange().Shift(- cache.getDefSize());
             if (l.IsInbound(index)) {
                 //если строка входит в диапазон слева, получаем данные для него
+                log.debug("Shift cache to left");
                 requestDataPage(l);
             } else {
                 //проверяем прилегающий диапазон справа
-                IntRange r = cacheRowsRange.Shift(dataPageBaseSize);
+                IntRange r = cache.getRange().Shift(cache.getDefSize());
                 if (r.IsInbound(index)) {
+                    log.debug("Shift cache to right");
                     //если строка входит в диапазон справа, получаем данные для него
                     requestDataPage(r);
                 } else {
+                    log.debug("Cache shift failed. Create new range");
                     //строка находится за пределами прилегающих диапазонов
                     //сместим его в новое место
-                    IntRange n = new IntRange(index, cacheRowsRange.getLength());
+                    IntRange n = new IntRange(index, cache.getRange().getLength());
                     requestDataPage(n);
                 }
             }
         }
+        log.debug("Cache ranging finshed. Check asserts about range");
         //проверяем, находится ли теперь строка в пределах диапазона
-        assert(cacheRowsRange.IsInbound(index));
+        assert(cache.containsIndex(index));
         //возвращаем значение из этой строки
-        return dataFacade.get(index);
+        return cache.get(index);
+    }
+
+    public void requestDataPage(IntRange aRowsRange) {
+        log.trace(">>> requestDataPage");
+        /*
+        * если ранее загруженная и запрошенная сейчас страницы пересекаются 
+        * (имеют общий диапазон), загружаем только ту часть запрошенной страницы, 
+        * которая выходит за рамки ранее загруженной и добавляем её в начало или 
+        * в конец кеша - в зависимости от того, с какой стороны находится запрошенная
+        * страница по отношению к ранее загруженной
+        */
+        if (aRowsRange == null) {
+            throw new ENullArgument("requestDataPage");
+        }
+        // вычисляем новую порцию данных дя загрузки
+        IntRange aRange;
+        //если диапазоны пересекаются
+        if (cache.getRange().IsOverlapped(aRowsRange)) {
+            log.debug("cache range overlapped");
+            //загружаем только новую порцию данных. ту часть, что уже есть, не загружаем
+            aRange = aRowsRange.Sub(cache.getRange());
+        } else {
+            log.debug("cache range not overlapped");
+            // если диапазоны не пересекаются, вычислим диапазон, включающий оба 
+            aRange = aRowsRange.Add(cache.getRange());
+            //а затем вычтем из него исходный
+            aRange = cache.getRange().Sub(aRange);
+        }
+        //ограничим длину запрашиваемого диапазона
+        aRange.setLength(Math.min(aRange.getLength(), cache.getMaxSize()));
+        log.debug("define new cache range. first="+aRange.getFirst()+", length="+aRange.getLength());
+        // фактически запрашиваем данные для вычисленного диапазона
+        throw new EUnsupported();
+        /*
+        List<ProductRefs> l = dao.select(aRange);
+        //смотрим, куда добавлять полученные данные - в начало кеша или в конец
+        if (aRange.getFirst() <= cache.getRange().getFirst()) {
+            //добавляем в начало
+            log.debug("insert into start. Range.first<= cache.first.");
+            cache.addAll(1, l);
+        } else {
+            //добавляем в конец
+            log.debug("add at end. Range.first<= cache.first.");
+            cache.addAll(l);
+        }
+        log.trace("<<< requestDataPage");
         */
     }
 
@@ -326,6 +330,11 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>{
     }
 
     /******************* javafx.beans.Observable *******************/
+    
+    /**
+     * javafx.beans.Observable
+     * @param listener
+     */
     @Override
     public void addListener(InvalidationListener listener) {
         log.trace(">>> addListener(InvalidationListener)");
