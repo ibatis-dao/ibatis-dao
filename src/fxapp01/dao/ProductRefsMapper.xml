@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fxapp01.dao.ProductRefsMapper">
+    <resultMap type="ProductRefs" id="ProductRefsMap">
+        <id column="ID" property="id"/>
+        <result column="NAME" property="name"/>
+    </resultMap>
+
+    <select id="select" databaseId="postgresql" parameterType="IntRange" resultMap="ProductRefsMap">
+    select id, 
+           name 
+      from "public"."test02" 
+    offset #{first} limit #{length}
+    </select>
+
+    <select id="select" databaseId="oracle" parameterType="IntRange" resultMap="ProductRefsMap">
+    select id, name
+      from (
+        select rownum as rn, 
+               s.id, 
+               trim(substr(s.name, 1, 70)) as name 
+          from lisa.insurancescheme s 
+         order by s.id
+      )
+     where rn between #{first} and #{last}
+    </select>
+
+    <select id="selectByID" databaseId="oracle" parameterType="BigInteger" resultMap="ProductRefsMap">
+    select s.id, trim(substr(s.name, 1, 70)) as name 
+      from lisa.insurancescheme s
+     where s.ID = #{id}
+    </select>
+    
+    <select id="selectByID" databaseId="postgresql" parameterType="BigInteger" resultMap="ProductRefsMap">
+    select id, 
+           name 
+      from "public"."test02"
+     where id = #{id}
+    </select>
+    
+    <select id="selectCount" databaseId="oracle" resultType="BigInteger">
+    select count(s.id) from lisa.insurancescheme s
+    </select>
+    
+    <select id="selectCount" databaseId="oracle" resultType="BigInteger">
+    select count(id) from "public"."test02"
+    </select>
+    
+</mapper>
