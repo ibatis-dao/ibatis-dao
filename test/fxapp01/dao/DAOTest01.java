@@ -1,11 +1,7 @@
 package fxapp01.dao;
 
-import fxapp01.dao.sort.ProductRefsObservList;
-import fxapp01.dao.DataCacheReadOnly;
-import fxapp01.dao.ProductRefsDAO;
 import fxapp01.dto.INestedRange;
 import fxapp01.dto.ISortOrder;
-import fxapp01.dto.LimitedIntRange;
 import fxapp01.dto.NestedIntRange;
 import fxapp01.dto.ProductRefs;
 import fxapp01.dto.ProductRefsQBE;
@@ -49,7 +45,7 @@ public class DAOTest01 {
     @After
     public void tearDown() {
     }
-    /*
+    
     @Test
     public void testSelectByRange() throws IOException {
         log.trace(">>> testSelectByRange");
@@ -66,7 +62,7 @@ public class DAOTest01 {
         Assert.assertTrue("ProductRefs retrieved not in 3 rows", (numRows == 3));
         log.trace("<<< testSelectByRange");
     }
-    */
+    
     @Test
     public void testSelectBE() throws IOException {
         log.trace(">>> testSelectBE");
@@ -110,7 +106,7 @@ public class DAOTest01 {
         
         log.trace("<<< testSelectBE");
     }
-    /*
+    
     @Test
     public void testInsertRow() throws IOException {
         log.trace(">>> testInsertRow");
@@ -152,5 +148,5 @@ public class DAOTest01 {
         Assert.assertTrue(item.equals(exp));
         log.trace("<<< testInsertRowBySP2");
     }
-    */
+    
 }

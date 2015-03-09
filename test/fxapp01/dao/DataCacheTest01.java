@@ -1,6 +1,6 @@
 package fxapp01.dao;
 
-import fxapp01.dao.sort.ProductRefsObservList;
+import fxapp01.ProductRefsObservList;
 import fxapp01.dto.ProductRefs;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
@@ -17,7 +17,7 @@ import org.junit.Test;
  */
 public class DataCacheTest01 {
     
-    private ILogger log = LogMgr.getLogger(this.getClass()); 
+    private final ILogger log = LogMgr.getLogger(this.getClass()); 
 
     public DataCacheTest01() {
     }

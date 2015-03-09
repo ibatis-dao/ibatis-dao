@@ -2,7 +2,7 @@
  * data model for swing JTable
  */
 
-package fxapp01.dao.sort;
+package fxapp01;
 
 import java.util.ArrayList;
 import java.util.List;

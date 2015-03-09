@@ -1,4 +1,4 @@
-package fxapp01.dao.sort;
+package fxapp01;
 
 import fxapp01.dto.ProductRefs;
 import fxapp01.log.ILogger;
@@ -6,8 +6,6 @@ import fxapp01.log.LogMgr;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -53,7 +51,7 @@ public class FXApp01Controller implements Initializable {
             dataOL = new ProductRefsObservList();
             if (table01 == null) {
                 log.debug("table01 == null");
-                table01 = new TableView<ProductRefs>(dataOL);
+                table01 = new TableView<>(dataOL);
             } else {
                 log.debug("table01 != null");
                 table01.setItems(dataOL);

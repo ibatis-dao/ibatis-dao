@@ -1,10 +1,9 @@
-package fxapp01.dao.sort;
+package fxapp01;
 
 import fxapp01.dao.DataCacheReadOnly;
 import fxapp01.dao.IDataRangeFetcher;
 import fxapp01.dao.ProductRefsDAO;
 import fxapp01.dto.INestedRange;
-import fxapp01.dto.LimitedIntRange;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -16,7 +15,6 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import fxapp01.dto.ProductRefs;
 import fxapp01.excpt.ENullArgument;
-import fxapp01.excpt.EUnsupported;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 import java.io.IOException;
@@ -40,7 +38,7 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>, IData
         this.invListeners = new ArrayList<>();
         log.debug("before new DataCacheReadOnly");
         IDataRangeFetcher dps = this; // 
-        this.cache = new DataCacheReadOnly<ProductRefs>(dps, 20, 40);
+        this.cache = new DataCacheReadOnly<>(dps, 20, 40);
         log.debug("before FXCollections.observableList");
         this.dataFacade = FXCollections.observableList(cache);
         log.debug("before new ProductRefsDAO");

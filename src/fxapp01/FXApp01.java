@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package fxapp01.dao.sort;
+package fxapp01;
 
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
