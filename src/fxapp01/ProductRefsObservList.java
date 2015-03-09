@@ -215,6 +215,7 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>{
             //определяем расстояние от дальнего края текущего диапазона до указаной строки
             int dist = cache.getRange().getMaxDistance(index);
             //если расстояние меньше максимального размера кеша
+            
             // TODO: продолжить с этого места мета-описание логики из requestDataPage
             
             
