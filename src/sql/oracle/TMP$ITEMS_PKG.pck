@@ -1,6 +1,6 @@
 create or replace package TMP$ITEMS_PKG is
 
-  -- Author  : STARUKHSA
+  -- Author  : serg
   -- Created : 03.02.2015 11:12:03
   -- Purpose : package for testing purpose
 
