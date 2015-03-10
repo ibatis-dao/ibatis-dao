@@ -11,12 +11,12 @@ create table tmp$items (
 
 -- Add comments to the table 
 comment on table TMP$ITEMS
-  is 'Тренировочная таблица';
+  is 'table for testing purpose';
 -- Add comments to the columns 
 comment on column TMP$ITEMS.id
-  is 'Код (просто первичный ключ)';
+  is 'id (primary key)';
 comment on column TMP$ITEMS.name
-  is 'Наименование';
+  is 'name of item';
 -- Create/Recreate primary, unique and foreign key constraints 
 alter table TMP$ITEMS
   add constraint TMP$ITEMS_PK1 primary key (ID);

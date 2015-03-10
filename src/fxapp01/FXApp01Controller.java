@@ -75,7 +75,7 @@ public class FXApp01Controller implements Initializable {
             //table01.getSortOrder();
             table01Column01.setCellValueFactory(
                     //new PropertyValueFactory<ProductRefs, Integer>("id")
-                    new PropertyValueFactory<>("id")
+                    new PropertyValueFactory<ProductRefs,Integer>("id")
             );
             /*
             table01Column01.setCellValueFactory(
@@ -89,7 +89,7 @@ public class FXApp01Controller implements Initializable {
             */
             table01Column02.setCellValueFactory(
                     //new PropertyValueFactory<ProductRefs, String>("name")
-                    new PropertyValueFactory<>("name")
+                    new PropertyValueFactory<ProductRefs,String>("name")
             );
             //getVisibleRows();
             log.trace("<<< initialize");

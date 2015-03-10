@@ -2,10 +2,10 @@ create or replace package TMP$ITEMS_PKG is
 
   -- Author  : STARUKHSA
   -- Created : 03.02.2015 11:12:03
-  -- Purpose : Тренировочный пакет
+  -- Purpose : package for testing purpose
 
 ------------------------------------------------
-/* заполнение таблицы tmp$items тестовыми данными */
+/* filling out of table tmp$items by random data for tests */
 procedure genTestData;
 ------------------------------------------------
 
@@ -20,7 +20,7 @@ end TMP$ITEMS_PKG;
 create or replace package body TMP$ITEMS_PKG is
 
 ------------------------------------------------
-/* заполнение таблицы tmp$items тестовыми данными */
+/* filling out of table tmp$items by random data for tests */
 procedure genTestData
 as
   lid  tmp$items.id%type;
