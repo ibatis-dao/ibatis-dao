@@ -15,6 +15,7 @@
  */
 package fxapp01.dao;
 
+import fxapp01.excpt.ENullArgument;
 import java.io.IOException;
 import java.sql.Connection;
 import java.util.List;
@@ -23,7 +24,12 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import org.apache.ibatis.exceptions.PersistenceException;
+import org.apache.ibatis.mapping.Environment;
+import org.apache.ibatis.parsing.XNode;
 
 public class BaseDao {
 
@@ -38,12 +44,14 @@ public class BaseDao {
 
     private void createDaoFactory() throws IOException, PersistenceException {
         log.trace(">>> createDaoFactory");
-        if (borm == null) {
-            try {
-                borm = new BatisORM(null);
-            } catch (IOException | PersistenceException e ) {
-                log.error("createDaoFactory() failed", e);
-                throw e;
+        synchronized(this) {
+            if (borm == null) {
+                try {
+                    borm = new BatisORM(null);
+                } catch (IOException | PersistenceException e ) {
+                    log.error("createDaoFactory() failed", e);
+                    throw e;
+                }
             }
         }
     }
@@ -104,4 +112,58 @@ public class BaseDao {
         if (session != null) { session.rollback(); }
     }
 
+    public String getDatabaseId() throws IOException {
+        log.trace(">>> getDatabaseId");
+        Configuration conf = getConfiguration();
+        return conf.getDatabaseId();
+    }
+    
+    public String getEnvironmentId() throws IOException {
+        log.trace(">>> getEnvironmentId");
+        Configuration conf = getConfiguration();
+        Environment env = conf.getEnvironment();
+        return env.getId();
+    }
+    
+    public String getSQLFragment(String ID) throws IOException {
+        String mthdName = "getSQLFragment";
+        log.trace(mthdName);
+        Configuration conf = getConfiguration();
+        if (conf != null) {
+            //log.debug("conf != null");
+            Map<String, XNode> sqlNodes = conf.getSqlFragments();
+            if (sqlNodes != null) {
+                //log.debug("sqlNodes != null");
+                /*
+                for (Map.Entry<String, XNode> es : sqlNodes.entrySet()) {
+                    XNode node = es.getValue();
+                    log.debug("node.key="+es.getKey()+", node.name="+node.getName()
+                        +", node.path="+node.getPath()+", node.body="+node.getStringBody()
+                        +", node.toString="+node.toString()
+                        +", node.Attribute="+node.getStringAttribute("lang"));
+                }
+                */
+                /*
+                node.key=fxapp01.dao.filter.FilterMapper.And, node.name=sql, node.path=mapper/sql, node.body=({0}) and ({1}), node.toString=<sql databaseId="oracle" id="And">({0}) and ({1})</sql>
+                node.key=And, node.name=sql, node.path=mapper/sql, node.body=({0}) and ({1}), node.toString=<sql databaseId="oracle" id="And">({0}) and ({1})</sql>
+                */
+                XNode node = sqlNodes.get(ID);
+                if (node != null) {
+                    //log.debug("node != null");
+                    //evalString(String expression)
+                    //getStringBody()
+                    //toString()
+                    return node.getStringBody();
+                } else {
+                    //log.debug("node == null");
+                    return null;
+                }
+            } else {
+                throw new ENullArgument(mthdName, "getSqlFragments()");
+            }
+        } else {
+            throw new ENullArgument(mthdName, "getConfiguration()");
+        }
+    }
+    
 }

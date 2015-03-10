@@ -16,7 +16,7 @@
     <typeAlias alias="IntRange" type="fxapp01.dto.NestedIntRange"/>
     <typeAlias alias="ProductRefsQBE" type="fxapp01.dto.ProductRefsQBE"/>
   </typeAliases>
-  <environments default="development-postgresql">
+  <environments default="development-oracle">
     <environment id="development-oracle">
       <transactionManager type="JDBC" >
       	<!-- property name="commitRequired" value="true"/ -->
@@ -75,6 +75,7 @@
     <property name="Oracle" value="oracle" />
   </databaseIdProvider>
   <mappers>
+    <mapper resource="fxapp01/dao/filter/FilterMapper.xml"/>
     <mapper resource="fxapp01/dao/ProductRefsMapper.xml"/>
   </mappers>
 </configuration>

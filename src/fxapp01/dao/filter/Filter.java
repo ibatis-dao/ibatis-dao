@@ -15,28 +15,34 @@
  */
 package fxapp01.dao.filter;
 
+import fxapp01.dao.BaseDao;
 import fxapp01.excpt.EArgumentBreaksRule;
-import fxapp01.excpt.EUnsupported;
+import fxapp01.excpt.ENullArgument;
+import fxapp01.log.ILogger;
+import fxapp01.log.LogMgr;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.text.MessageFormat;
-import java.util.Properties;
 
 
 public class Filter implements ISqlFilterable, ILocalFilterable {
 
+    protected final ILogger log = LogMgr.getLogger(this.getClass()); 
+    private final BaseDao dao;
     private String sqlTemplate;
-    private String sqlDialect;
     private Object[] args;
     private int argCount;
 
-    protected Filter(String sqlTemplate, int argCount) {
-        this.sqlTemplate = sqlTemplate;
+    protected Filter(int argCount) throws IOException {
         this.argCount = argCount;
+        this.dao = new BaseDao();
+        this.sqlTemplate = loadSqlTemplate();
+        log.debug(">>> Filter.constructor. argCount="+argCount+", sqlTemplate="+sqlTemplate);
     }
     
+    protected BaseDao getDao() throws IOException {
+        return dao;
+    }
+
     @Override
     public String getText() {
         return format(sqlTemplate, args);
@@ -55,52 +61,11 @@ public class Filter implements ISqlFilterable, ILocalFilterable {
         return sqlTemplate;
     }
 
-    /**
-     * @param sqlTemplate of the sqlTemplate to set
-     */
-    protected void setSqlTemplate(String sqlTemplate) {
-        this.sqlTemplate = sqlTemplate;
-    }
-
-    public String getSqlDialect() {
-        return sqlDialect;
-    }
-    
-    protected String getSqlDialectFileName() {
-        return "Filter_"+sqlDialect+".properties";
-    }
-    
-    protected boolean IsDialectSupported(String sqlDialect) {
-        URL url = getClass().getResource(getSqlDialectFileName());
-        return (url != null);
-    }
-    
-    public void setSqlDialect(String sqlDialect) throws IOException {
-        if (IsDialectSupported(sqlDialect)) {
-            this.sqlDialect = sqlDialect;
-            sqlTemplate = loadSqlTemplate();
-        } else {
-            throw new EUnsupported("Sql dialect ("+sqlDialect+")");
+    private String loadSqlTemplate() throws IOException {
+        if (getDao() == null) {
+            throw new ENullArgument("loadSqlTemplate", "getDao()");
         }
-    }
-    
-    public String loadSqlTemplate() throws IOException {
-        URL url = getClass().getResource(getSqlDialectFileName());
-        if (url != null) {
-            URLConnection connection = url.openConnection();
-            if (connection != null) {
-                connection.setUseCaches(true);
-                InputStream stream = connection.getInputStream();
-                if (stream != null) {
-                    Properties prop = new Properties();
-                    prop.load(stream);
-                    sqlTemplate = prop.getProperty(getClass().getName(), sqlTemplate);
-                    stream.close();
-                }
-            }
-        } else {
-            throw new EUnsupported("Sql dialect ("+sqlDialect+")");
-        }
+        sqlTemplate = getDao().getSQLFragment(getClass().getSimpleName());
         return sqlTemplate;
     }
     
@@ -145,8 +110,8 @@ public class Filter implements ISqlFilterable, ILocalFilterable {
 
 public static class And extends Filter {
     
-    public And(Object... arg) {
-        super("({0}) and ({1})", 2);
+    public And(Object... arg) throws IOException {
+        super(2);
         setArgs(arg);
     }
     
@@ -159,16 +124,17 @@ public static class And extends Filter {
 
 public static class Between extends Filter {
     
-    public Between(Object... arg) {
-        super("{0} between {1} and {2}", 3);
+    public Between(Object... arg) throws IOException {
+        super(3);
         setArgs(arg);
     }
-}
+    }
 
 public static class Equals extends Filter {
     
-    public Equals(Object... arg) {
-        super("{0} = {1}", 2);
+    public Equals(Object... arg) throws IOException {
+        super(2);
+        log.debug(">>> Equals.constructor");
         setArgs(arg);
     }
     
@@ -176,32 +142,32 @@ public static class Equals extends Filter {
 
 public static class NotEquals extends Filter {
     
-    public NotEquals(Object... arg) {
-        super("{0} <> {1}", 2);
+    public NotEquals(Object... arg) throws IOException {
+        super(2);
         setArgs(arg);
     }
-}
+    }
 
 public static class Greater extends Filter {
     
-    public Greater(Object... arg) {
-        super("{0} > {1}", 2);
+    public Greater(Object... arg) throws IOException {
+        super(2);
         setArgs(arg);
     }
-}
+    }
 
 public static class GreaterOrEquals extends Filter {
     
-    public GreaterOrEquals(Object... arg) {
-        super("{0} >= {1}", 2);
+    public GreaterOrEquals(Object... arg) throws IOException {
+        super(2);
         setArgs(arg);
     }
-}
+    }
 
 public static class IsNull extends Filter {
 
-    public IsNull(Object arg) {
-        super("{0} is null", 1);
+    public IsNull(Object arg) throws IOException {
+        super(1);
         setOneArg(arg);
     }
     
@@ -209,48 +175,48 @@ public static class IsNull extends Filter {
 
 public static class IsNotNull extends Filter {
     
-    public IsNotNull(Object... arg) {
-        super("{0} is not null", 1);
+    public IsNotNull(Object... arg) throws IOException {
+        super(1);
         setArgs(arg);
     }
-}
+    }
 
 public static class Less extends Filter {
     
-    public Less(Object... arg) {
-        super("{0} < {1}", 2);
+    public Less(Object... arg) throws IOException {
+        super(2);
         setArgs(arg);
     }
-}
+    }
 
 public static class LessOrEquals extends Filter {
     
-    public LessOrEquals(Object... arg) {
-        super("{0} =< {1}", 2);
+    public LessOrEquals(Object... arg) throws IOException {
+        super(2);
         setArgs(arg);
     }
-}
+    }
 
 public static class Like extends Filter {
     
-    public Like(Object... arg) {
-        super("{0} like {1}", 2);
+    public Like(Object... arg) throws IOException {
+        super(2);
         setArgs(arg);
     }
-}
+    }
 
 public static class NotLike extends Filter {
     
-    public NotLike(Object... arg) {
-        super("{0} not like {1}", 2);
+    public NotLike(Object... arg) throws IOException {
+        super(2);
         setArgs(arg);
     }
-}
+    }
 
 public static class Not extends Filter {
     
-    public Not(Object arg) {
-        super("not ({0})", 1);
+    public Not(Object arg) throws IOException {
+        super(1);
         setOneArg(arg);
     }
     
@@ -258,8 +224,8 @@ public static class Not extends Filter {
 
 public static class Or extends Filter {
     
-    public Or(Object... arg) {
-        super("({0}) or ({1})", 2);
+    public Or(Object... arg) throws IOException {
+        super(2);
         setArgs(arg);
     }
     
@@ -267,8 +233,8 @@ public static class Or extends Filter {
 
 public static class Containing extends Filter {
     
-    public Containing(Object... arg) {
-        super("{0} containing {1}", 2);
+    public Containing(Object... arg) throws IOException {
+        super(2);
         setArgs(arg);
     }
     
@@ -276,8 +242,8 @@ public static class Containing extends Filter {
 
 public static class StartsWith extends Filter {
     
-    public StartsWith(Object... arg) {
-        super("{0} starts with {1}", 2);
+    public StartsWith(Object... arg) throws IOException {
+        super(2);
         setArgs(arg);
     }
     
@@ -285,8 +251,8 @@ public static class StartsWith extends Filter {
 
 public static class EndsWith extends Filter {
     
-    public EndsWith(Object... arg) {
-        super("{0} ends with {1}", 2);
+    public EndsWith(Object... arg) throws IOException {
+        super(2);
         setArgs(arg);
     }
     
@@ -294,8 +260,8 @@ public static class EndsWith extends Filter {
 
 public static class In extends Filter {
     
-    public In(Object... arg) {
-        super("{0} in {1}", 2);
+    public In(Object... arg) throws IOException {
+        super(2);
         setArgs(arg);
     }
     
@@ -303,8 +269,8 @@ public static class In extends Filter {
 
 public static class NotIn extends Filter {
     
-    public NotIn(Object... arg) {
-        super("{0} not in {1}", 2);
+    public NotIn(Object... arg) throws IOException {
+        super(2);
         setArgs(arg);
     }
     
@@ -312,8 +278,8 @@ public static class NotIn extends Filter {
 
 public static class Exists extends Filter {
     
-    public Exists(Object... arg) {
-        super("exists {0}", 1);
+    public Exists(Object... arg) throws IOException {
+        super(1);
         setArgs(arg);
     }
     
@@ -321,8 +287,8 @@ public static class Exists extends Filter {
 
 public static class NotExists extends Filter {
     
-    public NotExists(Object... arg) {
-        super("not exists {0}", 1);
+    public NotExists(Object... arg) throws IOException {
+        super(1);
         setArgs(arg);
     }
     
