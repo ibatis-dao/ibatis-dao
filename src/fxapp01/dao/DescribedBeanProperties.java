@@ -29,26 +29,58 @@ import java.util.Map;
  *
  * @author serg
  */
-public class BeanProperties implements IHasDataProperty {
+public class DescribedBeanProperties implements IHasDescribedDataProperty{
 
     private static final ILogger log = LogMgr.getLogger(BeanProperties.class);
     private final Class<?> beanClass;
     private final Map<Object,IDataProperty> beanProperties;
 
-    public BeanProperties(Class<?> beanClass) throws IntrospectionException {
+    public DescribedBeanProperties(Class<?> beanClass) throws IntrospectionException {
         if (beanClass == null) {
             throw new IllegalArgumentException("Wrong parameter beanClass (= null)");
         }
         this.beanClass = beanClass;
+        //заполняем свойства на основе сведений о классе 
         BeanInfo beanInfo = Introspector.getBeanInfo(beanClass);
         PropertyDescriptor[] pds = beanInfo.getPropertyDescriptors();
         beanProperties = new HashMap<>(pds.length);
         for (int i = 0; i < pds.length; i++) {
-            beanProperties.put(i, new BeanProperty(beanClass, pds[i]));
+            beanProperties.put(i, new DescribedBeanProperty(beanClass, pds[i]));
             //log.debug(pd.getName());
         }
     }
     
+    
+    /*
+    implementation of interface IHasDescribedDataProperty
+    */
+    @Override
+    public boolean addDescribedDataProperty(Object id, IDescribedDataProperty property) {
+        return (beanProperties.put(id, property) != null);
+    }
+
+    @Override
+    public IDescribedDataProperty getDescribedDataProperty(Object id) {
+        //извлекаем "базовое" свойство по его ID
+        IDataProperty dp = beanProperties.get(id);
+        if (dp == null) {
+            //если свойство не найдено
+            return null;
+        } else {
+            //если свойство найдено
+            if (dp instanceof IDescribedDataProperty) {
+                //если свойство можно реализует интерфейс IDescribedDataProperty
+                return (IDescribedDataProperty)dp;
+            } else {
+                //свойство не реализует интерфейс IDescribedDataProperty. возвращаем null
+                return null;
+            }
+        }    
+    }
+
+    /*
+    implementation of interface IHasDataProperty
+    */
     @Override
     public boolean addDataProperty(Object id, IDataProperty property) {
         return (beanProperties.put(id, property) != null);

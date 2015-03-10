@@ -16,26 +16,39 @@
 package fxapp01.dao;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * @author serg
- * @param <T>
+ * @param <B> bean type
+ * @param <V> property value type
  */
-public interface IDataProperty<T> extends Serializable {
+public interface IDataProperty<B, V> extends Serializable {
 
     /*
     * Returns the type of the Property.
     */
-    Class<? extends T> getType();
+    Class<? extends V> getType();
 
-    /*
-    * Gets the value stored in the Property.
-    */
-    T getValue();
+    /**
+     * Gets the value stored in the Property.
+     * @param bean is a data object, which has property
+     * @return property value
+     * @throws InvocationTargetException
+     * @throws java.lang.IllegalAccessException
+     */
+    
+    V getValue(B bean) throws InvocationTargetException, IllegalAccessException, IllegalArgumentException;
 
-    /*
-    * Sets the value of the Property.
-    */
-    void setValue(T newValue);
+    /**
+     * Sets the value of the Property.
+     * @param bean
+     * @param newValue
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
+     */
+    
+    void setValue(B bean, V newValue) throws InvocationTargetException, IllegalAccessException, IllegalArgumentException;
 
 }

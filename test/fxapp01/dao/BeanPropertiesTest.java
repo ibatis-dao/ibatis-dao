@@ -70,8 +70,8 @@ public class BeanPropertiesTest {
         Object bean = new ProductRefs();
         BeanInfo beanInfo = Introspector.getBeanInfo(bean.getClass());
         PropertyDescriptor[] pds = beanInfo.getPropertyDescriptors();
-        IDataProperty property = new BeanProperty(bean, pds[0]);
-        BeanProperties instance = new BeanProperties(bean);
+        IDataProperty property = new BeanProperty(ProductRefs.class, pds[0]);
+        BeanProperties instance = new BeanProperties(ProductRefs.class);
         boolean result = instance.addDataProperty(id, property);
         assertTrue(result);
     }
@@ -84,8 +84,7 @@ public class BeanPropertiesTest {
     public void testGetDataProperty() throws IntrospectionException {
         log.trace("getDataProperty");
         int id = 0;
-        Object bean = new ProductRefs();
-        BeanProperties instance = new BeanProperties(bean);
+        BeanProperties instance = new BeanProperties(ProductRefs.class);
         IDataProperty result = instance.getDataProperty(id);
         assertNotNull(result);
     }
@@ -97,8 +96,7 @@ public class BeanPropertiesTest {
     @Test
     public void testGetDataPropertyIds() throws IntrospectionException {
         log.trace("getDataPropertyIds");
-        Object bean = new ProductRefs();
-        BeanProperties instance = new BeanProperties(bean);
+        BeanProperties instance = new BeanProperties(ProductRefs.class);
         int expResult = 3;
         Collection result = instance.getDataPropertyIds();
         assertEquals(expResult, result.size());
@@ -112,8 +110,7 @@ public class BeanPropertiesTest {
     public void testRemoveDataProperty() throws IntrospectionException {
         log.trace("removeDataProperty");
         int id = 0;
-        Object bean = new ProductRefs();
-        BeanProperties instance = new BeanProperties(bean);
+        BeanProperties instance = new BeanProperties(ProductRefs.class);
         boolean result = instance.removeDataProperty(id);
         assertTrue(result);
     }

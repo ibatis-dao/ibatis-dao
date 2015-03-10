@@ -28,17 +28,17 @@ import java.lang.reflect.Method;
 public class BeanProperty implements IDataProperty {
     
     private static final ILogger log = LogMgr.getLogger(BeanProperty.class);
-    private final Object bean;
+    private final Class<?> beanClass;
     private final PropertyDescriptor pd;
     
-    public BeanProperty(Object bean, PropertyDescriptor pd) {
-        if (bean == null) {
-            throw new IllegalArgumentException("Wrong parameter bean (= null)");
+    public BeanProperty(Class<?> beanClass, PropertyDescriptor pd) {
+        if (beanClass == null) {
+            throw new IllegalArgumentException("Wrong parameter beanClass (= null)");
         }
         if (pd == null) {
             throw new IllegalArgumentException("Wrong parameter pd (= null)");
         }
-        this.bean = bean;
+        this.beanClass = beanClass;
         this.pd = pd;
     }
 
@@ -48,25 +48,24 @@ public class BeanProperty implements IDataProperty {
     }
 
     @Override
-    public Object getValue() {
+    public Object getValue(Object bean) throws InvocationTargetException, IllegalAccessException, IllegalArgumentException {
         Method m = pd.getReadMethod();
-        try {
+        if (m != null) {
             Object[] params = null;
             return m.invoke(bean, params);
-        } catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException ex) {
-            log.error(null, ex);
-            return null;
+        } else {
+            throw new IllegalAccessException("No getter method for property "+pd.getName());
         }
     }
 
     @Override
-    public void setValue(Object newValue) {
+    public void setValue(Object bean, Object newValue) throws InvocationTargetException, IllegalAccessException, IllegalArgumentException {
         Method m = pd.getWriteMethod();
-        try {
+        if (m != null) {
             m.invoke(bean, newValue);
-        } catch (InvocationTargetException | IllegalAccessException | IllegalArgumentException ex) {
-            log.error(null, ex);
+        } else {
+            throw new IllegalAccessException("No setter method for property "+pd.getName());
         }
     }
-    
+
 }
