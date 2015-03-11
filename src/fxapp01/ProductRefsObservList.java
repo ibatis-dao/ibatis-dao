@@ -17,7 +17,7 @@ package fxapp01;
 
 import fxapp01.dao.DataCacheReadOnly;
 import fxapp01.dao.IDataRangeFetcher;
-import fxapp01.dao.ProductRefsDAO;
+import fxapp01.dao.TestItemDAO;
 import fxapp01.dto.INestedRange;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,7 +28,7 @@ import javafx.beans.InvalidationListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import fxapp01.dto.ProductRefs;
+import fxapp01.dto.TestItemDTO;
 import fxapp01.excpt.ENullArgument;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
@@ -38,13 +38,13 @@ import java.io.IOException;
  *
  * @author serg
  */
-public class ProductRefsObservList implements ObservableList<ProductRefs>, IDataRangeFetcher {
+public class ProductRefsObservList implements ObservableList<TestItemDTO>, IDataRangeFetcher {
     
     private static final ILogger log = LogMgr.getLogger(ProductRefsObservList.class);
-    private final DataCacheReadOnly<ProductRefs> cache;
-    private final ObservableList<ProductRefs> dataFacade;
-    private final ProductRefsDAO dao;
-    private final List<ListChangeListener<? super ProductRefs>> changeListeners;
+    private final DataCacheReadOnly<TestItemDTO> cache;
+    private final ObservableList<TestItemDTO> dataFacade;
+    private final TestItemDAO dao;
+    private final List<ListChangeListener<? super TestItemDTO>> changeListeners;
     private final List<InvalidationListener> invListeners;
 
     public ProductRefsObservList() throws IOException {
@@ -57,7 +57,7 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>, IData
         log.debug("before FXCollections.observableList");
         this.dataFacade = FXCollections.observableList(cache);
         log.debug("before new ProductRefsDAO");
-        this.dao = new ProductRefsDAO();
+        this.dao = new TestItemDAO();
         /*
         List<ProductRefs> l = dao.select();
         this.cache.addAll(l);
@@ -85,31 +85,31 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>, IData
      * @return 
      */
     @Override
-    public boolean addAll(ProductRefs[] elements) {
+    public boolean addAll(TestItemDTO[] elements) {
         log.trace(">>> addAll");
         return dataFacade.addAll(elements);
     }
 
     @Override
-    public boolean setAll(ProductRefs[] elements) {
+    public boolean setAll(TestItemDTO[] elements) {
         log.trace(">>> setAll(elements[])");
         return dataFacade.setAll(elements);
     }
 
     @Override
-    public boolean setAll(Collection<? extends ProductRefs> col) {
+    public boolean setAll(Collection<? extends TestItemDTO> col) {
         log.trace(">>> setAll(Collection)");
         return dataFacade.setAll(col);
     }
 
     @Override
-    public boolean removeAll(ProductRefs[] elements) {
+    public boolean removeAll(TestItemDTO[] elements) {
         log.trace(">>> setAll(elements[])");
         return dataFacade.removeAll(elements);
     }
 
     @Override
-    public boolean retainAll(ProductRefs[] elements) {
+    public boolean retainAll(TestItemDTO[] elements) {
         log.trace(">>> retainAll(elements[])");
         return dataFacade.retainAll(elements);
     }
@@ -121,14 +121,14 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>, IData
     }
 
     @Override
-    public void addListener(ListChangeListener<? super ProductRefs> listener) {
+    public void addListener(ListChangeListener<? super TestItemDTO> listener) {
         //throw new UnsupportedOperationException("Not supported yet.");
         log.trace(">>> addListener(ListChangeListener)");
         changeListeners.add(listener);
     }
 
     @Override
-    public void removeListener(ListChangeListener<? super ProductRefs> listener) {
+    public void removeListener(ListChangeListener<? super TestItemDTO> listener) {
         //throw new UnsupportedOperationException("Not supported yet.");
         log.trace(">>> removeListener(ListChangeListener)");
         changeListeners.remove(listener);
@@ -158,7 +158,7 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>, IData
     }
 
     @Override
-    public Iterator<ProductRefs> iterator() {
+    public Iterator<TestItemDTO> iterator() {
         log.trace(">>> iterator");
         return dataFacade.iterator();
     }
@@ -176,7 +176,7 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>, IData
     }
 
     @Override
-    public boolean add(ProductRefs e) {
+    public boolean add(TestItemDTO e) {
         log.trace(">>> add(ProductRefs)");
         return dataFacade.add(e);
     }
@@ -194,13 +194,13 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>, IData
     }
 
     @Override
-    public boolean addAll(Collection<? extends ProductRefs> c) {
+    public boolean addAll(Collection<? extends TestItemDTO> c) {
         log.trace(">>> addAll(Collection)");
         return dataFacade.addAll(c);
     }
 
     @Override
-    public boolean addAll(int index, Collection<? extends ProductRefs> c) {
+    public boolean addAll(int index, Collection<? extends TestItemDTO> c) {
         log.trace(">>> addAll(index, Collection)");
         return dataFacade.addAll(c);
     }
@@ -224,7 +224,7 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>, IData
     }
 
     @Override
-    public ProductRefs get(int index) {
+    public TestItemDTO get(int index) {
         //********************************************************
         //log.trace(">>> get(index="+index+")");
         //индекс List всегда начинается от 0. Индекс данных начинается от нижней границы диапазона данных
@@ -265,26 +265,26 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>, IData
         if (aRowsRange == null) {
             throw new ENullArgument("fetch");
         }
-        List<ProductRefs> l = dao.select(aRowsRange);
+        List<TestItemDTO> l = dao.select(aRowsRange);
         cache.addAll(pos, l);
         log.debug("cache.size="+cache.size());
         log.trace("<<< fetch");
     }
 
     @Override
-    public ProductRefs set(int index, ProductRefs element) {
+    public TestItemDTO set(int index, TestItemDTO element) {
         log.trace(">>> set(index, element)");
         return dataFacade.set(index, element);
     }
 
     @Override
-    public void add(int index, ProductRefs element) {
+    public void add(int index, TestItemDTO element) {
         log.trace(">>> add(index, element)");
         dataFacade.add(index, element);
     }
 
     @Override
-    public ProductRefs remove(int index) {
+    public TestItemDTO remove(int index) {
         log.trace(">>> remove(index)");
         return dataFacade.remove(index);
     }
@@ -302,19 +302,19 @@ public class ProductRefsObservList implements ObservableList<ProductRefs>, IData
     }
 
     @Override
-    public ListIterator<ProductRefs> listIterator() {
+    public ListIterator<TestItemDTO> listIterator() {
         log.trace(">>> listIterator");
         return dataFacade.listIterator();
     }
 
     @Override
-    public ListIterator<ProductRefs> listIterator(int index) {
+    public ListIterator<TestItemDTO> listIterator(int index) {
         log.trace(">>> listIterator(index)");
         return dataFacade.listIterator(index);
     }
 
     @Override
-    public List<ProductRefs> subList(int fromIndex, int toIndex) {
+    public List<TestItemDTO> subList(int fromIndex, int toIndex) {
         log.trace(">>> subList(fromIndex, toIndex)");
         return dataFacade.subList(fromIndex, toIndex);
     }

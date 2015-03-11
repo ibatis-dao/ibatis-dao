@@ -15,7 +15,7 @@
  */
 package fxapp01;
 
-import fxapp01.dto.ProductRefs;
+import fxapp01.dto.TestItemDTO;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 import java.io.IOException;
@@ -44,11 +44,11 @@ public class FXApp01Controller implements Initializable {
     @FXML
     private Label label;
     @FXML
-    private TableView<ProductRefs> table01;
+    private TableView<TestItemDTO> table01;
     @FXML
-    private TableColumn<ProductRefs,Integer> table01Column01;
+    private TableColumn<TestItemDTO,Integer> table01Column01;
     @FXML
-    private TableColumn<ProductRefs,String> table01Column02;
+    private TableColumn<TestItemDTO,String> table01Column02;
     
     private ProductRefsObservList dataOL;
     
@@ -73,23 +73,21 @@ public class FXApp01Controller implements Initializable {
             }
             table01.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
             //table01.getSortOrder();
-            table01Column01.setCellValueFactory(
-                    //new PropertyValueFactory<ProductRefs, Integer>("id")
-                    new PropertyValueFactory<ProductRefs,Integer>("id")
+            table01Column01.setCellValueFactory(//new PropertyValueFactory<ProductRefs, Integer>("id")
+                    new PropertyValueFactory<TestItemDTO,Integer>("id")
             );
             /*
             table01Column01.setCellValueFactory(
             new Callback<CellDataFeatures<ProductRefs, Integer>, ObservableValue<Integer>>() {
             public ObservableValue<Integer> call(CellDataFeatures<ProductRefs, Integer> p) {
-            // p.getValue() returns the ProductRefs instance for a particular TableView row
+            // p.getValue() returns the TestItemDTO instance for a particular TableView row
             return p.getValue().getId().intValue();
             }
             }
             );
             */
-            table01Column02.setCellValueFactory(
-                    //new PropertyValueFactory<ProductRefs, String>("name")
-                    new PropertyValueFactory<ProductRefs,String>("name")
+            table01Column02.setCellValueFactory(//new PropertyValueFactory<ProductRefs, String>("name")
+                    new PropertyValueFactory<TestItemDTO,String>("name")
             );
             //getVisibleRows();
             log.trace("<<< initialize");

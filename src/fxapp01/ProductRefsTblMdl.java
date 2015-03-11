@@ -28,9 +28,9 @@ import javax.swing.table.AbstractTableModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.BarChart;
-import fxapp01.dao.ProductRefsDAO;
+import fxapp01.dao.TestItemDAO;
 import fxapp01.dto.INestedRange;
-import fxapp01.dto.ProductRefs;
+import fxapp01.dto.TestItemDTO;
 import fxapp01.dto.LimitedIntRange;
 import fxapp01.dto.NestedIntRange;
 import fxapp01.log.ILogger;
@@ -46,8 +46,8 @@ public class ProductRefsTblMdl extends AbstractTableModel {
     private static final ILogger log = LogMgr.getLogger(ProductRefsTblMdl.class);
     private static ObservableList<BarChart.Series> bcData;
     
-    private final ProductRefsDAO dao;
-    private final ObservableList<ProductRefs> data = FXCollections.observableArrayList();
+    private final TestItemDAO dao;
+    private final ObservableList<TestItemDTO> data = FXCollections.observableArrayList();
     //TODO modified data cache
     
     // фактическое начало (порядковый номер первой строки) и фактический размер 
@@ -60,7 +60,7 @@ public class ProductRefsTblMdl extends AbstractTableModel {
     private Double dataCacheFactor; 
 
     public ProductRefsTblMdl() throws IOException {
-        dao = new ProductRefsDAO();
+        dao = new TestItemDAO();
         dataCacheFactor = 3.0; //defaul cache factor
         outerLimits = new NestedIntRange(1, Integer.MAX_VALUE, null); 
         cacheRowsRange = new NestedIntRange(1, 100, outerLimits); //default data window start and size
@@ -136,7 +136,7 @@ public class ProductRefsTblMdl extends AbstractTableModel {
         //ограничим длину запрашиваемого диапазона
         aRowsRange.setLength(Math.min(aRowsRange.getLength(), calcDataPageSize()));
         // фактически запрашиваем данные для вычисленного диапазона
-        List<ProductRefs> l = dao.select(aRowsRange);
+        List<TestItemDTO> l = dao.select(aRowsRange);
         //смотрим, куда добавлять полученные данные - в начало кеша или в конец
         if (aRowsRange.getFirst() <= cacheRowsRange.getFirst()) {
             //добавляем в начало
@@ -215,8 +215,8 @@ public class ProductRefsTblMdl extends AbstractTableModel {
 
     @Override
     public void setValueAt(Object value, int row, int column) {
-        List<ProductRefs> l = dao.select(new NestedIntRange(row, 1, outerLimits));
-        ProductRefs rowData = l.get(1);
+        List<TestItemDTO> l = dao.select(new NestedIntRange(row, 1, outerLimits));
+        TestItemDTO rowData = l.get(1);
         dao.setBeanProperty(rowData, column, value);
         fireTableCellUpdated(row, column);
     }
