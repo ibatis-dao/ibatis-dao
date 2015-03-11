@@ -2,8 +2,8 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="fxapp01.dao.ProductRefsMapper">
-    <resultMap type="ProductRefs" id="ProductRefsMap">
+<mapper namespace="fxapp01.dao.TestItemMapper">
+    <resultMap type="TestItemDTO" id="TestItemMap">
         <id column="ID" property="id" jdbcType="BIGINT"/>
         <result column="NAME" property="name"/>
     </resultMap>
@@ -18,14 +18,14 @@
     select 0 "first", count(id) "last" from public."test02"
     </select>
     
-    <select id="select" databaseId="postgresql" parameterType="IntRange" resultMap="ProductRefsMap">
+    <select id="select" databaseId="postgresql" parameterType="IntRange" resultMap="TestItemMap">
     select "id", "name" 
       from public."test02" 
      order by "id" 
     offset #{first} limit #{length}
     </select>
 
-    <select id="select" databaseId="oracle" parameterType="IntRange" resultMap="ProductRefsMap">
+    <select id="select" databaseId="oracle" parameterType="IntRange" resultMap="TestItemMap">
     with t001 as (
             select i.id, 
                    i.name
@@ -42,20 +42,20 @@
      where rn between #{first} and #{last}
     </select>
 
-    <select id="selectByID" databaseId="oracle" parameterType="BigInteger" resultMap="ProductRefsMap">
+    <select id="selectByID" databaseId="oracle" parameterType="BigInteger" resultMap="TestItemMap">
     select i.id, i.name
       from lisa.tmp$items i
      where i.id = #{id}
     </select>
     
-    <select id="selectByID" databaseId="postgresql" parameterType="BigInteger" resultMap="ProductRefsMap">
+    <select id="selectByID" databaseId="postgresql" parameterType="BigInteger" resultMap="TestItemMap">
     select id, 
            name 
       from public."test02"
      where id = #{id}
     </select>
     
-    <select id="selectBE" databaseId="postgresql" parameterType="ProductRefsQBE" resultMap="ProductRefsMap">
+    <select id="selectBE" databaseId="postgresql" parameterType="TestItemQBE" resultMap="TestItemMap">
     select "id", "name" 
       from public."test02" 
         <where>
@@ -72,7 +72,7 @@
     offset #{rowsRange.first} limit #{rowsRange.length}
     </select>
 
-    <insert id="insertRow" databaseId="oracle" statementType="CALLABLE" parameterType="ProductRefs">
+    <insert id="insertRow" databaseId="oracle" statementType="CALLABLE" parameterType="TestItemDTO">
     begin 
       insert into lisa.tmp$items(id, name) 
       values (tmp$items_sq.nextval, #{name})
@@ -80,22 +80,22 @@
     end;
     </insert>
     
-    <insert id="insertRowBySP" databaseId="oracle" statementType="CALLABLE" parameterType="ProductRefs">
+    <insert id="insertRowBySP" databaseId="oracle" statementType="CALLABLE" parameterType="TestItemDTO">
     begin 
       TMP$ITEMS_PKG.insertData(#{id,mode=INOUT,jdbcType=BIGINT}, #{name,mode=INOUT,jdbcType=VARCHAR});
     end;
     </insert>
     
-    <insert id="insertRow" databaseId="postgresql" useGeneratedKeys="true" keyProperty="id" parameterType="ProductRefs">
+    <insert id="insertRow" databaseId="postgresql" useGeneratedKeys="true" keyProperty="id" parameterType="TestItemDTO">
     insert into test02 (id, name) 
     values (DEFAULT, #{name})
     </insert>
 
-    <select id="insertRowBySP" databaseId="postgresql" statementType="CALLABLE" parameterType="ProductRefs" resultMap="ProductRefsMap">
+    <select id="insertRowBySP" databaseId="postgresql" statementType="CALLABLE" parameterType="TestItemDTO" resultMap="TestItemMap">
     select * from test02_insertrow(#{id}, #{name}) as t2;
     </select>
 
-    <select id="insertRowBySP2" databaseId="postgresql" statementType="CALLABLE" parameterType="ProductRefs" resultMap="ProductRefsMap">
+    <select id="insertRowBySP2" databaseId="postgresql" statementType="CALLABLE" parameterType="TestItemDTO" resultMap="TestItemMap">
     select * from test02_insertrow2(ROW(#{id}, #{name})::test02) as t2;
     </select>
     <!--  

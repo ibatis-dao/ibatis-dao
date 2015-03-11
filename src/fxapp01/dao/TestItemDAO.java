@@ -18,8 +18,8 @@ package fxapp01.dao;
 import fxapp01.dto.INestedRange;
 import java.math.BigInteger;
 import java.util.List;
-import fxapp01.dto.ProductRefs;
-import fxapp01.dto.ProductRefsQBE;
+import fxapp01.dto.TestItemDTO;
+import fxapp01.dto.TestItemQBE;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 import java.io.IOException;
@@ -29,17 +29,17 @@ import org.apache.ibatis.exceptions.PersistenceException;
  *
  * @author StarukhSA
  */
-public class ProductRefsDAO implements ProductRefsMapper{
+public class TestItemDAO implements TestItemMapper{
     
-    private static final ILogger log = LogMgr.getLogger(ProductRefsDAO.class);
+    private static final ILogger log = LogMgr.getLogger(TestItemDAO.class);
     private INestedRange rowRange = null;
     private final ItemProperties properties;
     private int pageSize;
     
-    public ProductRefsDAO() throws IOException {
+    public TestItemDAO() throws IOException {
         log.trace(">>> constructor");
         BaseDao dao = new BaseDao();
-        List<BeanPropertyMapping> beanPropertiesMap = dao.getBeanPropertiesMapping(ProductRefs.class);
+        List<BeanPropertyMapping> beanPropertiesMap = dao.getBeanPropertiesMapping(TestItemDTO.class);
         properties = new ItemProperties(beanPropertiesMap);
         log.trace("<<< constructor");
     }
@@ -70,14 +70,14 @@ public class ProductRefsDAO implements ProductRefsMapper{
     }
     
     @Override
-    public List<ProductRefs> select(INestedRange rowsrange) {
+    public List<TestItemDTO> select(INestedRange rowsrange) {
         try {
             //throw new UnsupportedOperationException("Not supported yet.");
             log.trace(">>> select");
             BaseDao dao = new BaseDao();
             try {
-                ProductRefsMapper mapper = dao.getMapper(ProductRefsMapper.class);
-                List<ProductRefs> res = mapper.select(rowsrange);
+                TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
+                List<TestItemDTO> res = mapper.select(rowsrange);
                 log.trace("<<< select");
                 return res;
             } catch (Exception e) {
@@ -93,14 +93,14 @@ public class ProductRefsDAO implements ProductRefsMapper{
     }
 
     @Override
-    public ProductRefs selectByID(BigInteger id) {
+    public TestItemDTO selectByID(BigInteger id) {
         try {
             //throw new UnsupportedOperationException("Not supported yet.");
             log.trace(">>> selectByID");
             BaseDao dao = new BaseDao();
             try {
-                ProductRefsMapper mapper = dao.getMapper(ProductRefsMapper.class);
-                ProductRefs res = mapper.selectByID(id);
+                TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
+                TestItemDTO res = mapper.selectByID(id);
                 log.trace("<<< selectByID");
                 return res;
             } catch (Exception e) {
@@ -122,7 +122,7 @@ public class ProductRefsDAO implements ProductRefsMapper{
             log.trace(">>> selectTotalRange");
             BaseDao dao = new BaseDao();
             try {
-                ProductRefsMapper mapper = dao.getMapper(ProductRefsMapper.class);
+                TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
                 INestedRange res = mapper.selectTotalRange();
                 log.trace("<<< selectTotalRange");
                 return res;
@@ -139,13 +139,13 @@ public class ProductRefsDAO implements ProductRefsMapper{
     }
 
     @Override
-    public int insertRow(ProductRefs item) {
+    public int insertRow(TestItemDTO item) {
         try {
             //throw new UnsupportedOperationException("Not supported yet.");
             log.trace(">>> insertRow");
             BaseDao dao = new BaseDao();
             try {
-                ProductRefsMapper mapper = dao.getMapper(ProductRefsMapper.class);
+                TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
                 int res = mapper.insertRow(item);
                 dao.commit();
                 log.trace("<<< insertRow");
@@ -163,13 +163,13 @@ public class ProductRefsDAO implements ProductRefsMapper{
     }
 
     @Override
-    public ProductRefs insertRowBySP(ProductRefs item) {
+    public TestItemDTO insertRowBySP(TestItemDTO item) {
         try {
             //throw new UnsupportedOperationException("Not supported yet.");
             log.trace(">>> insertRowBySP");
             BaseDao dao = new BaseDao();
             try {
-                ProductRefsMapper mapper = dao.getMapper(ProductRefsMapper.class);
+                TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
                 item = mapper.insertRowBySP(item);
                 dao.commit();
                 log.trace("<<< insertRowBySP");
@@ -187,13 +187,13 @@ public class ProductRefsDAO implements ProductRefsMapper{
     }
 
     @Override
-    public ProductRefs insertRowBySP2(ProductRefs item) {
+    public TestItemDTO insertRowBySP2(TestItemDTO item) {
         try {
             //throw new UnsupportedOperationException("Not supported yet.");
             log.trace(">>> insertRowBySP2");
             BaseDao dao = new BaseDao();
             try {
-                ProductRefsMapper mapper = dao.getMapper(ProductRefsMapper.class);
+                TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
                 item = mapper.insertRowBySP2(item);
                 dao.commit();
                 log.trace("<<< insertRowBySP2");
@@ -211,14 +211,14 @@ public class ProductRefsDAO implements ProductRefsMapper{
     }
 
     @Override
-    public List<ProductRefs> selectBE(ProductRefsQBE qbe) {
+    public List<TestItemDTO> selectBE(TestItemQBE qbe) {
         try {
             //throw new UnsupportedOperationException("Not supported yet.");
             log.trace(">>> selectBE");
             BaseDao dao = new BaseDao();
             try {
-                ProductRefsMapper mapper = dao.getMapper(ProductRefsMapper.class);
-                List<ProductRefs> res = mapper.selectBE(qbe);
+                TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
+                List<TestItemDTO> res = mapper.selectBE(qbe);
                 log.trace("<<< selectBE");
                 return res;
             } finally {

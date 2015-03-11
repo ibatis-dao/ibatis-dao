@@ -12,9 +12,9 @@
   	<!-- setting name="jdbcTypeForNull" value="NULL"/ -->
   </settings>
   <typeAliases>
-    <typeAlias alias="ProductRefs" type="fxapp01.dto.ProductRefs"/>
+    <typeAlias alias="TestItemDTO" type="fxapp01.dto.TestItemDTO"/>
     <typeAlias alias="IntRange" type="fxapp01.dto.NestedIntRange"/>
-    <typeAlias alias="ProductRefsQBE" type="fxapp01.dto.ProductRefsQBE"/>
+    <typeAlias alias="TestItemDTOQBE" type="fxapp01.dto.TestItemDTOQBE"/>
   </typeAliases>
   <environments default="development-oracle">
     <environment id="development-oracle">
@@ -76,6 +76,6 @@
   </databaseIdProvider>
   <mappers>
     <mapper resource="fxapp01/dao/filter/FilterMapper.xml"/>
-    <mapper resource="fxapp01/dao/ProductRefsMapper.xml"/>
+    <mapper resource="fxapp01/dao/TestItemMapper.xml"/>
   </mappers>
 </configuration>

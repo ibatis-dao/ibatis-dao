@@ -31,21 +31,34 @@ import java.util.Map;
  */
 public class BeanProperties implements IHasDataProperty {
 
-    private static final ILogger log = LogMgr.getLogger(BeanProperties.class);
-    private final Class<?> beanClass;
-    private final Map<Object,IDataProperty> beanProperties;
+    protected static final ILogger log = LogMgr.getLogger(BeanProperties.class);
+    protected final Class<?> beanClass;
+    protected final Map<Object,IDataProperty> beanProperties;
 
     public BeanProperties(Class<?> beanClass) throws IntrospectionException {
         if (beanClass == null) {
             throw new IllegalArgumentException("Wrong parameter beanClass (= null)");
         }
         this.beanClass = beanClass;
+        PropertyDescriptor[] pds = getBeanPropertyDescriptors(beanClass);
+        this.beanProperties = new HashMap<>((int)(pds.length/0.75), (float) 0.75);
+        addAllBeanProperties(pds);
+    }
+    
+    protected PropertyDescriptor[] getBeanPropertyDescriptors(Class<?> beanClass) throws IntrospectionException {
+        if (beanClass == null) {
+            throw new IllegalArgumentException("Wrong parameter beanClass (= null)");
+        }
+        //заполняем свойства на основе сведений о классе 
         BeanInfo beanInfo = Introspector.getBeanInfo(beanClass);
-        PropertyDescriptor[] pds = beanInfo.getPropertyDescriptors();
-        beanProperties = new HashMap<>(pds.length);
+        return beanInfo.getPropertyDescriptors();
+    }
+    
+    protected void addAllBeanProperties(PropertyDescriptor[] pds) {
+        //заполняем свойства на основе сведений о классе 
         for (int i = 0; i < pds.length; i++) {
             beanProperties.put(i, new BeanProperty(beanClass, pds[i]));
-            //log.debug(pd.getName());
+            log.debug(pds[i].getName());
         }
     }
     

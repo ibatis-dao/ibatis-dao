@@ -2,6 +2,11 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/home/serg/Server1.mount/NetBeansProjects/ibatis-dao/src/fxapp01/dao/BeanProperties.java</file>
+            <file>file:/home/serg/Server1.mount/NetBeansProjects/ibatis-dao/src/fxapp01/dao/DescribedBeanProperty.java</file>
+            <file>file:/home/serg/Server1.mount/NetBeansProjects/ibatis-dao/src/fxapp01/dao/DescribedBeanProperties.java</file>
+            <file>file:/home/serg/Server1.mount/NetBeansProjects/ibatis-dao/test/fxapp01/dao/DescribedBeanPropertiesTest.java</file>
+        </group>
     </open-files>
 </project-private>

@@ -21,41 +21,24 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  *
  * @author serg
  */
-public class DescribedBeanProperties implements IHasDescribedDataProperty{
-
-    private static final ILogger log = LogMgr.getLogger(BeanProperties.class);
-    private final Class<?> beanClass;
-    private final Map<Object,IDataProperty> beanProperties;
+public class DescribedBeanProperties extends BeanProperties implements IHasDescribedDataProperty {
 
     public DescribedBeanProperties(Class<?> beanClass) throws IntrospectionException {
-        if (beanClass == null) {
-            throw new IllegalArgumentException("Wrong parameter beanClass (= null)");
-        }
-        this.beanClass = beanClass;
-        //заполняем свойства на основе сведений о классе 
-        PropertyDescriptor[] pds = getBeanPropertyDescriptors(beanClass);
-        beanProperties = new HashMap<Object,IDataProperty>((int)(pds.length/0.75), (float) 0.75);
-        for (int i = 0; i < pds.length; i++) {
-            beanProperties.put(i, new DescribedBeanProperty(beanClass, pds[i]));
-            //log.debug(pd.getName());
-        }
+        super(beanClass);
     }
     
-    private PropertyDescriptor[] getBeanPropertyDescriptors(Class<?> beanClass) throws IntrospectionException {
-        if (beanClass == null) {
-            throw new IllegalArgumentException("Wrong parameter beanClass (= null)");
-        }
+    @Override
+    protected void addAllBeanProperties(PropertyDescriptor[] pds) {
         //заполняем свойства на основе сведений о классе 
-        BeanInfo beanInfo = Introspector.getBeanInfo(beanClass);
-        return beanInfo.getPropertyDescriptors();
+        for (int i = 0; i < pds.length; i++) {
+            beanProperties.put(i, new DescribedBeanProperty(beanClass, pds[i]));
+            log.debug(pds[i].getName());
+        }
     }
     
     /*
@@ -85,27 +68,4 @@ public class DescribedBeanProperties implements IHasDescribedDataProperty{
         }    
     }
 
-    /*
-    implementation of interface IHasDataProperty
-    */
-    @Override
-    public boolean addDataProperty(Object id, IDataProperty property) {
-        return (beanProperties.put(id, property) != null);
-    }
-
-    @Override
-    public IDataProperty getDataProperty(Object id) {
-        return beanProperties.get(id);
-    }
-
-    @Override
-    public Collection<?> getDataPropertyIds() {
-        return beanProperties.keySet(); //values();
-    }
-
-    @Override
-    public boolean removeDataProperty(Object id) {
-        return (beanProperties.remove(id) != null);
-    }
-    
 }

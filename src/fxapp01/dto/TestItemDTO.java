@@ -22,7 +22,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class ProductRefs implements Serializable {
+public class TestItemDTO implements Serializable {
 
     private static final long serialVersionUID = 8030875135429404808L;
     /*
@@ -65,7 +65,7 @@ public class ProductRefs implements Serializable {
             if (! o.getClass().isAssignableFrom(this.getClass())) {
                 return false;
             } else {
-                ProductRefs p = (ProductRefs)o;
+                TestItemDTO p = (TestItemDTO)o;
                 return (
                     (IdProperty().get() == p.IdProperty().get()) &&
                     (NameProperty().get().equals(p.NameProperty().get()))

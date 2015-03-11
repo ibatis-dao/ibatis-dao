@@ -21,24 +21,24 @@ import fxapp01.dao.sort.SortOrder;
  *
  * @author serg
  */
-public class ProductRefsQBE extends QueryExtraParam {
+public class TestItemQBE extends QueryExtraParam {
 
-    private ProductRefs example;
+    private TestItemDTO example;
     
-    public ProductRefsQBE(ProductRefs example, NestedIntRange rowsrange) {
+    public TestItemQBE(TestItemDTO example, NestedIntRange rowsrange) {
         this(example, rowsrange, null);
     }
 
-    public ProductRefsQBE(ProductRefs example, NestedIntRange rowsrange, SortOrder sortOrder) {
+    public TestItemQBE(TestItemDTO example, NestedIntRange rowsrange, SortOrder sortOrder) {
         super(rowsrange, sortOrder);
         this.example = example;
     }
     
-    public ProductRefs getExample() {
+    public TestItemDTO getExample() {
         return this.example;
     }
 
-    public void setExample(ProductRefs example) {
+    public void setExample(TestItemDTO example) {
         this.example = example;
     }
 
