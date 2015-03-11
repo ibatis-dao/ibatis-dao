@@ -15,8 +15,11 @@
  */
 package fxapp01.dao;
 
+import fxapp01.dto.TestItemDTO;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 import java.util.Collection;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -56,16 +59,13 @@ public class DescribedBeanPropertiesTest {
      * Test of addDescribedDataProperty method, of class DescribedBeanProperties.
      */
     @Test
-    public void testAddDescribedDataProperty() {
+    public void testAddDescribedDataProperty() throws IntrospectionException {
         log.trace("addDescribedDataProperty");
-        Object id = null;
-        IDescribedDataProperty property = null;
-        DescribedBeanProperties instance = null;
-        boolean expResult = false;
-        boolean result = instance.addDescribedDataProperty(id, property);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        DescribedBeanProperties instance = new DescribedBeanProperties(TestItemDTO.class);
+        PropertyDescriptor[] pds = instance.getBeanPropertyDescriptors(TestItemDTO.class);
+        IDescribedDataProperty property = new DescribedBeanProperty(TestItemDTO.class, pds[0]);
+        boolean result = instance.addDescribedDataProperty(pds.length, property);
+        assertTrue(result);
     }
 
     /**

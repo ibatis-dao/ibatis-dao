@@ -18,8 +18,8 @@ package fxapp01.dao;
 import fxapp01.dto.INestedRange;
 import fxapp01.dto.ISortOrder;
 import fxapp01.dto.NestedIntRange;
-import fxapp01.dto.ProductRefs;
-import fxapp01.dto.ProductRefsQBE;
+import fxapp01.dto.TestItemDTO;
+import fxapp01.dto.TestItemQBE;
 import fxapp01.dao.sort.SortOrder;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
@@ -64,13 +64,13 @@ public class DAOTest01 {
     @Test
     public void testSelectByRange() throws IOException {
         log.trace(">>> testSelectByRange");
-        ProductRefsDAO dao = new ProductRefsDAO();
+        TestItemDAO dao = new TestItemDAO();
         INestedRange r = new NestedIntRange(2, 3, null);
-        List<ProductRefs> l = dao.select(r);
+        List<TestItemDTO> l = dao.select(r);
         int numRows = 0;
-        Iterator<ProductRefs> itr = l.iterator();
+        Iterator<TestItemDTO> itr = l.iterator();
         while (itr.hasNext()){
-            ProductRefs p = itr.next();
+            TestItemDTO p = itr.next();
             log.debug(p.getName());
             numRows = numRows + 1;
         }
@@ -81,28 +81,28 @@ public class DAOTest01 {
     @Test
     public void testSelectBE() throws IOException {
         log.trace(">>> testSelectBE");
-        ProductRefsDAO dao = new ProductRefsDAO();
+        TestItemDAO dao = new TestItemDAO();
         NestedIntRange range = new NestedIntRange(0, 10, null);
-        ProductRefs example = new ProductRefs();
+        TestItemDTO example = new TestItemDTO();
         example.setId(BigInteger.ONE);
-        ProductRefsQBE qbe = new ProductRefsQBE(example, range, null);
-        List<ProductRefs> l = dao.selectBE(qbe);
+        TestItemQBE qbe = new TestItemQBE(example, range, null);
+        List<TestItemDTO> l = dao.selectBE(qbe);
         int numRows = 0;
-        Iterator<ProductRefs> itr = l.iterator();
+        Iterator<TestItemDTO> itr = l.iterator();
         while (itr.hasNext()){
-            ProductRefs p = itr.next();
+            TestItemDTO p = itr.next();
             log.debug(p.getName());
             numRows = numRows + 1;
         }
         Assert.assertTrue("ProductRefs retrieved not in one row", (numRows == 1));
-        example = new ProductRefs();
+        example = new TestItemDTO();
         example.setName("test");
         qbe.setExample(example);
         l = dao.selectBE(qbe);
         numRows = 0;
         itr = l.iterator();
         while (itr.hasNext()){
-            ProductRefs p = itr.next();
+            TestItemDTO p = itr.next();
             log.debug(p.getName());
             numRows = numRows + 1;
         }
@@ -116,7 +116,7 @@ public class DAOTest01 {
             so.add(s, ISortOrder.Direction.ASC);
         }
         
-        qbe = new ProductRefsQBE(example, range, so);
+        qbe = new TestItemQBE(example, range, so);
         l = dao.selectBE(qbe);
         
         log.trace("<<< testSelectBE");
@@ -125,12 +125,12 @@ public class DAOTest01 {
     @Test
     public void testInsertRow() throws IOException {
         log.trace(">>> testInsertRow");
-        ProductRefs item = new ProductRefs();
+        TestItemDTO item = new TestItemDTO();
         item.setName("test_"+Math.random());
-        ProductRefsDAO dao = new ProductRefsDAO();
+        TestItemDAO dao = new TestItemDAO();
         int numRows = dao.insertRow(item);
         log.debug("Rows inserted="+numRows+", item:"+item);
-        ProductRefs exp = dao.selectByID(item.getId());
+        TestItemDTO exp = dao.selectByID(item.getId());
         log.debug("Item selected:"+exp);
         Assert.assertTrue(item.equals(exp));
         log.trace("<<< testInsertRow");
@@ -139,12 +139,12 @@ public class DAOTest01 {
     @Test
     public void testInsertRowBySP() throws IOException {
         log.trace(">>> testInsertRowBySP");
-        ProductRefs item = new ProductRefs();
+        TestItemDTO item = new TestItemDTO();
         item.setName("test_"+Math.random());
-        ProductRefsDAO dao = new ProductRefsDAO();
+        TestItemDAO dao = new TestItemDAO();
         item = dao.insertRowBySP(item);
         log.debug("Inserted item:"+item);
-        ProductRefs exp = dao.selectByID(item.getId());
+        TestItemDTO exp = dao.selectByID(item.getId());
         log.debug("Item selected:"+exp);
         Assert.assertTrue(item.equals(exp));
         log.trace("<<< testInsertRowBySP");
@@ -153,12 +153,12 @@ public class DAOTest01 {
     @Test
     public void testInsertRowBySP2() throws IOException {
         log.trace(">>> testInsertRowBySP2");
-        ProductRefs item = new ProductRefs();
+        TestItemDTO item = new TestItemDTO();
         item.setName("test_"+Math.random());
-        ProductRefsDAO dao = new ProductRefsDAO();
+        TestItemDAO dao = new TestItemDAO();
         item = dao.insertRowBySP2(item);
         log.debug("Inserted item:"+item);
-        ProductRefs exp = dao.selectByID(item.getId());
+        TestItemDTO exp = dao.selectByID(item.getId());
         log.debug("Item selected:"+exp);
         Assert.assertTrue(item.equals(exp));
         log.trace("<<< testInsertRowBySP2");

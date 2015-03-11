@@ -15,7 +15,7 @@
  */
 package fxapp01.dao;
 
-import fxapp01.dto.ProductRefs;
+import fxapp01.dto.TestItemDTO;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 import java.io.IOException;
@@ -100,7 +100,7 @@ public class BaseDaoTest {
     public void testGetMapper() throws IOException {
         log.trace("getMapper");
         BaseDao instance = new BaseDao();
-        Object result = instance.getMapper(ProductRefsMapper.class);
+        Object result = instance.getMapper(TestItemMapper.class);
         assertNotNull(result);
     }
 
@@ -136,7 +136,7 @@ public class BaseDaoTest {
     public void testGetBeanPropertiesMapping() throws Exception {
         log.trace("getBeanPropertiesMapping");
         BaseDao instance = new BaseDao();
-        List<BeanPropertyMapping> result = instance.getBeanPropertiesMapping(ProductRefs.class);
+        List<BeanPropertyMapping> result = instance.getBeanPropertiesMapping(TestItemDTO.class);
         assertNotNull(result);
     }
 

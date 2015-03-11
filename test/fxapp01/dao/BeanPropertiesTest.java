@@ -15,7 +15,7 @@
  */
 package fxapp01.dao;
 
-import fxapp01.dto.ProductRefs;
+import fxapp01.dto.TestItemDTO;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 import java.beans.BeanInfo;
@@ -67,11 +67,11 @@ public class BeanPropertiesTest {
     public void testAddDataProperty() throws IOException, IntrospectionException {
         log.trace("addDataProperty");
         int id = 0;
-        Object bean = new ProductRefs();
+        Object bean = new TestItemDTO();
         BeanInfo beanInfo = Introspector.getBeanInfo(bean.getClass());
         PropertyDescriptor[] pds = beanInfo.getPropertyDescriptors();
-        IDataProperty property = new BeanProperty(ProductRefs.class, pds[0]);
-        BeanProperties instance = new BeanProperties(ProductRefs.class);
+        IDataProperty property = new BeanProperty(TestItemDTO.class, pds[0]);
+        BeanProperties instance = new BeanProperties(TestItemDTO.class);
         boolean result = instance.addDataProperty(id, property);
         assertTrue(result);
     }
@@ -84,7 +84,7 @@ public class BeanPropertiesTest {
     public void testGetDataProperty() throws IntrospectionException {
         log.trace("getDataProperty");
         int id = 0;
-        BeanProperties instance = new BeanProperties(ProductRefs.class);
+        BeanProperties instance = new BeanProperties(TestItemDTO.class);
         IDataProperty result = instance.getDataProperty(id);
         assertNotNull(result);
     }
@@ -96,7 +96,7 @@ public class BeanPropertiesTest {
     @Test
     public void testGetDataPropertyIds() throws IntrospectionException {
         log.trace("getDataPropertyIds");
-        BeanProperties instance = new BeanProperties(ProductRefs.class);
+        BeanProperties instance = new BeanProperties(TestItemDTO.class);
         int expResult = 3;
         Collection result = instance.getDataPropertyIds();
         assertEquals(expResult, result.size());
@@ -110,7 +110,7 @@ public class BeanPropertiesTest {
     public void testRemoveDataProperty() throws IntrospectionException {
         log.trace("removeDataProperty");
         int id = 0;
-        BeanProperties instance = new BeanProperties(ProductRefs.class);
+        BeanProperties instance = new BeanProperties(TestItemDTO.class);
         boolean result = instance.removeDataProperty(id);
         assertTrue(result);
     }
