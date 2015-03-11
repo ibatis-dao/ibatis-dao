@@ -41,15 +41,22 @@ public class DescribedBeanProperties implements IHasDescribedDataProperty{
         }
         this.beanClass = beanClass;
         //заполняем свойства на основе сведений о классе 
-        BeanInfo beanInfo = Introspector.getBeanInfo(beanClass);
-        PropertyDescriptor[] pds = beanInfo.getPropertyDescriptors();
-        beanProperties = new HashMap<>(pds.length);
+        PropertyDescriptor[] pds = getBeanPropertyDescriptors(beanClass);
+        beanProperties = new HashMap<Object,IDataProperty>((int)(pds.length/0.75), (float) 0.75);
         for (int i = 0; i < pds.length; i++) {
             beanProperties.put(i, new DescribedBeanProperty(beanClass, pds[i]));
             //log.debug(pd.getName());
         }
     }
     
+    private PropertyDescriptor[] getBeanPropertyDescriptors(Class<?> beanClass) throws IntrospectionException {
+        if (beanClass == null) {
+            throw new IllegalArgumentException("Wrong parameter beanClass (= null)");
+        }
+        //заполняем свойства на основе сведений о классе 
+        BeanInfo beanInfo = Introspector.getBeanInfo(beanClass);
+        return beanInfo.getPropertyDescriptors();
+    }
     
     /*
     implementation of interface IHasDescribedDataProperty
