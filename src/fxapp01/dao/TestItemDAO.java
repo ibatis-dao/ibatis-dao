@@ -23,6 +23,8 @@ import fxapp01.dto.TestItemQBE;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.ibatis.exceptions.PersistenceException;
 
 /**
@@ -44,7 +46,7 @@ public class TestItemDAO implements TestItemMapper{
         log.trace("<<< constructor");
     }
     
-    public int getRowCount() {
+    public int getRowCount() throws IOException {
         //log.trace(">>> getRowCount");
         if (rowRange == null) {
             rowRange = selectTotalRange();
@@ -70,163 +72,120 @@ public class TestItemDAO implements TestItemMapper{
     }
     
     @Override
-    public List<TestItemDTO> select(INestedRange rowsrange) {
+    public List<TestItemDTO> select(INestedRange rowsrange) throws IOException {
+        log.trace(">>> select");
+        BaseDao dao = new BaseDao();
         try {
-            //throw new UnsupportedOperationException("Not supported yet.");
-            log.trace(">>> select");
-            BaseDao dao = new BaseDao();
-            try {
-                TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
-                List<TestItemDTO> res = mapper.select(rowsrange);
-                log.trace("<<< select");
-                return res;
-            } catch (Exception e) {
-                log.error(null, e);
-                throw e;
-            } finally {
-                dao.closeDBSession();
-            }
-        } catch (IOException | PersistenceException ex) {
-            log.error(null, ex);
-            return null;
+            TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
+            List<TestItemDTO> res = mapper.select(rowsrange);
+            log.trace("<<< select");
+            return res;
+        } catch (Exception e) {
+            log.error(null, e);
+            throw e;
+        } finally {
+            dao.closeDBSession();
         }
     }
 
     @Override
-    public TestItemDTO selectByID(BigInteger id) {
+    public TestItemDTO selectByID(BigInteger id) throws IOException {
+        log.trace(">>> selectByID");
+        BaseDao dao = new BaseDao();
         try {
-            //throw new UnsupportedOperationException("Not supported yet.");
-            log.trace(">>> selectByID");
-            BaseDao dao = new BaseDao();
-            try {
-                TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
-                TestItemDTO res = mapper.selectByID(id);
-                log.trace("<<< selectByID");
-                return res;
-            } catch (Exception e) {
-                log.error(null, e);
-                throw e;
-            } finally {
-                dao.closeDBSession();
-            }
-        } catch (IOException | PersistenceException ex) {
-            log.error(null, ex);
-            return null;
+            TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
+            TestItemDTO res = mapper.selectByID(id);
+            log.trace("<<< selectByID");
+            return res;
+        } catch (Exception e) {
+            log.error(null, e);
+            throw e;
+        } finally {
+            dao.closeDBSession();
         }
     }
 
     @Override
-    public INestedRange selectTotalRange() {
+    public INestedRange selectTotalRange() throws IOException {
+        log.trace(">>> selectTotalRange");
+        BaseDao dao = new BaseDao();
         try {
-            //throw new UnsupportedOperationException("Not supported yet.");
-            log.trace(">>> selectTotalRange");
-            BaseDao dao = new BaseDao();
-            try {
-                TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
-                INestedRange res = mapper.selectTotalRange();
-                log.trace("<<< selectTotalRange");
-                return res;
-            } catch (Exception e) {
-                log.error(null, e);
-                throw e;
-            } finally {
-                dao.closeDBSession();
-            }
-        } catch (IOException | PersistenceException ex) {
-            log.error(null, ex);
-            return null;
+            TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
+            INestedRange res = mapper.selectTotalRange();
+            log.trace("<<< selectTotalRange");
+            return res;
+        } catch (Exception e) {
+            log.error(null, e);
+            throw e;
+        } finally {
+            dao.closeDBSession();
         }
     }
 
     @Override
-    public int insertRow(TestItemDTO item) {
+    public int insertRow(TestItemDTO item) throws IOException {
+        log.trace(">>> insertRow");
+        BaseDao dao = new BaseDao();
         try {
-            //throw new UnsupportedOperationException("Not supported yet.");
-            log.trace(">>> insertRow");
-            BaseDao dao = new BaseDao();
-            try {
-                TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
-                int res = mapper.insertRow(item);
-                dao.commit();
-                log.trace("<<< insertRow");
-                return res;
-            } catch (Exception e) {
-                log.error(null, e);
-                throw e;
-            } finally {
-                dao.closeDBSession();
-            }
-        } catch (IOException | PersistenceException ex) {
-            log.error(null, ex);
-            return 0;
+            TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
+            int res = mapper.insertRow(item);
+            dao.commit();
+            log.trace("<<< insertRow");
+            return res;
+        } catch (Exception e) {
+            log.error(null, e);
+            throw e;
+        } finally {
+            dao.closeDBSession();
         }
     }
 
     @Override
-    public TestItemDTO insertRowBySP(TestItemDTO item) {
+    public void insertRowBySP(Map<String, Object> params) throws IOException {
+        log.trace(">>> insertRowBySP");
+        BaseDao dao = new BaseDao();
         try {
-            //throw new UnsupportedOperationException("Not supported yet.");
-            log.trace(">>> insertRowBySP");
-            BaseDao dao = new BaseDao();
-            try {
-                TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
-                item = mapper.insertRowBySP(item);
-                dao.commit();
-                log.trace("<<< insertRowBySP");
-                return item;
-            } catch (Exception e) {
-                log.error(null, e);
-                throw e;
-            } finally {
-                dao.closeDBSession();
-            }
-        } catch (IOException | PersistenceException ex) {
-            log.error(null, ex);
-            return null;
+            TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
+            mapper.insertRowBySP(params);
+            dao.commit();
+            log.trace("<<< insertRowBySP");
+        } catch (Exception e) {
+            log.error(null, e);
+            throw e;
+        } finally {
+            dao.closeDBSession();
         }
     }
 
     @Override
-    public TestItemDTO insertRowBySP2(TestItemDTO item) {
+    public TestItemDTO insertRowBySP2(TestItemDTO item) throws IOException {
+        log.trace(">>> insertRowBySP2");
+        BaseDao dao = new BaseDao();
         try {
-            //throw new UnsupportedOperationException("Not supported yet.");
-            log.trace(">>> insertRowBySP2");
-            BaseDao dao = new BaseDao();
-            try {
-                TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
-                item = mapper.insertRowBySP2(item);
-                dao.commit();
-                log.trace("<<< insertRowBySP2");
-                return item;
-            } catch (Exception e) {
-                log.error(null, e);
-                throw e;
-            } finally {
-                dao.closeDBSession();
-            }
-        } catch (IOException | PersistenceException ex) {
-            log.error(null, ex);
-            return null;
+            TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
+            item = mapper.insertRowBySP2(item);
+            dao.commit();
+            log.trace("<<< insertRowBySP2");
+            return item;
+        } catch (Exception e) {
+            log.error(null, e);
+            throw e;
+        } finally {
+            dao.closeDBSession();
         }
     }
 
     @Override
-    public List<TestItemDTO> selectBE(TestItemQBE qbe) {
+    public List<TestItemDTO> selectBE(TestItemQBE qbe) throws IOException {
+        log.trace(">>> selectBE");
+        BaseDao dao = new BaseDao();
         try {
-            //throw new UnsupportedOperationException("Not supported yet.");
-            log.trace(">>> selectBE");
-            BaseDao dao = new BaseDao();
-            try {
-                TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
-                List<TestItemDTO> res = mapper.selectBE(qbe);
-                log.trace("<<< selectBE");
-                return res;
-            } finally {
-                dao.closeDBSession();
-            }
-        } catch (IOException | PersistenceException ex) {
-            log.error(null, ex);
-            return null;
+            TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
+            List<TestItemDTO> res = mapper.selectBE(qbe);
+            log.trace("<<< selectBE");
+            return res;
+        } finally {
+            dao.closeDBSession();
         }
     }
 

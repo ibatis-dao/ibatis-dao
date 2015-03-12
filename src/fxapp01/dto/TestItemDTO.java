@@ -17,6 +17,8 @@ package fxapp01.dto;
 
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Map;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -73,5 +75,25 @@ public class TestItemDTO implements Serializable {
             }
         }
     }
-
+    
+    public static Map<String, Object> toMap(TestItemDTO item) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", item.getId());
+        map.put("name", item.getName());
+        return map;
+    }
+    
+    public static TestItemDTO fromMap(Map<String, Object> map) {
+        TestItemDTO item = new TestItemDTO();
+        Object o = map.get("id");
+        BigInteger id;
+        if (o instanceof BigInteger) {
+            id = (BigInteger) o;
+        } else {
+            id = new BigInteger(o.toString());
+        }
+        item.setId(id);
+        item.setName(map.get("name").toString());
+        return item;
+    }
 }

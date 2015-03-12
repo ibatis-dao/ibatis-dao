@@ -55,6 +55,32 @@
      where id = #{id}
     </select>
     
+    <select id="selectBE" databaseId="oracle" parameterType="TestItemQBE" resultMap="TestItemMap">
+    with t001 as (
+        select i.id, i.name 
+          from lisa.tmp$items i
+        <where>
+            <if test="example.id != null and example.id != 0">
+                id = #{example.id}
+            </if>
+            <if test="example.name != null">
+                AND name like '%'||#{example.name}||'%'
+            </if>
+        </where>
+        <if test="(sortOrder != null) and (!sortOrder.toString().isEmpty())">
+        order by ${sortOrder}
+        </if>
+    )
+    select id, name
+      from (
+        select rownum as rn, 
+               id, 
+               name
+          from t001
+      )
+     where rn between #{rowsRange.first} and #{rowsRange.last}
+    </select>
+
     <select id="selectBE" databaseId="postgresql" parameterType="TestItemQBE" resultMap="TestItemMap">
     select "id", "name" 
       from public."test02" 
@@ -80,20 +106,27 @@
     end;
     </insert>
     
-    <insert id="insertRowBySP" databaseId="oracle" statementType="CALLABLE" parameterType="TestItemDTO">
-    begin 
-      TMP$ITEMS_PKG.insertData(#{id,mode=INOUT,jdbcType=BIGINT}, #{name,mode=INOUT,jdbcType=VARCHAR});
-    end;
-    </insert>
-    
     <insert id="insertRow" databaseId="postgresql" useGeneratedKeys="true" keyProperty="id" parameterType="TestItemDTO">
     insert into test02 (id, name) 
     values (DEFAULT, #{name})
     </insert>
 
+    <insert id="insertRowBySP" databaseId="oracle" statementType="CALLABLE" parameterType="java.util.HashMap">
+begin
+    TMP$ITEMS_PKG.insertData(
+        #{id,mode=OUT,jdbcType=BIGINT,javaType=BigInteger}, 
+        #{name,mode=INOUT,jdbcType=VARCHAR,javaType=java.lang.String}
+    );
+end;
+    </insert>
+    
     <select id="insertRowBySP" databaseId="postgresql" statementType="CALLABLE" parameterType="TestItemDTO" resultMap="TestItemMap">
     select * from test02_insertrow(#{id}, #{name}) as t2;
     </select>
+
+    <insert id="insertRowBySP2" databaseId="oracle" statementType="CALLABLE" parameterType="TestItemDTO">
+    begin null; end;
+    </insert>
 
     <select id="insertRowBySP2" databaseId="postgresql" statementType="CALLABLE" parameterType="TestItemDTO" resultMap="TestItemMap">
     select * from test02_insertrow2(ROW(#{id}, #{name})::test02) as t2;

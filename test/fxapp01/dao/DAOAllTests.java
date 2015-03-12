@@ -30,7 +30,13 @@ import org.junit.runners.Suite;
  * @author serg
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses( {DAOTest01.class} )
+@Suite.SuiteClasses( {
+    BaseDaoTest.class,
+    DAOTest01.class,
+    DataCacheTest01.class,
+    BeanPropertiesTest.class,
+    DescribedBeanPropertiesTest.class
+} )
 public class DAOAllTests {
 
     private ILogger log = LogMgr.getLogger(this.getClass()); 

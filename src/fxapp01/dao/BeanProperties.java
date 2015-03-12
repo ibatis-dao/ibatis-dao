@@ -64,7 +64,8 @@ public class BeanProperties implements IHasDataProperty {
     
     @Override
     public boolean addDataProperty(Object id, IDataProperty property) {
-        return (beanProperties.put(id, property) != null);
+        beanProperties.put(id, property);
+        return true;
     }
 
     @Override

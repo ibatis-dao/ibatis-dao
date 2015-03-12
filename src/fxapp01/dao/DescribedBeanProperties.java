@@ -46,7 +46,9 @@ public class DescribedBeanProperties extends BeanProperties implements IHasDescr
     */
     @Override
     public boolean addDescribedDataProperty(Object id, IDescribedDataProperty property) {
-        return (beanProperties.put(id, property) != null);
+        //log.debug("containsKey="+beanProperties.containsKey(id));
+        beanProperties.put(id, property);
+        return true;
     }
 
     @Override

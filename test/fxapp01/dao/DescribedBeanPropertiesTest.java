@@ -57,90 +57,88 @@ public class DescribedBeanPropertiesTest {
 
     /**
      * Test of addDescribedDataProperty method, of class DescribedBeanProperties.
+     * @throws java.beans.IntrospectionException
      */
     @Test
     public void testAddDescribedDataProperty() throws IntrospectionException {
         log.trace("addDescribedDataProperty");
         DescribedBeanProperties instance = new DescribedBeanProperties(TestItemDTO.class);
+        //log.debug("Properties.size="+instance.beanProperties.size());
         PropertyDescriptor[] pds = instance.getBeanPropertyDescriptors(TestItemDTO.class);
+        int expResult = pds.length+1;
         IDescribedDataProperty property = new DescribedBeanProperty(TestItemDTO.class, pds[0]);
-        boolean result = instance.addDescribedDataProperty(pds.length, property);
-        assertTrue(result);
+        instance.addDescribedDataProperty(pds.length, property);
+        int result = instance.beanProperties.size();
+        assertEquals(expResult, result);
     }
 
     /**
      * Test of getDescribedDataProperty method, of class DescribedBeanProperties.
+     * @throws java.beans.IntrospectionException
      */
     @Test
-    public void testGetDescribedDataProperty() {
+    public void testGetDescribedDataProperty() throws IntrospectionException {
         log.trace("getDescribedDataProperty");
         Object id = null;
-        DescribedBeanProperties instance = null;
-        IDescribedDataProperty expResult = null;
-        IDescribedDataProperty result = instance.getDescribedDataProperty(id);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        DescribedBeanProperties instance = new DescribedBeanProperties(TestItemDTO.class);
+        IDescribedDataProperty result = instance.getDescribedDataProperty(0);
+        assertNotNull(result);
     }
 
     /**
      * Test of addDataProperty method, of class DescribedBeanProperties.
+     * @throws java.beans.IntrospectionException
      */
     @Test
-    public void testAddDataProperty() {
+    public void testAddDataProperty() throws IntrospectionException {
         log.trace("addDataProperty");
-        Object id = null;
-        IDataProperty property = null;
-        DescribedBeanProperties instance = null;
-        boolean expResult = false;
-        boolean result = instance.addDataProperty(id, property);
+        DescribedBeanProperties instance = new DescribedBeanProperties(TestItemDTO.class);
+        PropertyDescriptor[] pds = instance.getBeanPropertyDescriptors(TestItemDTO.class);
+        IDataProperty property = new BeanProperty(TestItemDTO.class, pds[0]);
+        int expResult = pds.length+1;
+        instance.addDataProperty(pds.length, property);
+        int result = instance.beanProperties.size();
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
      * Test of getDataProperty method, of class DescribedBeanProperties.
+     * @throws java.beans.IntrospectionException
      */
     @Test
-    public void testGetDataProperty() {
+    public void testGetDataProperty() throws IntrospectionException {
         log.trace("getDataProperty");
-        Object id = null;
-        DescribedBeanProperties instance = null;
-        IDataProperty expResult = null;
-        IDataProperty result = instance.getDataProperty(id);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        DescribedBeanProperties instance = new DescribedBeanProperties(TestItemDTO.class);
+        IDataProperty result = instance.getDataProperty(0);
+        assertNotNull(result);
     }
 
     /**
      * Test of getDataPropertyIds method, of class DescribedBeanProperties.
+     * @throws java.beans.IntrospectionException
      */
     @Test
-    public void testGetDataPropertyIds() {
+    public void testGetDataPropertyIds() throws IntrospectionException {
         log.trace("getDataPropertyIds");
-        DescribedBeanProperties instance = null;
-        Collection expResult = null;
-        Collection result = instance.getDataPropertyIds();
+        DescribedBeanProperties instance = new DescribedBeanProperties(TestItemDTO.class);
+        int expResult = instance.beanProperties.size();
+        int result = instance.getDataPropertyIds().size();
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
      * Test of removeDataProperty method, of class DescribedBeanProperties.
+     * @throws java.beans.IntrospectionException
      */
     @Test
-    public void testRemoveDataProperty() {
+    public void testRemoveDataProperty() throws IntrospectionException {
         log.trace("removeDataProperty");
         Object id = null;
-        DescribedBeanProperties instance = null;
-        boolean expResult = false;
-        boolean result = instance.removeDataProperty(id);
+        DescribedBeanProperties instance = new DescribedBeanProperties(TestItemDTO.class);
+        int expResult = instance.beanProperties.size()-1;
+        instance.removeDataProperty(0);
+        int result = instance.getDataPropertyIds().size();
         assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
     
 }

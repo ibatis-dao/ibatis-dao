@@ -14,7 +14,7 @@
   <typeAliases>
     <typeAlias alias="TestItemDTO" type="fxapp01.dto.TestItemDTO"/>
     <typeAlias alias="IntRange" type="fxapp01.dto.NestedIntRange"/>
-    <typeAlias alias="TestItemDTOQBE" type="fxapp01.dto.TestItemDTOQBE"/>
+    <typeAlias alias="TestItemQBE" type="fxapp01.dto.TestItemQBE"/>
   </typeAliases>
   <environments default="development-oracle">
     <environment id="development-oracle">
