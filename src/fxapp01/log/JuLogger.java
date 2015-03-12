@@ -15,15 +15,7 @@
  */
 package fxapp01.log;
 
-//log4j
-//import org.apache.log4j.Logger;
-//import org.apache.log4j.LogManager;
-
-//slf4j
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-
-//java.util.logging
+import java.text.MessageFormat;
 import java.util.logging.Logger;
 
 
@@ -32,9 +24,6 @@ public class JuLogger implements ILogger {
     private Logger log;
     
     public JuLogger(Class<?> cls) {
-        //if (log == null) log = LoggerFactory.getLogger(cls); //slf4j
-    	//if (log == null) log = LogManager.getLogger(cls); //log4j
-    	
     	if (log == null) {
             if (cls == null) {
                 log = Logger.getAnonymousLogger();
@@ -47,13 +36,30 @@ public class JuLogger implements ILogger {
     
     @Override
     public void info(String string) {
-        log.info(string);
+        if (log.isLoggable(java.util.logging.Level.INFO)) {
+            log.info(string);
+        }
+    }
+    
+    @Override
+    public void info(String pattern, Object... arguments) {
+        if (log.isLoggable(java.util.logging.Level.INFO)) {
+            log.info(MessageFormat.format(pattern, arguments));
+        }
     }
     
     @Override
     public void trace(String string) {
-        //log.trace(string); // slf4j, log4j
-        log.finest(string); //java.util.logging
+        if (log.isLoggable(java.util.logging.Level.FINEST)) {
+            log.finest(string);
+        }
+    }
+    
+    @Override
+    public void trace(String pattern, Object... arguments) {
+        if (log.isLoggable(java.util.logging.Level.FINEST)) {
+            log.info(MessageFormat.format(pattern, arguments));
+        }
     }
     
     @Override

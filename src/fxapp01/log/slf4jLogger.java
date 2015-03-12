@@ -16,6 +16,7 @@
 package fxapp01.log;
 
 //slf4j
+import java.text.MessageFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,12 +41,30 @@ public class slf4jLogger implements ILogger {
     
     @Override
     public void info(String string) {
-        log.info(string);
+        if (log.isInfoEnabled()) {
+            log.info(string);
+        }
+    }
+    
+    @Override
+    public void info(String pattern, Object... arguments) {
+        if (log.isInfoEnabled()) {
+            log.info(MessageFormat.format(pattern, arguments));
+        }
     }
     
     @Override
     public void trace(String string) {
-        log.trace(string);
+        if (log.isTraceEnabled()) {
+            log.trace(string);
+        }
+    }
+    
+    @Override
+    public void trace(String pattern, Object... arguments) {
+        if (log.isTraceEnabled()) {
+            log.info(MessageFormat.format(pattern, arguments));
+        }
     }
     
     @Override

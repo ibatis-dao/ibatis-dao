@@ -36,6 +36,8 @@ import fxapp01.dto.NestedIntRange;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * data model for swing JTable
@@ -136,7 +138,13 @@ public class ProductRefsTblMdl extends AbstractTableModel {
         //ограничим длину запрашиваемого диапазона
         aRowsRange.setLength(Math.min(aRowsRange.getLength(), calcDataPageSize()));
         // фактически запрашиваем данные для вычисленного диапазона
-        List<TestItemDTO> l = dao.select(aRowsRange);
+        List<TestItemDTO> l;
+        try {
+            l = dao.select(aRowsRange);
+        } catch (IOException ex) {
+            log.error(null, ex);
+            l = new ArrayList<>();
+        }
         //смотрим, куда добавлять полученные данные - в начало кеша или в конец
         if (aRowsRange.getFirst() <= cacheRowsRange.getFirst()) {
             //добавляем в начало
@@ -188,7 +196,13 @@ public class ProductRefsTblMdl extends AbstractTableModel {
 
     @Override
     public int getRowCount() {
-        int rc = dao.getRowCount();
+        int rc;
+        try {
+            rc = dao.getRowCount();
+        } catch (IOException ex) {
+            log.error(null, ex);
+            rc = 0;
+        }
         outerLimits.setLength(rc);
         return rc;
     }
@@ -215,7 +229,13 @@ public class ProductRefsTblMdl extends AbstractTableModel {
 
     @Override
     public void setValueAt(Object value, int row, int column) {
-        List<TestItemDTO> l = dao.select(new NestedIntRange(row, 1, outerLimits));
+        List<TestItemDTO> l;
+        try {
+            l = dao.select(new NestedIntRange(row, 1, outerLimits));
+        } catch (IOException ex) {
+            log.error(null, ex);
+            l = new ArrayList<>();
+        }
         TestItemDTO rowData = l.get(1);
         dao.setBeanProperty(rowData, column, value);
         fireTableCellUpdated(row, column);

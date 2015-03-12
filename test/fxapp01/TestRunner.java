@@ -16,18 +16,20 @@
 package fxapp01;
 
 import fxapp01.dao.DAOAllTests;
-import fxapp01.dto.GeoLocationTest;
 import fxapp01.dto.DTOAllTests;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
+import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
+import org.junit.runners.Suite;
 
-/**
- *
- * @author serg
- */
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+    DTOAllTests.class, 
+    DAOAllTests.class
+})
 public class TestRunner {
     
     private static final ILogger log = LogMgr.getLogger(TestRunner.class); 
@@ -35,7 +37,6 @@ public class TestRunner {
     public static void main(String[] args) {
         run(DTOAllTests.class);
         run(DAOAllTests.class);
-        run(GeoLocationTest.class);
     }
     
     private static void run(Class clazz) {

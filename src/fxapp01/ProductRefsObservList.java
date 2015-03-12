@@ -33,6 +33,8 @@ import fxapp01.excpt.ENullArgument;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -139,7 +141,13 @@ public class ProductRefsObservList implements ObservableList<TestItemDTO>, IData
     public int size() {
         //**********************************************************************
         int sz = dataFacade.size();
-        int rc = dao.getRowCount();
+        int rc;
+        try {
+            rc = dao.getRowCount();
+        } catch (IOException ex) {
+            log.error(null, ex);
+            rc = 0;
+        }
         log.trace(">>> size="+sz+", RowCount="+rc);
         //return dataFacade.size();
         return rc;
@@ -265,7 +273,13 @@ public class ProductRefsObservList implements ObservableList<TestItemDTO>, IData
         if (aRowsRange == null) {
             throw new ENullArgument("fetch");
         }
-        List<TestItemDTO> l = dao.select(aRowsRange);
+        List<TestItemDTO> l;
+        try {
+            l = dao.select(aRowsRange);
+        } catch (IOException ex) {
+            log.error(null, ex);
+            l = new ArrayList<>();
+        }
         cache.addAll(pos, l);
         log.debug("cache.size="+cache.size());
         log.trace("<<< fetch");

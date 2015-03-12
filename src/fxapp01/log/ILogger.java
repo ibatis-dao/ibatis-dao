@@ -27,7 +27,11 @@ public interface ILogger {
     
     public void info(String string);
     
+    public void info(String pattern, Object... arguments);
+    
     public void trace(String string);
+    
+    public void trace(String pattern, Object... arguments);
     
     public void debug(String string);
     
