@@ -144,9 +144,9 @@ public class DAOTest01 {
         TestItemDTO item = new TestItemDTO();
         item.setName("test_"+Math.random());
         TestItemDAO dao = new TestItemDAO();
-        Map<String, Object> params = TestItemDTO.toMap(item);
-        dao.insertRowBySP(params);
-        item = TestItemDTO.fromMap(params);
+        //Map<String, Object> params = TestItemDTO.toMap(item);
+        dao.insertRowBySP(item);
+        //item = TestItemDTO.fromMap(params);
         log.debug("Inserted item:"+item);
         TestItemDTO exp = dao.selectByID(item.getId());
         log.debug("Item selected:"+exp);
@@ -160,8 +160,8 @@ public class DAOTest01 {
         TestItemDTO item = new TestItemDTO();
         item.setName("test_"+Math.random());
         TestItemDAO dao = new TestItemDAO();
-        item = dao.insertRowBySP2(item);
-        log.debug("Inserted item:"+item);
+        int cnt = dao.insertRowBySP2(item);
+        log.debug("Inserted item:"+item+", affected rows="+cnt);
         TestItemDTO exp = dao.selectByID(item.getId());
         log.debug("Item selected:"+exp);
         Assert.assertTrue(item.equals(exp));

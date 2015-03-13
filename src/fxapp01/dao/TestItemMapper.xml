@@ -111,7 +111,7 @@
     values (DEFAULT, #{name})
     </insert>
 
-    <insert id="insertRowBySP" databaseId="oracle" statementType="CALLABLE" parameterType="java.util.HashMap">
+    <insert id="insertRowBySP" databaseId="oracle" statementType="CALLABLE" parameterType="TestItemDTO">
 begin
     TMP$ITEMS_PKG.insertData(
         #{id,mode=OUT,jdbcType=BIGINT,javaType=BigInteger}, 
@@ -125,7 +125,12 @@ end;
     </select>
 
     <insert id="insertRowBySP2" databaseId="oracle" statementType="CALLABLE" parameterType="TestItemDTO">
-    begin null; end;
+    begin
+        TMP$ITEMS_PKG.insertData(
+            #{id,mode=OUT,jdbcType=BIGINT,javaType=BigInteger}, 
+            #{name,mode=INOUT,jdbcType=VARCHAR,javaType=java.lang.String}
+        );
+    end;
     </insert>
 
     <select id="insertRowBySP2" databaseId="postgresql" statementType="CALLABLE" parameterType="TestItemDTO" resultMap="TestItemMap">

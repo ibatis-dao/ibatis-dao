@@ -35,14 +35,20 @@ public interface ILogger {
     
     public void debug(String string);
     
+    public void debug(String pattern, Object... arguments);
+
     public void warn(String string);
     
     public void warn(String string, Throwable thrwbl);
     
+    public void warn(String pattern, Object... arguments);
+
     public void error(String string);
     
     public void error(String string, Throwable thrwbl);
     
+    public void error(String pattern, Object... arguments);
+
     public boolean isEnabled(ILogger.Level lvl);
     
 }

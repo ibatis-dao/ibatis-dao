@@ -29,6 +29,6 @@ public interface TestItemMapper {
     INestedRange selectTotalRange() throws IOException;
     List<TestItemDTO> selectBE(TestItemQBE qbe) throws IOException;
     int insertRow(TestItemDTO item) throws IOException;
-    void insertRowBySP(Map<String, Object> params) throws IOException;
-    TestItemDTO insertRowBySP2(TestItemDTO item) throws IOException;
+    void insertRowBySP(TestItemDTO item) throws IOException;
+    int insertRowBySP2(TestItemDTO item) throws IOException;
 }

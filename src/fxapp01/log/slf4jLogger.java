@@ -26,16 +26,14 @@ import org.slf4j.LoggerFactory;
  */
 public class slf4jLogger implements ILogger {
 
-    private Logger log;
+    private final Logger log;
     
     public slf4jLogger(Class<?> cls) {
-    	if (log == null) {
-            if (cls == null) {
-                log = LoggerFactory.getLogger("");
-            }
-            else {
-                log = LoggerFactory.getLogger(cls);
-            }
+        if (cls == null) {
+            log = LoggerFactory.getLogger("");
+        }
+        else {
+            log = LoggerFactory.getLogger(cls);
         }
     }
     
@@ -63,38 +61,68 @@ public class slf4jLogger implements ILogger {
     @Override
     public void trace(String pattern, Object... arguments) {
         if (log.isTraceEnabled()) {
-            log.info(MessageFormat.format(pattern, arguments));
+            log.trace(MessageFormat.format(pattern, arguments));
         }
     }
     
     @Override
     public void debug(String string) {
-        log.debug(string);
+        if (log.isDebugEnabled()) {
+            log.debug(string);
+        }
+    }
+    
+    @Override
+    public void debug(String pattern, Object... arguments) {
+        if (log.isDebugEnabled()) {
+            log.debug(MessageFormat.format(pattern, arguments));
+        }
     }
     
     @Override
     public void warn(String string) {
-        log.warn(string);
+        if (log.isWarnEnabled()) {
+            log.warn(string);
+        }
     }
     
     @Override
     public void warn(String string, Throwable thrwbl) {
-        log.warn(string, thrwbl);
+        if (log.isWarnEnabled()) {
+            log.warn(string, thrwbl);
+        }
+    }
+    
+    @Override
+    public void warn(String pattern, Object... arguments) {
+        if (log.isWarnEnabled()) {
+            log.warn(MessageFormat.format(pattern, arguments));
+        }
     }
     
     @Override
     public void error(String string) {
-        log.error(string);
+        if (log.isErrorEnabled()) {
+            log.error(string);
+        }
     }
     
     @Override
     public void error(String string, Throwable thrwbl) {
-        log.error(string, thrwbl);
+        if (log.isErrorEnabled()) {
+            log.error(string, thrwbl);
+        }
     }
 
     @Override
+    public void error(String pattern, Object... arguments) {
+        if (log.isErrorEnabled()) {
+            log.error(MessageFormat.format(pattern, arguments));
+        }
+    }
+    
+    @Override
     public boolean isEnabled(ILogger.Level lvl) {
-        //throw new UnsupportedOperationException("Not supported yet.");
         switch (lvl) {
             case All: return true;
             case Trace: return log.isTraceEnabled();

@@ -19,6 +19,7 @@ package fxapp01.log;
 import java.text.MessageFormat;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 
 /**
  *
@@ -26,16 +27,14 @@ import org.apache.log4j.Logger;
  */
 public class Log4jLogger implements ILogger {
 
-    private Logger log;
+    private final Logger log;
     
     public Log4jLogger(Class<?> cls) {
-    	if (log == null) {
-            if (cls == null) {
-                log = LogManager.getRootLogger();
-            }
-            else {
-                log = LogManager.getLogger(cls);
-            }
+        if (cls == null) {
+            log = LogManager.getRootLogger();
+        }
+        else {
+            log = LogManager.getLogger(cls);
         }
     }
     
@@ -63,35 +62,66 @@ public class Log4jLogger implements ILogger {
     @Override
     public void trace(String pattern, Object... arguments) {
         if (log.isTraceEnabled()) {
-            log.info(MessageFormat.format(pattern, arguments));
+            log.trace(MessageFormat.format(pattern, arguments));
         }
     }
     
     @Override
     public void debug(String string) {
-        log.debug(string);
+        if (log.isDebugEnabled()) {
+            log.debug(string);
+        }
+    }
+    
+    @Override
+    public void debug(String pattern, Object... arguments) {
+        if (log.isDebugEnabled()) {
+            log.debug(MessageFormat.format(pattern, arguments));
+        }
     }
     
     @Override
     public void warn(String string) {
-        log.warn(string);
+        if (log.isEnabledFor(Priority.WARN)) {
+            log.warn(string);
+        }
     }
     
     @Override
     public void warn(String string, Throwable thrwbl) {
-        log.warn(string, thrwbl);
+        if (log.isEnabledFor(Priority.WARN)) {
+            log.warn(string, thrwbl);
+        }
+    }
+    
+    @Override
+    public void warn(String pattern, Object... arguments) {
+        if (log.isEnabledFor(Priority.WARN)) {
+            log.warn(MessageFormat.format(pattern, arguments));
+        }
     }
     
     @Override
     public void error(String string) {
-        log.error(string);
+        if (log.isEnabledFor(Priority.ERROR)) {
+            log.error(string);
+        }
     }
     
     @Override
     public void error(String string, Throwable thrwbl) {
-        log.error(string, thrwbl);
+        if (log.isEnabledFor(Priority.ERROR)) {
+            log.error(string, thrwbl);
+        }
     }
 
+    @Override
+    public void error(String pattern, Object... arguments) {
+        if (log.isEnabledFor(Priority.ERROR)) {
+            log.error(MessageFormat.format(pattern, arguments));
+        }
+    }
+    
     private org.apache.log4j.Level convertLevel(ILogger.Level lvl) {
         switch (lvl) {
             case All: return org.apache.log4j.Level.ALL;
@@ -107,7 +137,6 @@ public class Log4jLogger implements ILogger {
 
     @Override
     public boolean isEnabled(ILogger.Level lvl) {
-        //throw new UnsupportedOperationException("Not supported yet.");
         return log.isEnabledFor(convertLevel(lvl));
     }
     
