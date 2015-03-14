@@ -51,6 +51,10 @@ public class NestedIntRange implements INestedRange<Integer> {
     private INestedRange<Integer> parentRange;
     private static final INestedRange<Integer> Singular = new SingularIntRange();
     
+    public NestedIntRange() {
+        
+    }
+    
     public NestedIntRange(Integer first, Integer length, INestedRange<Integer> parentRange) {
         init(first, length, null);
         log.trace(entering+contructorMthdName+"(first="+first+", length="+length+", parentRange="+parentRange+")");

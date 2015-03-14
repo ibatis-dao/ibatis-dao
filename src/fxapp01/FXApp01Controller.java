@@ -50,7 +50,7 @@ public class FXApp01Controller implements Initializable {
     @FXML
     private TableColumn<TestItemDTO,String> table01Column02;
     
-    private ProductRefsObservList dataOL;
+    private TestItemObservList dataOL;
     
     @FXML
     private void handleButtonAction(ActionEvent event) {
@@ -63,7 +63,7 @@ public class FXApp01Controller implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         try {
             log.trace(">>> initialize");
-            dataOL = new ProductRefsObservList();
+            dataOL = new TestItemObservList();
             if (table01 == null) {
                 log.debug("table01 == null");
                 table01 = new TableView<>(dataOL);

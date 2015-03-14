@@ -198,7 +198,7 @@ public class ProductRefsTblMdl extends AbstractTableModel {
     public int getRowCount() {
         int rc;
         try {
-            rc = dao.getRowCount();
+            rc = dao.getRowTotalRange().getLength().intValue();
         } catch (IOException ex) {
             log.error(null, ex);
             rc = 0;

@@ -16,11 +16,15 @@
 package fxapp01.dao;
 
 import fxapp01.dto.INestedRange;
+import java.io.IOException;
 
 /**
  * Интерфейс источника данных, поддерживающий их извлечение по-странично.
  * @author StarukhSA
  */
 public interface IDataRangeFetcher {
+    
+    public INestedRange getRowTotalRange() throws IOException;
+    
     void fetch(INestedRange aRowsRange, int pos);
 }

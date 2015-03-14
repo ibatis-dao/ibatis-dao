@@ -23,17 +23,14 @@ import fxapp01.dto.TestItemQBE;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import org.apache.ibatis.exceptions.PersistenceException;
 
 /**
  *
  * @author StarukhSA
  */
-public class TestItemDAO implements TestItemMapper{
+public class TestItemDAO implements TestItemMapper, IDAO<TestItemDTO>{
     
-    private static final ILogger log = LogMgr.getLogger(TestItemDAO.class);
+    private final ILogger log = LogMgr.getLogger(this.getClass());
     private INestedRange rowRange = null;
     private final ItemProperties properties;
     private int pageSize;
@@ -46,14 +43,14 @@ public class TestItemDAO implements TestItemMapper{
         log.trace("<<< constructor");
     }
     
-    public int getRowCount() throws IOException {
+    public INestedRange getRowTotalRange() throws IOException {
         //log.trace(">>> getRowCount");
         if (rowRange == null) {
             rowRange = selectTotalRange();
         }
         //пока условно считаем, что кол-во записей в таблице не меняется
         //в дальнейшем надо будет продумать, как и когда это должно обновляться
-        return rowRange.getLast().intValue();
+        return rowRange;
     }
     
     public ItemProperties getContainerProperties() {

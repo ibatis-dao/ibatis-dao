@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fxapp01;
+package fxapp01.dao;
 
-import fxapp01.dao.DataCacheReadOnly;
-import fxapp01.dao.IDataRangeFetcher;
-import fxapp01.dao.TestItemDAO;
 import fxapp01.dto.INestedRange;
+import fxapp01.excpt.ENullArgument;
+import fxapp01.log.ILogger;
+import fxapp01.log.LogMgr;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -28,46 +29,36 @@ import javafx.beans.InvalidationListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import fxapp01.dto.TestItemDTO;
-import fxapp01.excpt.ENullArgument;
-import fxapp01.log.ILogger;
-import fxapp01.log.LogMgr;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author serg
+ * @param <DTOclass>
  */
-public class ProductRefsObservList implements ObservableList<TestItemDTO>, IDataRangeFetcher {
+public class DataList<DTOclass> implements IHasData<DTOclass> {
     
-    private static final ILogger log = LogMgr.getLogger(ProductRefsObservList.class);
-    private final DataCacheReadOnly<TestItemDTO> cache;
-    private final ObservableList<TestItemDTO> dataFacade;
-    private final TestItemDAO dao;
-    private final List<ListChangeListener<? super TestItemDTO>> changeListeners;
+    protected final ILogger log = LogMgr.getLogger(this.getClass());
+    private final DataCacheReadOnly<DTOclass> cache;
+    private final ObservableList<DTOclass> dataFacade;
+    private final IDAO dao;
+    private final List<ListChangeListener<? super DTOclass>> changeListeners;
     private final List<InvalidationListener> invListeners;
 
-    public ProductRefsObservList() throws IOException {
+    public DataList(IDAO dao) throws IOException {
         log.trace(">>> constructor");
         this.changeListeners = new ArrayList<>();
         this.invListeners = new ArrayList<>();
+        this.dao = dao;
         log.debug("before new DataCacheReadOnly");
         IDataRangeFetcher dps = this; // 
         this.cache = new DataCacheReadOnly<>(dps, 20, 40);
         log.debug("before FXCollections.observableList");
         this.dataFacade = FXCollections.observableList(cache);
         log.debug("before new ProductRefsDAO");
-        this.dao = new TestItemDAO();
-        /*
-        List<ProductRefs> l = dao.select();
-        this.cache.addAll(l);
-        */
         log.debug("before requestDataPage");
         INestedRange<Integer> initRange = cache.getRange().clone();
         initRange.setLength(20);
-        dps.fetch(initRange, 0);
+        dps.fetch(initRange, cache.getLeftLimit());
         log.trace("<<< constructor");
     }
     
@@ -79,169 +70,15 @@ public class ProductRefsObservList implements ObservableList<TestItemDTO>, IData
         cache.debugPrintAll();
     }
 
-    /******************* javafx.collections.ObservableList *******************/
-    
-    /**
-     * javafx.collections.ObservableList
-     * @param elements
+    /******************* IDataRangeFetcher *******************
      * @return 
-     */
+     * @throws java.io.IOException 
+    */
     @Override
-    public boolean addAll(TestItemDTO[] elements) {
-        log.trace(">>> addAll");
-        return dataFacade.addAll(elements);
+    public INestedRange getRowTotalRange() throws IOException{
+        return dao.getRowTotalRange();
     }
-
-    @Override
-    public boolean setAll(TestItemDTO[] elements) {
-        log.trace(">>> setAll(elements[])");
-        return dataFacade.setAll(elements);
-    }
-
-    @Override
-    public boolean setAll(Collection<? extends TestItemDTO> col) {
-        log.trace(">>> setAll(Collection)");
-        return dataFacade.setAll(col);
-    }
-
-    @Override
-    public boolean removeAll(TestItemDTO[] elements) {
-        log.trace(">>> setAll(elements[])");
-        return dataFacade.removeAll(elements);
-    }
-
-    @Override
-    public boolean retainAll(TestItemDTO[] elements) {
-        log.trace(">>> retainAll(elements[])");
-        return dataFacade.retainAll(elements);
-    }
-
-    @Override
-    public void remove(int from, int to) {
-        log.trace(">>> remove(from, to)");
-        dataFacade.remove(from, to);
-    }
-
-    @Override
-    public void addListener(ListChangeListener<? super TestItemDTO> listener) {
-        //throw new UnsupportedOperationException("Not supported yet.");
-        log.trace(">>> addListener(ListChangeListener)");
-        changeListeners.add(listener);
-    }
-
-    @Override
-    public void removeListener(ListChangeListener<? super TestItemDTO> listener) {
-        //throw new UnsupportedOperationException("Not supported yet.");
-        log.trace(">>> removeListener(ListChangeListener)");
-        changeListeners.remove(listener);
-    }
-
-    /******************* java.util.List *******************/
-    @Override
-    public int size() {
-        //**********************************************************************
-        int sz = dataFacade.size();
-        int rc;
-        try {
-            rc = dao.getRowCount();
-        } catch (IOException ex) {
-            log.error(null, ex);
-            rc = 0;
-        }
-        log.trace(">>> size="+sz+", RowCount="+rc);
-        //return dataFacade.size();
-        return rc;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        log.trace(">>> isEmpty");
-        return dataFacade.isEmpty();
-    }
-
-    @Override
-    public boolean contains(Object o) {
-        log.trace(">>> contains(Object)");
-        return dataFacade.contains(o);
-    }
-
-    @Override
-    public Iterator<TestItemDTO> iterator() {
-        log.trace(">>> iterator");
-        return dataFacade.iterator();
-    }
-
-    @Override
-    public Object[] toArray() {
-        log.trace(">>> toArray");
-        return dataFacade.toArray();
-    }
-
-    @Override
-    public <T> T[] toArray(T[] a) {
-        log.trace(">>> toArray(T[] a)");
-        return dataFacade.toArray(a);
-    }
-
-    @Override
-    public boolean add(TestItemDTO e) {
-        log.trace(">>> add(ProductRefs)");
-        return dataFacade.add(e);
-    }
-
-    @Override
-    public boolean remove(Object o) {
-        log.trace(">>> remove(Object)");
-        return dataFacade.remove(o);
-    }
-
-    @Override
-    public boolean containsAll(Collection<?> c) {
-        log.trace(">>> containsAll(Collection)");
-        return dataFacade.containsAll(c);
-    }
-
-    @Override
-    public boolean addAll(Collection<? extends TestItemDTO> c) {
-        log.trace(">>> addAll(Collection)");
-        return dataFacade.addAll(c);
-    }
-
-    @Override
-    public boolean addAll(int index, Collection<? extends TestItemDTO> c) {
-        log.trace(">>> addAll(index, Collection)");
-        return dataFacade.addAll(c);
-    }
-
-    @Override
-    public boolean removeAll(Collection<?> c) {
-        log.trace(">>> removeAll(Collection)");
-        return dataFacade.removeAll(c);
-    }
-
-    @Override
-    public boolean retainAll(Collection<?> c) {
-        log.trace(">>> retainAll(Collection)");
-        return dataFacade.retainAll(c);
-    }
-
-    @Override
-    public void clear() {
-        log.trace(">>> clear");
-        dataFacade.clear();
-    }
-
-    @Override
-    public TestItemDTO get(int index) {
-        //********************************************************
-        //log.trace(">>> get(index="+index+")");
-        //индекс List всегда начинается от 0. Индекс данных начинается от нижней границы диапазона данных
-        //конвертируем индекс списка в номер строки диапазона
-        //возвращаем значение из этой строки
-        //assert(cache.containsIndex(index));
-        return cache.get(index+cache.getLeftLimit());
-    }
-
+    
     @Override
     public void fetch(INestedRange aRowsRange, int pos) {
     /* мета-описание логики работы:
@@ -273,7 +110,7 @@ public class ProductRefsObservList implements ObservableList<TestItemDTO>, IData
         if (aRowsRange == null) {
             throw new ENullArgument("fetch");
         }
-        List<TestItemDTO> l;
+        List<DTOclass> l;
         try {
             l = dao.select(aRowsRange);
         } catch (IOException ex) {
@@ -285,20 +122,183 @@ public class ProductRefsObservList implements ObservableList<TestItemDTO>, IData
         log.trace("<<< fetch");
     }
 
+    /******************* javafx.collections.ObservableList *******************/
+    
+    /**
+     * javafx.collections.ObservableList
+     * @param elements
+     * @return 
+     */
     @Override
-    public TestItemDTO set(int index, TestItemDTO element) {
+    public boolean addAll(DTOclass[] elements) {
+        log.trace(">>> addAll");
+        return dataFacade.addAll(elements);
+    }
+
+    @Override
+    public boolean setAll(DTOclass[] elements) {
+        log.trace(">>> setAll(elements[])");
+        return dataFacade.setAll(elements);
+    }
+
+    @Override
+    public boolean setAll(Collection<? extends DTOclass> col) {
+        log.trace(">>> setAll(Collection)");
+        return dataFacade.setAll(col);
+    }
+
+    @Override
+    public boolean removeAll(DTOclass[] elements) {
+        log.trace(">>> setAll(elements[])");
+        return dataFacade.removeAll(elements);
+    }
+
+    @Override
+    public boolean retainAll(DTOclass[] elements) {
+        log.trace(">>> retainAll(elements[])");
+        return dataFacade.retainAll(elements);
+    }
+
+    @Override
+    public void remove(int from, int to) {
+        log.trace(">>> remove(from, to)");
+        dataFacade.remove(from, to);
+    }
+
+    @Override
+    public void addListener(ListChangeListener<? super DTOclass> listener) {
+        //throw new UnsupportedOperationException("Not supported yet.");
+        log.trace(">>> addListener(ListChangeListener)");
+        changeListeners.add(listener);
+    }
+
+    @Override
+    public void removeListener(ListChangeListener<? super DTOclass> listener) {
+        //throw new UnsupportedOperationException("Not supported yet.");
+        log.trace(">>> removeListener(ListChangeListener)");
+        changeListeners.remove(listener);
+    }
+
+    /******************* java.util.List *******************/
+    @Override
+    public int size() {
+        //**********************************************************************
+        int sz = dataFacade.size();
+        int rc;
+        try {
+            rc = dao.getRowTotalRange().getLength().intValue();
+        } catch (IOException ex) {
+            log.error(null, ex);
+            rc = 0;
+        }
+        log.trace(">>> size="+sz+", RowCount="+rc);
+        //return dataFacade.size();
+        return rc;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        log.trace(">>> isEmpty");
+        return dataFacade.isEmpty();
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        log.trace(">>> contains(Object)");
+        return dataFacade.contains(o);
+    }
+
+    @Override
+    public Iterator<DTOclass> iterator() {
+        log.trace(">>> iterator");
+        return dataFacade.iterator();
+    }
+
+    @Override
+    public Object[] toArray() {
+        log.trace(">>> toArray");
+        return dataFacade.toArray();
+    }
+
+    @Override
+    public <T> T[] toArray(T[] a) {
+        log.trace(">>> toArray(T[] a)");
+        return dataFacade.toArray(a);
+    }
+
+    @Override
+    public boolean add(DTOclass e) {
+        log.trace(">>> add(ProductRefs)");
+        return dataFacade.add(e);
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        log.trace(">>> remove(Object)");
+        return dataFacade.remove(o);
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        log.trace(">>> containsAll(Collection)");
+        return dataFacade.containsAll(c);
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends DTOclass> c) {
+        log.trace(">>> addAll(Collection)");
+        return dataFacade.addAll(c);
+    }
+
+    @Override
+    public boolean addAll(int index, Collection<? extends DTOclass> c) {
+        log.trace(">>> addAll(index, Collection)");
+        return dataFacade.addAll(c);
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        log.trace(">>> removeAll(Collection)");
+        return dataFacade.removeAll(c);
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> c) {
+        log.trace(">>> retainAll(Collection)");
+        return dataFacade.retainAll(c);
+    }
+
+    @Override
+    public void clear() {
+        log.trace(">>> clear");
+        dataFacade.clear();
+    }
+
+    @Override
+    public DTOclass get(int index) {
+        //********************************************************
+        //log.trace(">>> get(index="+index+")");
+        //индекс List всегда начинается от 0. Индекс данных начинается от нижней границы диапазона данных
+        //конвертируем индекс списка в номер строки диапазона
+        //возвращаем значение из этой строки
+        //assert(cache.containsIndex(index));
+        return cache.get(index+cache.getLeftLimit());
+    }
+
+    @Override
+    public DTOclass set(int index, DTOclass element) {
         log.trace(">>> set(index, element)");
         return dataFacade.set(index, element);
     }
 
     @Override
-    public void add(int index, TestItemDTO element) {
+    public void add(int index, DTOclass element) {
         log.trace(">>> add(index, element)");
         dataFacade.add(index, element);
     }
 
     @Override
-    public TestItemDTO remove(int index) {
+    public DTOclass remove(int index) {
         log.trace(">>> remove(index)");
         return dataFacade.remove(index);
     }
@@ -316,19 +316,19 @@ public class ProductRefsObservList implements ObservableList<TestItemDTO>, IData
     }
 
     @Override
-    public ListIterator<TestItemDTO> listIterator() {
+    public ListIterator<DTOclass> listIterator() {
         log.trace(">>> listIterator");
         return dataFacade.listIterator();
     }
 
     @Override
-    public ListIterator<TestItemDTO> listIterator(int index) {
+    public ListIterator<DTOclass> listIterator(int index) {
         log.trace(">>> listIterator(index)");
         return dataFacade.listIterator(index);
     }
 
     @Override
-    public List<TestItemDTO> subList(int fromIndex, int toIndex) {
+    public List<DTOclass> subList(int fromIndex, int toIndex) {
         log.trace(">>> subList(fromIndex, toIndex)");
         return dataFacade.subList(fromIndex, toIndex);
     }
@@ -350,5 +350,4 @@ public class ProductRefsObservList implements ObservableList<TestItemDTO>, IData
         log.trace(">>> removeListener(InvalidationListener)");
         invListeners.remove(listener);
     }
-
 }

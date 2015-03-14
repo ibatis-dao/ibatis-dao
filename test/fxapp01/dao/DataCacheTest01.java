@@ -15,7 +15,7 @@
  */
 package fxapp01.dao;
 
-import fxapp01.ProductRefsObservList;
+import fxapp01.TestItemObservList;
 import fxapp01.dto.TestItemDTO;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
@@ -56,7 +56,7 @@ public class DataCacheTest01 {
     @Test
     public void testProductRefsObservList() throws IOException {
         log.trace(">>> testProductRefsObservList");
-        ProductRefsObservList pl = new ProductRefsObservList();
+        TestItemObservList pl = new TestItemObservList();
         TestItemDTO p;
         log.debug("p(0). "+pl.get(0).toString());
         //Oracle - при первом шаге фактически читается не 20 записей, 

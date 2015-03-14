@@ -25,8 +25,6 @@ import org.apache.ibatis.session.SqlSession;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.parsing.XNode;

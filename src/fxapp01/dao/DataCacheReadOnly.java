@@ -21,6 +21,7 @@ import fxapp01.excpt.EArgumentBreaksRule;
 import fxapp01.excpt.ENullArgument;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -46,7 +47,7 @@ public class DataCacheReadOnly<T> implements List<T> {
     private int maxSize;
     private final List<T> data;
     
-    public DataCacheReadOnly(IDataRangeFetcher dataFetcher) {
+    public DataCacheReadOnly(IDataRangeFetcher dataFetcher) throws IOException {
         String methodName = "constructor(dataFetcher)";
         log.trace(entering+methodName);
         if (dataFetcher == null) {
@@ -57,12 +58,12 @@ public class DataCacheReadOnly<T> implements List<T> {
         this.maxSize = 300;
         this.data = new ArrayList<>();
         log.debug("before new IntRange");
-        this.outerLimits = new NestedIntRange(0, Integer.MAX_VALUE, null); 
-        this.range = new NestedIntRange(0, 0, this.outerLimits); 
+        this.outerLimits = dataFetcher.getRowTotalRange(); 
+        this.range = new NestedIntRange(outerLimits.getFirst(), 0, outerLimits); 
         log.trace(exiting+methodName);
     }
     
-    public DataCacheReadOnly(IDataRangeFetcher dataFetcher, int defSize, int maxSize) {
+    public DataCacheReadOnly(IDataRangeFetcher dataFetcher, int defSize, int maxSize) throws IOException {
         this(dataFetcher);
         String methodName = "constructor(dataFetcher, defSize, maxSize)";
         log.trace(entering+methodName);

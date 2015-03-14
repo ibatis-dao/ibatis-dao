@@ -10,12 +10,12 @@
 
     <select id="selectTotalRange" databaseId="oracle" resultType="IntRange">
         <!-- database specific minimum number of row and rows count -->
-    select 1 as first, count(i.id) as last from lisa.tmp$items i
+    select 1 as first, count(i.id) as length from lisa.tmp$items i
     </select>
     
     <select id="selectTotalRange" databaseId="postgresql" resultType="IntRange">
         <!-- database specific minimum number of row and rows count -->
-    select 0 "first", count(id) "last" from public."test02"
+    select 0 "first", count(id)-1 "length" from public."test02"
     </select>
     
     <select id="select" databaseId="postgresql" parameterType="IntRange" resultMap="TestItemMap">
