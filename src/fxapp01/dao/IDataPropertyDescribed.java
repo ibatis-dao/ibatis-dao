@@ -22,7 +22,7 @@ import java.util.Enumeration;
  *
  * @author serg
  */
-public interface IDescribedDataProperty extends IDataProperty {
+public interface IDataPropertyDescribed extends IDataProperty {
     /*
     * Gets the name (usually short "programmatic", non localizable) of the Property.
     */

@@ -26,9 +26,9 @@ import java.beans.PropertyDescriptor;
  *
  * @author serg
  */
-public class DescribedBeanProperties extends BeanProperties implements IHasDescribedDataProperty {
+public class BeanPropertiesDescribed extends BeanProperties implements IHasDataPropertyDescribed {
 
-    public DescribedBeanProperties(Class<?> beanClass) throws IntrospectionException {
+    public BeanPropertiesDescribed(Class<?> beanClass) throws IntrospectionException {
         super(beanClass);
     }
     
@@ -36,23 +36,23 @@ public class DescribedBeanProperties extends BeanProperties implements IHasDescr
     protected void addAllBeanProperties(PropertyDescriptor[] pds) {
         //заполняем свойства на основе сведений о классе 
         for (int i = 0; i < pds.length; i++) {
-            beanProperties.put(i, new DescribedBeanProperty(beanClass, pds[i]));
+            beanProperties.put(i, new BeanPropertyDescribed(beanClass, pds[i]));
             log.debug(pds[i].getName());
         }
     }
     
     /*
-    implementation of interface IHasDescribedDataProperty
+    implementation of interface IHasDataPropertyDescribed
     */
     @Override
-    public boolean addDescribedDataProperty(Object id, IDescribedDataProperty property) {
+    public boolean addDescribedDataProperty(Object id, IDataPropertyDescribed property) {
         //log.debug("containsKey="+beanProperties.containsKey(id));
         beanProperties.put(id, property);
         return true;
     }
 
     @Override
-    public IDescribedDataProperty getDescribedDataProperty(Object id) {
+    public IDataPropertyDescribed getDescribedDataProperty(Object id) {
         //извлекаем "базовое" свойство по его ID
         IDataProperty dp = beanProperties.get(id);
         if (dp == null) {
@@ -60,11 +60,11 @@ public class DescribedBeanProperties extends BeanProperties implements IHasDescr
             return null;
         } else {
             //если свойство найдено
-            if (dp instanceof IDescribedDataProperty) {
-                //если свойство можно реализует интерфейс IDescribedDataProperty
-                return (IDescribedDataProperty)dp;
+            if (dp instanceof IDataPropertyDescribed) {
+                //если свойство можно реализует интерфейс IDataPropertyDescribed
+                return (IDataPropertyDescribed)dp;
             } else {
-                //свойство не реализует интерфейс IDescribedDataProperty. возвращаем null
+                //свойство не реализует интерфейс IDataPropertyDescribed. возвращаем null
                 return null;
             }
         }    

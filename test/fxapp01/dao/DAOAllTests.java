@@ -35,7 +35,7 @@ import org.junit.runners.Suite;
     DAOTest01.class,
     DataCacheTest01.class,
     BeanPropertiesTest.class,
-    DescribedBeanPropertiesTest.class
+    BeanPropertiesDescribedTest.class
 } )
 public class DAOAllTests {
 

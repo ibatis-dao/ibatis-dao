@@ -26,14 +26,14 @@ import java.util.Enumeration;
  *
  * @author serg
  */
-public class DescribedBeanProperty implements IDescribedDataProperty {
+public class BeanPropertyDescribed implements IDataPropertyDescribed {
 
-    private static final ILogger log = LogMgr.getLogger(DescribedBeanProperty.class);
+    private static final ILogger log = LogMgr.getLogger(BeanPropertyDescribed.class);
     private final Class<?> beanClass;
     private final PropertyDescriptor pd;
     private boolean isReadOnly;
 
-    public DescribedBeanProperty(Class<?> beanClass, PropertyDescriptor pd) {
+    public BeanPropertyDescribed(Class<?> beanClass, PropertyDescriptor pd) {
         //throw new UnsupportedOperationException("Not supported yet.");
         if (beanClass == null) {
             throw new IllegalArgumentException("Wrong parameter beanClass (= null)");
@@ -80,7 +80,7 @@ public class DescribedBeanProperty implements IDescribedDataProperty {
     }
     
     /*
-    implementation of interface IDescribedDataProperty
+    implementation of interface IDataPropertyDescribed
     */
     @Override
     public String getName() {

@@ -19,21 +19,16 @@ package fxapp01.dao;
  *
  * @author serg
  */
-public enum SqlDialect {
-    Oracle("Oracle", "7"),
-    PostgreSQL("PostgreSQL", "9");
+public interface IHasDataPropertyDescribed extends IHasDataProperty {
     
-    private final String dialect;
-    private final String version;
-            
-    private SqlDialect(String dialect, String version) {
-        this.dialect = dialect;
-        this.version = version;
-    }
-    
-    @Override
-    public String toString(){
-        return dialect;
-    }
+    /*
+    * Tries to add a new Property into the Item.
+    */
+    boolean addDescribedDataProperty(Object id, IDataPropertyDescribed property);
+
+    /*
+    * Gets the Property corresponding to the given Property ID stored in the Item.
+    */
+    IDataPropertyDescribed getDescribedDataProperty(Object id);
 
 }

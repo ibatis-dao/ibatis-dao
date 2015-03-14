@@ -21,7 +21,6 @@ import java.util.List;
 import fxapp01.dto.TestItemDTO;
 import fxapp01.dto.TestItemQBE;
 import java.io.IOException;
-import java.util.Map;
 
 public interface TestItemMapper {
     List<TestItemDTO> select(INestedRange rowsrange) throws IOException;
@@ -29,6 +28,6 @@ public interface TestItemMapper {
     INestedRange selectTotalRange() throws IOException;
     List<TestItemDTO> selectBE(TestItemQBE qbe) throws IOException;
     int insertRow(TestItemDTO item) throws IOException;
-    void insertRowBySP(TestItemDTO item) throws IOException;
+    int insertRowBySP(TestItemDTO item) throws IOException;
     int insertRowBySP2(TestItemDTO item) throws IOException;
 }

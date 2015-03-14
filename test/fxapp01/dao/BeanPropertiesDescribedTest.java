@@ -32,11 +32,11 @@ import static org.junit.Assert.*;
  *
  * @author serg
  */
-public class DescribedBeanPropertiesTest {
+public class BeanPropertiesDescribedTest {
     
     private final ILogger log = LogMgr.getLogger(this.getClass()); 
 
-    public DescribedBeanPropertiesTest() {
+    public BeanPropertiesDescribedTest() {
     }
     
     @BeforeClass
@@ -56,43 +56,43 @@ public class DescribedBeanPropertiesTest {
     }
 
     /**
-     * Test of addDescribedDataProperty method, of class DescribedBeanProperties.
+     * Test of addDescribedDataProperty method, of class BeanPropertiesDescribed.
      * @throws java.beans.IntrospectionException
      */
     @Test
     public void testAddDescribedDataProperty() throws IntrospectionException {
         log.trace("addDescribedDataProperty");
-        DescribedBeanProperties instance = new DescribedBeanProperties(TestItemDTO.class);
+        BeanPropertiesDescribed instance = new BeanPropertiesDescribed(TestItemDTO.class);
         //log.debug("Properties.size="+instance.beanProperties.size());
         PropertyDescriptor[] pds = instance.getBeanPropertyDescriptors(TestItemDTO.class);
         int expResult = pds.length+1;
-        IDescribedDataProperty property = new DescribedBeanProperty(TestItemDTO.class, pds[0]);
+        IDataPropertyDescribed property = new BeanPropertyDescribed(TestItemDTO.class, pds[0]);
         instance.addDescribedDataProperty(pds.length, property);
         int result = instance.beanProperties.size();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of getDescribedDataProperty method, of class DescribedBeanProperties.
+     * Test of getDescribedDataProperty method, of class BeanPropertiesDescribed.
      * @throws java.beans.IntrospectionException
      */
     @Test
     public void testGetDescribedDataProperty() throws IntrospectionException {
         log.trace("getDescribedDataProperty");
         Object id = null;
-        DescribedBeanProperties instance = new DescribedBeanProperties(TestItemDTO.class);
-        IDescribedDataProperty result = instance.getDescribedDataProperty(0);
+        BeanPropertiesDescribed instance = new BeanPropertiesDescribed(TestItemDTO.class);
+        IDataPropertyDescribed result = instance.getDescribedDataProperty(0);
         assertNotNull(result);
     }
 
     /**
-     * Test of addDataProperty method, of class DescribedBeanProperties.
+     * Test of addDataProperty method, of class BeanPropertiesDescribed.
      * @throws java.beans.IntrospectionException
      */
     @Test
     public void testAddDataProperty() throws IntrospectionException {
         log.trace("addDataProperty");
-        DescribedBeanProperties instance = new DescribedBeanProperties(TestItemDTO.class);
+        BeanPropertiesDescribed instance = new BeanPropertiesDescribed(TestItemDTO.class);
         PropertyDescriptor[] pds = instance.getBeanPropertyDescriptors(TestItemDTO.class);
         IDataProperty property = new BeanProperty(TestItemDTO.class, pds[0]);
         int expResult = pds.length+1;
@@ -102,39 +102,39 @@ public class DescribedBeanPropertiesTest {
     }
 
     /**
-     * Test of getDataProperty method, of class DescribedBeanProperties.
+     * Test of getDataProperty method, of class BeanPropertiesDescribed.
      * @throws java.beans.IntrospectionException
      */
     @Test
     public void testGetDataProperty() throws IntrospectionException {
         log.trace("getDataProperty");
-        DescribedBeanProperties instance = new DescribedBeanProperties(TestItemDTO.class);
+        BeanPropertiesDescribed instance = new BeanPropertiesDescribed(TestItemDTO.class);
         IDataProperty result = instance.getDataProperty(0);
         assertNotNull(result);
     }
 
     /**
-     * Test of getDataPropertyIds method, of class DescribedBeanProperties.
+     * Test of getDataPropertyIds method, of class BeanPropertiesDescribed.
      * @throws java.beans.IntrospectionException
      */
     @Test
     public void testGetDataPropertyIds() throws IntrospectionException {
         log.trace("getDataPropertyIds");
-        DescribedBeanProperties instance = new DescribedBeanProperties(TestItemDTO.class);
+        BeanPropertiesDescribed instance = new BeanPropertiesDescribed(TestItemDTO.class);
         int expResult = instance.beanProperties.size();
         int result = instance.getDataPropertyIds().size();
         assertEquals(expResult, result);
     }
 
     /**
-     * Test of removeDataProperty method, of class DescribedBeanProperties.
+     * Test of removeDataProperty method, of class BeanPropertiesDescribed.
      * @throws java.beans.IntrospectionException
      */
     @Test
     public void testRemoveDataProperty() throws IntrospectionException {
         log.trace("removeDataProperty");
         Object id = null;
-        DescribedBeanProperties instance = new DescribedBeanProperties(TestItemDTO.class);
+        BeanPropertiesDescribed instance = new BeanPropertiesDescribed(TestItemDTO.class);
         int expResult = instance.beanProperties.size()-1;
         instance.removeDataProperty(0);
         int result = instance.getDataPropertyIds().size();

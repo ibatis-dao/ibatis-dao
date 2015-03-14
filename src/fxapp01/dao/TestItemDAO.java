@@ -141,14 +141,15 @@ public class TestItemDAO implements TestItemMapper{
     }
 
     @Override
-    public void insertRowBySP(TestItemDTO item) throws IOException {
+    public int insertRowBySP(TestItemDTO item) throws IOException {
         log.trace(">>> insertRowBySP");
         BaseDao dao = new BaseDao();
         try {
             TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
-            mapper.insertRowBySP(item);
+            int res = mapper.insertRowBySP(item);
             dao.commit();
             log.trace("<<< insertRowBySP");
+            return res;
         } catch (Exception e) {
             log.error(null, e);
             throw e;

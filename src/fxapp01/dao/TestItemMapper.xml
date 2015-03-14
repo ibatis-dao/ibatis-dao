@@ -112,17 +112,23 @@
     </insert>
 
     <insert id="insertRowBySP" databaseId="oracle" statementType="CALLABLE" parameterType="TestItemDTO">
-begin
-    TMP$ITEMS_PKG.insertData(
-        #{id,mode=OUT,jdbcType=BIGINT,javaType=BigInteger}, 
-        #{name,mode=INOUT,jdbcType=VARCHAR,javaType=java.lang.String}
-    );
-end;
+    begin
+        TMP$ITEMS_PKG.insertData(
+            #{id,mode=OUT,jdbcType=BIGINT,javaType=BigInteger}, 
+            #{name,mode=INOUT,jdbcType=VARCHAR,javaType=java.lang.String}
+        );
+    end;
     </insert>
     
+    <!--
     <select id="insertRowBySP" databaseId="postgresql" statementType="CALLABLE" parameterType="TestItemDTO" resultMap="TestItemMap">
     select * from test02_insertrow(#{id}, #{name}) as t2;
     </select>
+    -->
+    
+    <insert id="insertRowBySP" databaseId="postgresql" statementType="CALLABLE" parameterType="TestItemDTO">
+    {#{id,mode=OUT,jdbcType=NUMERIC,javaType=BigInteger} = call test02_insertrow(null, #{name}) } 
+    </insert>
 
     <insert id="insertRowBySP2" databaseId="oracle" statementType="CALLABLE" parameterType="TestItemDTO">
     begin
@@ -133,9 +139,15 @@ end;
     end;
     </insert>
 
+    <!--
     <select id="insertRowBySP2" databaseId="postgresql" statementType="CALLABLE" parameterType="TestItemDTO" resultMap="TestItemMap">
     select * from test02_insertrow2(ROW(#{id}, #{name})::test02) as t2;
     </select>
+    -->
+
+    <insert id="insertRowBySP2" databaseId="postgresql" statementType="CALLABLE" parameterType="TestItemDTO">
+    {#{id,mode=OUT,jdbcType=NUMERIC,javaType=BigInteger} = call test02_insertrow2(ROW(null, #{name})::test02) } 
+    </insert>
     <!--  
 
 select * from test02_insertrow(#{id}, #{name}) as t2;    

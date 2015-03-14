@@ -25,10 +25,8 @@ import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -150,7 +148,7 @@ public class DAOTest01 {
         log.debug("Inserted item:"+item);
         TestItemDTO exp = dao.selectByID(item.getId());
         log.debug("Item selected:"+exp);
-        Assert.assertTrue(item.equals(exp));
+        Assert.assertTrue(item.getName().equals(exp.getName()));
         log.trace("<<< testInsertRowBySP");
     }
     
