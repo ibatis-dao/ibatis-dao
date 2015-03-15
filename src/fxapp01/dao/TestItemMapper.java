@@ -30,4 +30,6 @@ public interface TestItemMapper {
     int insertRow(TestItemDTO item) throws IOException;
     int insertRowBySP(TestItemDTO item) throws IOException;
     int insertRowBySP2(TestItemDTO item) throws IOException;
+    int updateRow(TestItemDTO item) throws IOException;
+    int deleteRow(TestItemDTO item) throws IOException;
 }

@@ -32,7 +32,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses( {
     BaseDaoTest.class,
-    DAOTest01.class,
+    TestItemDAOIT.class,
     DataCacheTest01.class,
     BeanPropertiesTest.class,
     BeanPropertiesDescribedTest.class

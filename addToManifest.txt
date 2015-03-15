@@ -1,0 +1,5 @@
+# http://stackoverflow.com/questions/19659134/how-do-i-fix-missing-codebase-permissions-and-application-name-manifest-attri/20501377#20501377
+Permissions: all-permissions
+Codebase: http://127.0.0.1/dist
+Application-Name: My Application
+

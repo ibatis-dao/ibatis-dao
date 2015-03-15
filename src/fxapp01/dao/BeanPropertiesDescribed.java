@@ -15,11 +15,7 @@
  */
 package fxapp01.dao;
 
-import fxapp01.log.ILogger;
-import fxapp01.log.LogMgr;
-import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
-import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 
 /**

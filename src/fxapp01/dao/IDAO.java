@@ -26,7 +26,7 @@ import java.util.List;
  */
 public interface IDAO<DTOclass> {
     
-    public ItemProperties getContainerProperties();
+    public BeanProperties getBeanProperties();
     
     public INestedRange getRowTotalRange() throws IOException;
     

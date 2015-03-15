@@ -19,9 +19,9 @@
     </select>
     
     <select id="select" databaseId="postgresql" parameterType="IntRange" resultMap="TestItemMap">
-    select "id", "name" 
-      from public."test02" 
-     order by "id" 
+    select id, name
+      from test02
+     order by id
     offset #{first} limit #{length}
     </select>
 
@@ -44,14 +44,14 @@
 
     <select id="selectByID" databaseId="oracle" parameterType="BigInteger" resultMap="TestItemMap">
     select i.id, i.name
-      from lisa.tmp$items i
+      from tmp$items i
      where i.id = #{id}
     </select>
     
     <select id="selectByID" databaseId="postgresql" parameterType="BigInteger" resultMap="TestItemMap">
     select id, 
            name 
-      from public."test02"
+      from test02
      where id = #{id}
     </select>
     
@@ -82,8 +82,8 @@
     </select>
 
     <select id="selectBE" databaseId="postgresql" parameterType="TestItemQBE" resultMap="TestItemMap">
-    select "id", "name" 
-      from public."test02" 
+    select id, name
+      from test02
         <where>
             <if test="example.id != null and example.id != 0">
                 id = #{example.id}
@@ -100,7 +100,7 @@
 
     <insert id="insertRow" databaseId="oracle" statementType="CALLABLE" parameterType="TestItemDTO">
     begin 
-      insert into lisa.tmp$items(id, name) 
+      insert into tmp$items(id, name) 
       values (tmp$items_sq.nextval, #{name})
       returning id into #{id,mode=OUT,jdbcType=BIGINT}; 
     end;
@@ -148,6 +148,36 @@
     <insert id="insertRowBySP2" databaseId="postgresql" statementType="CALLABLE" parameterType="TestItemDTO">
     {#{id,mode=OUT,jdbcType=NUMERIC,javaType=BigInteger} = call test02_insertrow2(ROW(null, #{name})::test02) } 
     </insert>
+    
+    <update id="updateRow" databaseId="postgresql" statementType="CALLABLE" parameterType="TestItemDTO">
+    update test02 
+       set name = #{name}
+     where id = #{id}
+    </update>
+
+    <update id="updateRow" databaseId="oracle" statementType="CALLABLE" parameterType="TestItemDTO">
+    begin
+        TMP$ITEMS_PKG.updateData(
+            #{id,mode=INOUT,jdbcType=BIGINT,javaType=BigInteger}, 
+            #{name,mode=INOUT,jdbcType=VARCHAR,javaType=java.lang.String}
+        );
+    end;
+    </update>
+    
+    <delete id="deleteRow" databaseId="postgresql" statementType="CALLABLE" parameterType="TestItemDTO">
+    delete from test02 
+     where id = #{id}
+    </delete>
+
+    <delete id="deleteRow" databaseId="oracle" statementType="CALLABLE" parameterType="TestItemDTO">
+    begin
+        TMP$ITEMS_PKG.deleteData(
+            #{id,mode=INOUT,jdbcType=BIGINT,javaType=BigInteger}
+        );
+    end;
+    </delete>
+    
+
     <!--  
 
 select * from test02_insertrow(#{id}, #{name}) as t2;    

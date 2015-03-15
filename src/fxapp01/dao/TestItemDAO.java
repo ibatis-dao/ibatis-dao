@@ -22,7 +22,9 @@ import fxapp01.dto.TestItemDTO;
 import fxapp01.dto.TestItemQBE;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
+import java.beans.IntrospectionException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  *
@@ -32,19 +34,47 @@ public class TestItemDAO implements TestItemMapper, IDAO<TestItemDTO>{
     
     private final ILogger log = LogMgr.getLogger(this.getClass());
     private INestedRange rowRange = null;
-    private final ItemProperties properties;
+    private final BeanPropertiesDescribed beanProperties;
     private int pageSize;
     
-    public TestItemDAO() throws IOException {
+    public TestItemDAO() throws IOException, IntrospectionException {
         log.trace(">>> constructor");
         BaseDao dao = new BaseDao();
         List<BeanPropertyMapping> beanPropertiesMap = dao.getBeanPropertiesMapping(TestItemDTO.class);
-        properties = new ItemProperties(beanPropertiesMap);
+        beanProperties = new BeanPropertiesDescribed(TestItemDTO.class);
         log.trace("<<< constructor");
     }
     
+    @Override
+    public BeanProperties getBeanProperties() {
+        log.trace(">>> getBeanProperties");
+        return beanProperties;
+    }
+    
+    public Object getBeanPropertyValue(Object bean, int propIndex) throws InvocationTargetException, IllegalAccessException {
+        log.trace(">>> getBeanProperty");
+        IDataProperty dp = beanProperties.getDataProperty(propIndex);
+        if (dp != null) {
+            return dp.getValue(bean);
+        } else {
+            throw new IllegalArgumentException("No data property found for index "+propIndex);
+        }
+    }
+    
+    public void setBeanPropertyValue(Object bean, int propIndex, Object propValue) throws InvocationTargetException, IllegalAccessException {
+        log.trace(">>> setBeanProperty");
+        IDataProperty dp = beanProperties.getDataProperty(propIndex);
+        if (dp != null) {
+            dp.setValue(bean, propValue);
+        } else {
+            throw new IllegalArgumentException("No data property found for index "+propIndex);
+        }
+    }
+    
+    @Override
     public INestedRange getRowTotalRange() throws IOException {
         //log.trace(">>> getRowCount");
+        //TODO сделать обновление диапазона
         if (rowRange == null) {
             rowRange = selectTotalRange();
         }
@@ -53,21 +83,23 @@ public class TestItemDAO implements TestItemMapper, IDAO<TestItemDTO>{
         return rowRange;
     }
     
-    public ItemProperties getContainerProperties() {
-        log.trace(">>> getContainerProperties");
-        return properties;
+    @Override
+    public INestedRange selectTotalRange() throws IOException {
+        log.trace(">>> selectTotalRange");
+        BaseDao dao = new BaseDao();
+        try {
+            TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
+            INestedRange res = mapper.selectTotalRange();
+            log.trace("<<< selectTotalRange");
+            return res;
+        } catch (Exception e) {
+            log.error(null, e);
+            throw e;
+        } finally {
+            dao.closeDBSession();
+        }
     }
-    
-    public Object getBeanProperty(Object bean, int propIndex) {
-        log.trace(">>> getBeanProperty");
-        return properties.getBeanProperty(bean, propIndex);
-    }
-    
-    public void setBeanProperty(Object bean, int propIndex, Object propValue) {
-        log.trace(">>> setBeanProperty");
-        properties.setBeanProperty(bean, propIndex, propValue);
-    }
-    
+
     @Override
     public List<TestItemDTO> select(INestedRange rowsrange) throws IOException {
         log.trace(">>> select");
@@ -103,17 +135,14 @@ public class TestItemDAO implements TestItemMapper, IDAO<TestItemDTO>{
     }
 
     @Override
-    public INestedRange selectTotalRange() throws IOException {
-        log.trace(">>> selectTotalRange");
+    public List<TestItemDTO> selectBE(TestItemQBE qbe) throws IOException {
+        log.trace(">>> selectBE");
         BaseDao dao = new BaseDao();
         try {
             TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
-            INestedRange res = mapper.selectTotalRange();
-            log.trace("<<< selectTotalRange");
+            List<TestItemDTO> res = mapper.selectBE(qbe);
+            log.trace("<<< selectBE");
             return res;
-        } catch (Exception e) {
-            log.error(null, e);
-            throw e;
         } finally {
             dao.closeDBSession();
         }
@@ -174,14 +203,36 @@ public class TestItemDAO implements TestItemMapper, IDAO<TestItemDTO>{
     }
 
     @Override
-    public List<TestItemDTO> selectBE(TestItemQBE qbe) throws IOException {
-        log.trace(">>> selectBE");
+    public int updateRow(TestItemDTO item) throws IOException {
+        log.trace(">>> updateRow");
         BaseDao dao = new BaseDao();
         try {
             TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
-            List<TestItemDTO> res = mapper.selectBE(qbe);
-            log.trace("<<< selectBE");
+            int res = mapper.updateRow(item);
+            dao.commit();
+            log.trace("<<< updateRow");
             return res;
+        } catch (Exception e) {
+            log.error(null, e);
+            throw e;
+        } finally {
+            dao.closeDBSession();
+        }
+    }
+
+    @Override
+    public int deleteRow(TestItemDTO item) throws IOException {
+        log.trace(">>> deleteRow");
+        BaseDao dao = new BaseDao();
+        try {
+            TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
+            int res = mapper.deleteRow(item);
+            dao.commit();
+            log.trace("<<< deleteRow");
+            return res;
+        } catch (Exception e) {
+            log.error(null, e);
+            throw e;
         } finally {
             dao.closeDBSession();
         }

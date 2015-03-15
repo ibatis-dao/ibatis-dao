@@ -166,7 +166,7 @@ public class ProductRefsTblMdl extends AbstractTableModel {
         //проверяем, находится ли строка в пределах диапазона
         if (cacheRowsRange.IsInbound(row)) {
             //если да, то возвращаем значение из этой строки
-            return dao.getBeanProperty(row, column);
+            return dao.getBeanPropertyValue(row, column);
         } else {
             //если строка за пределами диапазона
             //проверяем прилегающий диапазон слева
@@ -191,7 +191,7 @@ public class ProductRefsTblMdl extends AbstractTableModel {
         //проверяем, находится ли теперь строка в пределах диапазона
         assert(cacheRowsRange.IsInbound(row));
         //возвращаем значение из этой строки
-        return dao.getBeanProperty(row, column);
+        return dao.getBeanPropertyValue(row, column);
     }
 
     @Override
@@ -237,7 +237,7 @@ public class ProductRefsTblMdl extends AbstractTableModel {
             l = new ArrayList<>();
         }
         TestItemDTO rowData = l.get(1);
-        dao.setBeanProperty(rowData, column, value);
+        dao.setBeanPropertyValue(rowData, column, value);
         fireTableCellUpdated(row, column);
     }
 

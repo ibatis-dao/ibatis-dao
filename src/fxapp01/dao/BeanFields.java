@@ -26,17 +26,16 @@ import fxapp01.log.LogMgr;
  *
  * @author serg
  */
-public class ItemProperties {
+public class BeanFields {
     
-    private static ILogger log;
+    private final ILogger log = LogMgr.getLogger(this.getClass());
     private List<BeanPropertyMapping> beanPropertiesMap;
     
-    public ItemProperties(List<BeanPropertyMapping> beanPropertiesMap) {
+    public BeanFields(List<BeanPropertyMapping> beanPropertiesMap) {
         if (beanPropertiesMap == null) {
             throw new IllegalArgumentException("Wrong parameter beanPropertiesMap (= null)");
         }
         this.beanPropertiesMap = beanPropertiesMap;
-        log = LogMgr.getLogger(this.getClass());
     }
     
     public BeanPropertyMapping get(int propIndex) {
@@ -64,8 +63,8 @@ public class ItemProperties {
         }
     }
 
-    public Object getBeanProperty(Object bean, int propIndex) {
-        Field f = getBeanField(bean, propIndex);
+    public Object getBeanFieldValue(Object bean, int fldIndex) {
+        Field f = getBeanField(bean, fldIndex);
         try {
             return f.get(bean);
         } catch (IllegalArgumentException | IllegalAccessException ex) {
@@ -74,8 +73,8 @@ public class ItemProperties {
         return null;
     }
 
-    public void setBeanProperty(Object bean, int propIndex, Object propValue) {
-        Field f = getBeanField(bean, propIndex);
+    public void sgetBeanFieldValue(Object bean, int fldIndex, Object propValue) {
+        Field f = getBeanField(bean, fldIndex);
         try {
             f.set(bean, propValue);
         } catch (IllegalArgumentException | IllegalAccessException ex) {

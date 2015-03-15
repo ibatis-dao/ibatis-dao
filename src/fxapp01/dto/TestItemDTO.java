@@ -15,6 +15,7 @@
  */
 package fxapp01.dto;
 
+import fxapp01.dao.IHasID;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.HashMap;
@@ -24,7 +25,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-public class TestItemDTO implements Serializable {
+public class TestItemDTO implements Serializable, IHasID<BigInteger> {
 
     private static final long serialVersionUID = 8030875135429404808L;
     /*
