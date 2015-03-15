@@ -63,7 +63,7 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
     }
     
     public List<String> getColumnNames() {
-        return dao.getContainerProperties().getColumnNames();
+        return dao.getColumnNames();
     }
     
     public void debugPrintAll() {

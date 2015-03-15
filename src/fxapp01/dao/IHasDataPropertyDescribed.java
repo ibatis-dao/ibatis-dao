@@ -30,5 +30,5 @@ public interface IHasDataPropertyDescribed extends IHasDataProperty {
     * Gets the Property corresponding to the given Property ID stored in the Item.
     */
     IDataPropertyDescribed getDescribedDataProperty(Object id);
-
+    
 }

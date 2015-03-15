@@ -199,8 +199,7 @@ public class TestItemDAOIT {
         }
         Assert.assertTrue("ProductRefs retrieved more than one row", (numRows > 0));
         SortOrder so = new SortOrder();
-        BeanProperties props = dao.getBeanProperties();
-        List<String> colNames = props.getColumnNames();
+        List<String> colNames = dao.getColumnNames();
         String s;
         for (int i = 0; i < colNames.size(); i++) {
             s = colNames.get(i);

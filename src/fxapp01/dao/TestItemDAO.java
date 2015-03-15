@@ -25,6 +25,8 @@ import fxapp01.log.LogMgr;
 import java.beans.IntrospectionException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  *
@@ -35,13 +37,14 @@ public class TestItemDAO implements TestItemMapper, IDAO<TestItemDTO>{
     private final ILogger log = LogMgr.getLogger(this.getClass());
     private INestedRange rowRange = null;
     private final BeanPropertiesDescribed beanProperties;
+    private final List<BeanPropertyMapping> beanPropertiesMap;
     private int pageSize;
     
     public TestItemDAO() throws IOException, IntrospectionException {
         log.trace(">>> constructor");
         BaseDao dao = new BaseDao();
-        List<BeanPropertyMapping> beanPropertiesMap = dao.getBeanPropertiesMapping(TestItemDTO.class);
         beanProperties = new BeanPropertiesDescribed(TestItemDTO.class);
+        beanPropertiesMap = dao.getBeanPropertiesMapping(TestItemDTO.class);
         log.trace("<<< constructor");
     }
     
@@ -71,6 +74,18 @@ public class TestItemDAO implements TestItemMapper, IDAO<TestItemDTO>{
         }
     }
     
+    @Override
+    public List<String> getColumnNames() {
+        log.trace(">>> selectTotalRange");
+        List<String> colNames = new ArrayList<>();
+        Iterator<BeanPropertyMapping> bpi = beanPropertiesMap.iterator();
+        while (bpi.hasNext()) {
+            BeanPropertyMapping bp = bpi.next();
+            colNames.add(bp.getProperty());
+        }
+        return colNames;
+    }
+
     @Override
     public INestedRange getRowTotalRange() throws IOException {
         //log.trace(">>> getRowCount");

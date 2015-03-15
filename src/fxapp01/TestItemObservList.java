@@ -18,6 +18,7 @@ package fxapp01;
 import fxapp01.dao.DataList;
 import fxapp01.dao.TestItemDAO;
 import fxapp01.dto.TestItemDTO;
+import java.beans.IntrospectionException;
 import java.io.IOException;
 
 /**
@@ -26,7 +27,7 @@ import java.io.IOException;
  */
 public class TestItemObservList extends DataList<TestItemDTO> {
     
-    public TestItemObservList() throws IOException {
+    public TestItemObservList() throws IOException, IntrospectionException {
         super(new TestItemDAO());
         log.trace(">>> constructor");
     }

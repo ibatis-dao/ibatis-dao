@@ -35,7 +35,9 @@ import fxapp01.dto.LimitedIntRange;
 import fxapp01.dto.NestedIntRange;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
+import java.beans.IntrospectionException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -61,7 +63,7 @@ public class ProductRefsTblMdl extends AbstractTableModel {
     // размер кеша данных относительно размера окна данных
     private Double dataCacheFactor; 
 
-    public ProductRefsTblMdl() throws IOException {
+    public ProductRefsTblMdl() throws IOException, IntrospectionException {
         dao = new TestItemDAO();
         dataCacheFactor = 3.0; //defaul cache factor
         outerLimits = new NestedIntRange(1, Integer.MAX_VALUE, null); 
@@ -73,7 +75,7 @@ public class ProductRefsTblMdl extends AbstractTableModel {
     }
 
     public List<String> getColumnNames() {
-        return dao.getContainerProperties().getColumnNames();
+        return dao.getColumnNames();
     }
 
     public int getDataPageStart() {
@@ -165,8 +167,13 @@ public class ProductRefsTblMdl extends AbstractTableModel {
     public Object getValueAt(int row, int column) {
         //проверяем, находится ли строка в пределах диапазона
         if (cacheRowsRange.IsInbound(row)) {
-            //если да, то возвращаем значение из этой строки
-            return dao.getBeanPropertyValue(row, column);
+            try {
+                //если да, то возвращаем значение из этой строки
+                return dao.getBeanPropertyValue(row, column);
+            } catch (InvocationTargetException | IllegalAccessException ex) {
+                log.error(null, ex);
+                return null;
+            }
         } else {
             //если строка за пределами диапазона
             //проверяем прилегающий диапазон слева
@@ -190,8 +197,13 @@ public class ProductRefsTblMdl extends AbstractTableModel {
         }
         //проверяем, находится ли теперь строка в пределах диапазона
         assert(cacheRowsRange.IsInbound(row));
-        //возвращаем значение из этой строки
-        return dao.getBeanPropertyValue(row, column);
+        try {
+            //возвращаем значение из этой строки
+            return dao.getBeanPropertyValue(row, column);
+        } catch (InvocationTargetException | IllegalAccessException ex) {
+            log.error(null, ex);
+            return null;
+        }
     }
 
     @Override
@@ -209,12 +221,12 @@ public class ProductRefsTblMdl extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return dao.getContainerProperties().getSize();
+        return dao.getColumnNames().size();
     }
 
     @Override
     public String getColumnName(int column) {
-        return dao.getContainerProperties().get(column).getColumn();
+        return dao.getColumnNames().get(column);
     }
 
     @Override
@@ -237,7 +249,11 @@ public class ProductRefsTblMdl extends AbstractTableModel {
             l = new ArrayList<>();
         }
         TestItemDTO rowData = l.get(1);
-        dao.setBeanPropertyValue(rowData, column, value);
+        try {
+            dao.setBeanPropertyValue(rowData, column, value);
+        } catch (InvocationTargetException | IllegalAccessException ex) {
+            log.error(null, ex);
+        }
         fireTableCellUpdated(row, column);
     }
 
