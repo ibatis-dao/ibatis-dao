@@ -29,13 +29,13 @@ import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.parsing.XNode;
 
-public class BaseDao {
+public class ORMFacade {
 
-    protected static final ILogger log = LogMgr.getLogger(BaseDao.class);
-    private static BatisORM borm = null;
-    private SqlSession session; 
+    protected static final ILogger log = LogMgr.getLogger(ORMFacade.class);
+    private static ORMConnector ormConn = null;
+    private SqlSession sqlSess; 
 
-    public BaseDao() throws IOException, PersistenceException {
+    public ORMFacade() throws IOException, PersistenceException {
         log.trace(">>> constructor");
         createDaoFactory();
     }
@@ -43,9 +43,9 @@ public class BaseDao {
     private void createDaoFactory() throws IOException, PersistenceException {
         log.trace(">>> createDaoFactory");
         synchronized(this) {
-            if (borm == null) {
+            if (ormConn == null) {
                 try {
-                    borm = new BatisORM(null);
+                    ormConn = new ORMConnector(null);
                 } catch (IOException | PersistenceException e ) {
                     log.error("createDaoFactory() failed", e);
                     throw e;
@@ -56,25 +56,25 @@ public class BaseDao {
 
     public SqlSession createDBSession(){
         log.trace(">>> createDBSession");
-        if (borm == null) { session = null; }
-        else { session = borm.createDBSession(); }
-        return session;
+        if (ormConn == null) { sqlSess = null; }
+        else { sqlSess = ormConn.createDBSession(); }
+        return sqlSess;
     }
 
     public SqlSession getDBSession(){
         log.trace(">>> getDBSession");
-        if (session == null) {
+        if (sqlSess == null) {
             return createDBSession();
         }
         else {
-            return session;
+            return sqlSess;
         }
     }
 
     public void closeDBSession(){
-        log.trace(">>> closeDBSession. session="+session);
-        if (session != null) { session.close(); }
-        session = null;
+        log.trace(">>> closeDBSession. session="+sqlSess);
+        if (sqlSess != null) { sqlSess.close(); }
+        sqlSess = null;
     }
 
     public <T extends Object> T getMapper(Class<T> type) {
@@ -90,24 +90,24 @@ public class BaseDao {
 
     public Configuration getConfiguration() throws IOException {
         log.trace(">>> getConfiguration");
-        if (borm == null) { createDaoFactory(); }
-        return borm.getConfiguration();
+        if (ormConn == null) { createDaoFactory(); }
+        return ormConn.getConfiguration();
     }
     
     public List<BeanPropertyMapping> getBeanPropertiesMapping(Class beanClass) throws IOException {
         log.trace(">>> getBeanPropertiesMapping");
-        if (borm == null) { createDaoFactory(); }
-        return borm.getBeanPropertiesMapping(beanClass);
+        if (ormConn == null) { createDaoFactory(); }
+        return ormConn.getBeanPropertiesMapping(beanClass);
     }
 
     public void commit(){
-        log.trace(">>>  commit(); session="+session);
-        if (session != null) { session.commit(); }
+        log.trace(">>>  commit(); session="+sqlSess);
+        if (sqlSess != null) { sqlSess.commit(); }
     }
 
     public void rollback(){
-        log.trace(">>> rollback(); session="+session);
-        if (session != null) { session.rollback(); }
+        log.trace(">>> rollback(); session="+sqlSess);
+        if (sqlSess != null) { sqlSess.rollback(); }
     }
 
     public String getDatabaseId() throws IOException {

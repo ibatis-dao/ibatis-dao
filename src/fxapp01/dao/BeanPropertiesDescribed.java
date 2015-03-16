@@ -17,8 +17,6 @@ package fxapp01.dao;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.io.IOException;
-import java.util.List;
 
 /**
  *
@@ -26,17 +24,8 @@ import java.util.List;
  */
 public class BeanPropertiesDescribed extends BeanProperties implements IHasDataPropertyDescribed {
 
-    private BaseDao dao;
-    private List<BeanPropertyMapping> beanPropertiesMap;
-    
     public BeanPropertiesDescribed(Class<?> beanClass) throws IntrospectionException {
         super(beanClass);
-    }
-    
-    public BeanPropertiesDescribed(Class<?> beanClass, BaseDao dao) throws IntrospectionException, IOException {
-        super(beanClass);
-        this.dao = dao;
-        this.beanPropertiesMap = dao.getBeanPropertiesMapping(beanClass);
     }
     
     @Override

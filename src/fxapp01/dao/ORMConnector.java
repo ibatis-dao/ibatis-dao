@@ -40,17 +40,17 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
-public class BatisORM {
+public class ORMConnector {
 	
-    protected static ILogger log = LogMgr.getLogger(BatisORM.class);
+    protected static ILogger log = LogMgr.getLogger(ORMConnector.class);
     private SqlSessionFactory sqlSessionFactory;
 
-    public BatisORM (String configURI) throws IOException, PersistenceException {
+    public ORMConnector (String configURI) throws IOException, PersistenceException {
         log.trace(">>> constructor");
         if ((configURI == null) || configURI.length() == 0) {
             //String fs = System.getProperty("file.separator"); //не работает для чтения из ресурсов
             String fs = "/";
-            configURI = getClass().getPackage().getName().replace(".", fs).concat(fs).concat("batis-config.xml");
+            configURI = getClass().getPackage().getName().replace(".", fs).concat(fs).concat("orm-config.xml");
         }
         log.debug("configURI="+configURI);
         InputStream config = Resources.getResourceAsStream(configURI);

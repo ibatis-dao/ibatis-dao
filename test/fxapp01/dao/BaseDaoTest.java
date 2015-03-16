@@ -58,118 +58,118 @@ public class BaseDaoTest {
     }
 
     /**
-     * Test of createDBSession method, of class BaseDao.
+     * Test of createDBSession method, of class ORMFacade.
      * @throws java.io.IOException
      */
     @Test
     public void testCreateDBSession() throws IOException {
         log.trace("createDBSession");
-        BaseDao instance = new BaseDao();
+        ORMFacade instance = new ORMFacade();
         SqlSession result = instance.createDBSession();
         assertNotNull(result);
     }
 
     /**
-     * Test of getDBSession method, of class BaseDao.
+     * Test of getDBSession method, of class ORMFacade.
      * @throws java.io.IOException
      */
     @Test
     public void testGetDBSession() throws IOException {
         log.trace("getDBSession");
-        BaseDao instance = new BaseDao();
+        ORMFacade instance = new ORMFacade();
         SqlSession result = instance.getDBSession();
         assertNotNull(result);
     }
 
     /**
-     * Test of closeDBSession method, of class BaseDao.
+     * Test of closeDBSession method, of class ORMFacade.
      * @throws java.io.IOException
      */
     @Test
     public void testCloseDBSession() throws IOException {
         log.trace("closeDBSession");
-        BaseDao instance = new BaseDao();
+        ORMFacade instance = new ORMFacade();
         instance.closeDBSession();
     }
 
     /**
-     * Test of getMapper method, of class BaseDao.
+     * Test of getMapper method, of class ORMFacade.
      * @throws java.io.IOException
      */
     @Test
     public void testGetMapper() throws IOException {
         log.trace("getMapper");
-        BaseDao instance = new BaseDao();
+        ORMFacade instance = new ORMFacade();
         Object result = instance.getMapper(TestItemMapper.class);
         assertNotNull(result);
     }
 
     /**
-     * Test of getDBConnection method, of class BaseDao.
+     * Test of getDBConnection method, of class ORMFacade.
      * @throws java.io.IOException
      */
     @Test
     public void testGetDBConnection() throws IOException {
         log.trace("getDBConnection");
-        BaseDao instance = new BaseDao();
+        ORMFacade instance = new ORMFacade();
         Connection result = instance.getDBConnection();
         assertNotNull(result);
     }
 
     /**
-     * Test of getConfiguration method, of class BaseDao.
+     * Test of getConfiguration method, of class ORMFacade.
      * @throws java.lang.Exception
      */
     @Test
     public void testGetConfiguration() throws Exception {
         log.trace("getConfiguration");
-        BaseDao instance = new BaseDao();
+        ORMFacade instance = new ORMFacade();
         Configuration result = instance.getConfiguration();
         assertNotNull(result);
     }
 
     /**
-     * Test of getBeanPropertiesMapping method, of class BaseDao.
+     * Test of getBeanPropertiesMapping method, of class ORMFacade.
      * @throws java.lang.Exception
      */
     @Test
     public void testGetBeanPropertiesMapping() throws Exception {
         log.trace("getBeanPropertiesMapping");
-        BaseDao instance = new BaseDao();
+        ORMFacade instance = new ORMFacade();
         List<BeanPropertyMapping> result = instance.getBeanPropertiesMapping(TestItemDTO.class);
         assertNotNull(result);
     }
 
     /**
-     * Test of commit method, of class BaseDao.
+     * Test of commit method, of class ORMFacade.
      * @throws java.io.IOException
      */
     @Test
     public void testCommit() throws IOException {
         log.trace("commit");
-        BaseDao instance = new BaseDao();
+        ORMFacade instance = new ORMFacade();
         instance.commit();
     }
 
     /**
-     * Test of rollback method, of class BaseDao.
+     * Test of rollback method, of class ORMFacade.
      * @throws java.io.IOException
      */
     @Test
     public void testRollback() throws IOException {
         log.trace("rollback");
-        BaseDao instance = new BaseDao();
+        ORMFacade instance = new ORMFacade();
         instance.rollback();
     }
 
     /**
-     * Test of getDatabaseId method, of class BaseDao.
+     * Test of getDatabaseId method, of class ORMFacade.
      * @throws java.lang.Exception
      */
     @Test
     public void testGetDatabaseId() throws Exception {
         log.trace("getDatabaseId");
-        BaseDao instance = new BaseDao();
+        ORMFacade instance = new ORMFacade();
         String notExpResult = "";
         String result = instance.getDatabaseId();
         log.debug("DatabaseId="+result);
@@ -177,13 +177,13 @@ public class BaseDaoTest {
     }
 
     /**
-     * Test of getEnvironmentId method, of class BaseDao.
+     * Test of getEnvironmentId method, of class ORMFacade.
      * @throws java.lang.Exception
      */
     @Test
     public void testGetEnvironmentId() throws Exception {
         log.trace("getEnvironmentId");
-        BaseDao instance = new BaseDao();
+        ORMFacade instance = new ORMFacade();
         String notExpResult = "";
         String result = instance.getEnvironmentId();
         log.debug("EnvironmentId="+result);
@@ -191,14 +191,14 @@ public class BaseDaoTest {
     }
 
     /**
-     * Test of getSQLFragment method, of class BaseDao.
+     * Test of getSQLFragment method, of class ORMFacade.
      * @throws java.lang.Exception
      */
     @Test
     public void testGetSQLFragment() throws Exception {
         log.trace("getSQLFragment");
         String ID = "And";
-        BaseDao instance = new BaseDao();
+        ORMFacade instance = new ORMFacade();
         String notExpResult = "";
         String result = instance.getSQLFragment(ID);
         log.debug("SQLFragment="+result);

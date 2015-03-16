@@ -36,20 +36,18 @@ public class TestItemDAO implements TestItemMapper, IDAO<TestItemDTO>{
     
     private final ILogger log = LogMgr.getLogger(this.getClass());
     private INestedRange rowRange = null;
-    private final BeanPropertiesDescribed beanProperties;
-    private final List<BeanPropertyMapping> beanPropertiesMap;
+    private final DAOProperties beanProperties;
     private int pageSize;
     
     public TestItemDAO() throws IOException, IntrospectionException {
         log.trace(">>> constructor");
-        BaseDao dao = new BaseDao();
-        beanProperties = new BeanPropertiesDescribed(TestItemDTO.class);
-        beanPropertiesMap = dao.getBeanPropertiesMapping(TestItemDTO.class);
+        ORMFacade orm = new ORMFacade();
+        beanProperties = new DAOProperties(TestItemDTO.class);
         log.trace("<<< constructor");
     }
     
     @Override
-    public BeanProperties getBeanProperties() {
+    public IDAOProperties getBeanProperties() {
         log.trace(">>> getBeanProperties");
         return beanProperties;
     }
@@ -76,14 +74,7 @@ public class TestItemDAO implements TestItemMapper, IDAO<TestItemDTO>{
     
     @Override
     public List<String> getColumnNames() {
-        log.trace(">>> selectTotalRange");
-        List<String> colNames = new ArrayList<>();
-        Iterator<BeanPropertyMapping> bpi = beanPropertiesMap.iterator();
-        while (bpi.hasNext()) {
-            BeanPropertyMapping bp = bpi.next();
-            colNames.add(bp.getProperty());
-        }
-        return colNames;
+        return beanProperties.getColumnNames();
     }
 
     @Override
@@ -101,9 +92,9 @@ public class TestItemDAO implements TestItemMapper, IDAO<TestItemDTO>{
     @Override
     public INestedRange selectTotalRange() throws IOException {
         log.trace(">>> selectTotalRange");
-        BaseDao dao = new BaseDao();
+        ORMFacade orm = new ORMFacade();
         try {
-            TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
+            TestItemMapper mapper = orm.getMapper(TestItemMapper.class);
             INestedRange res = mapper.selectTotalRange();
             log.trace("<<< selectTotalRange");
             return res;
@@ -111,16 +102,16 @@ public class TestItemDAO implements TestItemMapper, IDAO<TestItemDTO>{
             log.error(null, e);
             throw e;
         } finally {
-            dao.closeDBSession();
+            orm.closeDBSession();
         }
     }
 
     @Override
     public List<TestItemDTO> select(INestedRange rowsrange) throws IOException {
         log.trace(">>> select");
-        BaseDao dao = new BaseDao();
+        ORMFacade orm = new ORMFacade();
         try {
-            TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
+            TestItemMapper mapper = orm.getMapper(TestItemMapper.class);
             List<TestItemDTO> res = mapper.select(rowsrange);
             log.trace("<<< select");
             return res;
@@ -128,16 +119,16 @@ public class TestItemDAO implements TestItemMapper, IDAO<TestItemDTO>{
             log.error(null, e);
             throw e;
         } finally {
-            dao.closeDBSession();
+            orm.closeDBSession();
         }
     }
 
     @Override
     public TestItemDTO selectByID(BigInteger id) throws IOException {
         log.trace(">>> selectByID");
-        BaseDao dao = new BaseDao();
+        ORMFacade orm = new ORMFacade();
         try {
-            TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
+            TestItemMapper mapper = orm.getMapper(TestItemMapper.class);
             TestItemDTO res = mapper.selectByID(id);
             log.trace("<<< selectByID");
             return res;
@@ -145,111 +136,111 @@ public class TestItemDAO implements TestItemMapper, IDAO<TestItemDTO>{
             log.error(null, e);
             throw e;
         } finally {
-            dao.closeDBSession();
+            orm.closeDBSession();
         }
     }
 
     @Override
     public List<TestItemDTO> selectBE(TestItemQBE qbe) throws IOException {
         log.trace(">>> selectBE");
-        BaseDao dao = new BaseDao();
+        ORMFacade orm = new ORMFacade();
         try {
-            TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
+            TestItemMapper mapper = orm.getMapper(TestItemMapper.class);
             List<TestItemDTO> res = mapper.selectBE(qbe);
             log.trace("<<< selectBE");
             return res;
         } finally {
-            dao.closeDBSession();
+            orm.closeDBSession();
         }
     }
 
     @Override
     public int insertRow(TestItemDTO item) throws IOException {
         log.trace(">>> insertRow");
-        BaseDao dao = new BaseDao();
+        ORMFacade orm = new ORMFacade();
         try {
-            TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
+            TestItemMapper mapper = orm.getMapper(TestItemMapper.class);
             int res = mapper.insertRow(item);
-            dao.commit();
+            orm.commit();
             log.trace("<<< insertRow");
             return res;
         } catch (Exception e) {
             log.error(null, e);
             throw e;
         } finally {
-            dao.closeDBSession();
+            orm.closeDBSession();
         }
     }
 
     @Override
     public int insertRowBySP(TestItemDTO item) throws IOException {
         log.trace(">>> insertRowBySP");
-        BaseDao dao = new BaseDao();
+        ORMFacade orm = new ORMFacade();
         try {
-            TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
+            TestItemMapper mapper = orm.getMapper(TestItemMapper.class);
             int res = mapper.insertRowBySP(item);
-            dao.commit();
+            orm.commit();
             log.trace("<<< insertRowBySP");
             return res;
         } catch (Exception e) {
             log.error(null, e);
             throw e;
         } finally {
-            dao.closeDBSession();
+            orm.closeDBSession();
         }
     }
 
     @Override
     public int insertRowBySP2(TestItemDTO item) throws IOException {
         log.trace(">>> insertRowBySP2");
-        BaseDao dao = new BaseDao();
+        ORMFacade orm = new ORMFacade();
         try {
-            TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
+            TestItemMapper mapper = orm.getMapper(TestItemMapper.class);
             int res = mapper.insertRowBySP2(item);
-            dao.commit();
+            orm.commit();
             log.trace("<<< insertRowBySP2");
             return res;
         } catch (Exception e) {
             log.error(null, e);
             throw e;
         } finally {
-            dao.closeDBSession();
+            orm.closeDBSession();
         }
     }
 
     @Override
     public int updateRow(TestItemDTO item) throws IOException {
         log.trace(">>> updateRow");
-        BaseDao dao = new BaseDao();
+        ORMFacade orm = new ORMFacade();
         try {
-            TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
+            TestItemMapper mapper = orm.getMapper(TestItemMapper.class);
             int res = mapper.updateRow(item);
-            dao.commit();
+            orm.commit();
             log.trace("<<< updateRow");
             return res;
         } catch (Exception e) {
             log.error(null, e);
             throw e;
         } finally {
-            dao.closeDBSession();
+            orm.closeDBSession();
         }
     }
 
     @Override
     public int deleteRow(TestItemDTO item) throws IOException {
         log.trace(">>> deleteRow");
-        BaseDao dao = new BaseDao();
+        ORMFacade orm = new ORMFacade();
         try {
-            TestItemMapper mapper = dao.getMapper(TestItemMapper.class);
+            TestItemMapper mapper = orm.getMapper(TestItemMapper.class);
             int res = mapper.deleteRow(item);
-            dao.commit();
+            orm.commit();
             log.trace("<<< deleteRow");
             return res;
         } catch (Exception e) {
             log.error(null, e);
             throw e;
         } finally {
-            dao.closeDBSession();
+            orm.closeDBSession();
         }
     }
 

@@ -15,7 +15,7 @@
  */
 package fxapp01.dao.filter;
 
-import fxapp01.dao.BaseDao;
+import fxapp01.dao.ORMFacade;
 import fxapp01.excpt.EArgumentBreaksRule;
 import fxapp01.excpt.ENullArgument;
 import fxapp01.log.ILogger;
@@ -27,19 +27,19 @@ import java.text.MessageFormat;
 public class Filter implements ISqlFilterable, ILocalFilterable {
 
     protected final ILogger log = LogMgr.getLogger(this.getClass()); 
-    private final BaseDao dao;
+    private final ORMFacade dao;
     private String sqlTemplate;
     private Object[] args;
     private int argCount;
 
     protected Filter(int argCount) throws IOException {
         this.argCount = argCount;
-        this.dao = new BaseDao();
+        this.dao = new ORMFacade();
         this.sqlTemplate = loadSqlTemplate();
         log.debug(">>> Filter.constructor. argCount="+argCount+", sqlTemplate="+sqlTemplate);
     }
     
-    protected BaseDao getDao() throws IOException {
+    protected ORMFacade getDao() throws IOException {
         return dao;
     }
 

@@ -74,7 +74,7 @@ public class TestItemDAOIT {
     public void testGetContainerProperties() throws IOException, IntrospectionException {
         log.trace(">>> getContainerProperties");
         TestItemDAO instance = new TestItemDAO();
-        BeanProperties result = instance.getBeanProperties();
+        IDAOProperties result = instance.getBeanProperties();
         assertNotNull(result);
     }
 
