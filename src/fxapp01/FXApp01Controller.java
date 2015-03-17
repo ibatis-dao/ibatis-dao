@@ -18,9 +18,13 @@ package fxapp01;
 import fxapp01.dto.TestItemDTO;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
+import java.beans.IntrospectionException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -72,26 +76,17 @@ public class FXApp01Controller implements Initializable {
                 table01.setItems(dataOL);
             }
             table01.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-            //table01.getSortOrder();
+            //ObservableList<TableColumn<TestItemDTO,?>> so = table01.getSortOrder();
+            // http://stackoverflow.com/questions/25509031/javafx-tableview-sort-policy
             table01Column01.setCellValueFactory(//new PropertyValueFactory<ProductRefs, Integer>("id")
                     new PropertyValueFactory<TestItemDTO,Integer>("id")
             );
-            /*
-            table01Column01.setCellValueFactory(
-            new Callback<CellDataFeatures<ProductRefs, Integer>, ObservableValue<Integer>>() {
-            public ObservableValue<Integer> call(CellDataFeatures<ProductRefs, Integer> p) {
-            // p.getValue() returns the TestItemDTO instance for a particular TableView row
-            return p.getValue().getId().intValue();
-            }
-            }
-            );
-            */
             table01Column02.setCellValueFactory(//new PropertyValueFactory<ProductRefs, String>("name")
                     new PropertyValueFactory<TestItemDTO,String>("name")
             );
             //getVisibleRows();
             log.trace("<<< initialize");
-        } catch (IOException ex) {
+        } catch (IOException | IntrospectionException ex) {
             log.error(null, ex);
         }
     }

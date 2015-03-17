@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 
 
-public class Filter implements ISqlFilterable, ILocalFilterable {
+public class Filter implements ISqlFilterable {
 
     protected final ILogger log = LogMgr.getLogger(this.getClass()); 
     private final ORMFacade dao;
@@ -101,11 +101,6 @@ public class Filter implements ISqlFilterable, ILocalFilterable {
         this.argCount = argCount;
     }
 
-    @Override
-    public boolean passesFilter(Object item) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-    
 ////////////////////////////////////////////////////////////////////////////
 
 public static class And extends Filter {
@@ -113,11 +108,6 @@ public static class And extends Filter {
     public And(Object... arg) throws IOException {
         super(2);
         setArgs(arg);
-    }
-    
-    @Override
-    public boolean passesFilter(Object item) {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
     
 }
