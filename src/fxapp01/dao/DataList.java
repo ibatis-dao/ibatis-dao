@@ -31,14 +31,28 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 /**
- *
+ * Адаптер источника данных для табличного представления (например, в javafx TableView).
+ * Основное назначение - диспетчеризация и согласование вызовов между потребителем 
+ * данных (TableView), кешем данных (DataCacheRolling) и объектом доступа к данным (IDAO).
+ * Класс реализует интерфейс ObservableList и делегирует все обращения к данным извне 
+ * к плавающему кешу данных DataCacheRolling. При наличии данных в кеше они 
+ * извлекаются оттуда. При отсутствии в кеше данных кеш обращается с запросом на 
+ * загрузку необходимых данных к данному классу, который в свою очередь делегирует 
+ * вызов объекту доступа к данным IDAO.
+ * При делегировании вызовов учитывается, что пространства номеров строк в 
+ * потребителе (TableView), кеше данных (DataCacheRolling) и объекте доступа к 
+ * данным (IDAO) отличаются и требуют согласования между собой. 
+ * Данный класс реализует интерфейс List, который предполагает нумерацию строк 
+ * с 0 до size()-1 во всех методах, кроме методов, реализующих интерфейс IDataRangeFetcher.
+ * Нумерация строк в кеше и объекте доступа к данным зависит от подключенной БД 
+ * и ограничена диапазоном, который можно получить вызовом метода IDAO.getRowTotalRange().
  * @author serg
- * @param <DTOclass>
+ * @param <DTOclass> - класс объекта, представляющего строку данных
  */
 public class DataList<DTOclass> implements IHasData<DTOclass> {
     
     protected final ILogger log = LogMgr.getLogger(this.getClass());
-    private final DataCacheReadOnly<DTOclass> cache;
+    private final DataCacheRolling<DTOclass> cache;
     private final ObservableList<DTOclass> dataFacade;
     private final IDAO dao;
     private final List<ListChangeListener<? super DTOclass>> changeListeners;
@@ -49,9 +63,11 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
         this.changeListeners = new ArrayList<>();
         this.invListeners = new ArrayList<>();
         this.dao = dao;
-        log.debug("before new DataCacheReadOnly");
+        log.debug("before new DataCacheRolling");
         IDataRangeFetcher dps = this; // 
-        this.cache = new DataCacheReadOnly<>(dps, 20, 40);
+        //TODO желательно минимальный и максимальный диапазон окна определять 
+        //по размеру видимой страницы данных на клиенте
+        this.cache = new DataCacheRolling<>(dps, 20, 40);
         log.debug("before FXCollections.observableList");
         this.dataFacade = FXCollections.observableList(cache);
         log.debug("before new ProductRefsDAO");
@@ -79,6 +95,11 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
         return dao.getRowTotalRange();
     }
     
+    /**
+     *
+     * @param aRowsRange
+     * @param pos
+     */
     @Override
     public void fetch(INestedRange aRowsRange, int pos) {
     /* мета-описание логики работы:
@@ -282,7 +303,7 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
         //конвертируем индекс списка в номер строки диапазона
         //возвращаем значение из этой строки
         //assert(cache.containsIndex(index));
-        return cache.get(index+cache.getLeftLimit());
+        return cache.get(index);
     }
 
     @Override
