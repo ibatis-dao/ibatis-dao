@@ -96,9 +96,11 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
     }
     
     /**
-     *
-     * @param aRowsRange
-     * @param pos
+     * запрашивает указанный диапазон адресов (номеров строк aRowsRange) у 
+     * источника данных и помещает полученные данные в кеш по адресу pos.
+     * @param aRowsRange - диапазон строк, который нужно запросить у источника данных
+     * @param pos - адрес (номер строки) в кеше, куда нужно поместить полученые из источника данные. 
+     * номер строки определяется адресацией кеша.
      */
     @Override
     public void fetch(INestedRange aRowsRange, int pos) {
@@ -183,7 +185,7 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
     @Override
     public void remove(int from, int to) {
         log.trace(">>> remove(from, to)");
-        dataFacade.remove(from, to);
+        dataFacade.remove(from+cache.getLeftLimit(), to+cache.getLeftLimit());
     }
 
     @Override
@@ -274,7 +276,7 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
     @Override
     public boolean addAll(int index, Collection<? extends DTOclass> c) {
         log.trace(">>> addAll(index, Collection)");
-        return dataFacade.addAll(c);
+        return dataFacade.addAll(index+cache.getLeftLimit(), c);
     }
 
     @Override
@@ -303,37 +305,37 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
         //конвертируем индекс списка в номер строки диапазона
         //возвращаем значение из этой строки
         //assert(cache.containsIndex(index));
-        return cache.get(index);
+        return cache.get(index+cache.getLeftLimit());
     }
 
     @Override
     public DTOclass set(int index, DTOclass element) {
         log.trace(">>> set(index, element)");
-        return dataFacade.set(index, element);
+        return dataFacade.set(index+cache.getLeftLimit(), element);
     }
 
     @Override
     public void add(int index, DTOclass element) {
         log.trace(">>> add(index, element)");
-        dataFacade.add(index, element);
+        dataFacade.add(index+cache.getLeftLimit(), element);
     }
 
     @Override
     public DTOclass remove(int index) {
         log.trace(">>> remove(index)");
-        return dataFacade.remove(index);
+        return dataFacade.remove(index+cache.getLeftLimit());
     }
 
     @Override
     public int indexOf(Object o) {
         log.trace(">>> indexOf(Object)");
-        return dataFacade.indexOf(o);
+        return dataFacade.indexOf(o)-cache.getLeftLimit();
     }
 
     @Override
     public int lastIndexOf(Object o) {
         log.trace(">>> lastIndexOf(Object)");
-        return dataFacade.lastIndexOf(o);
+        return dataFacade.lastIndexOf(o)-cache.getLeftLimit();
     }
 
     @Override
@@ -345,13 +347,13 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
     @Override
     public ListIterator<DTOclass> listIterator(int index) {
         log.trace(">>> listIterator(index)");
-        return dataFacade.listIterator(index);
+        return dataFacade.listIterator(index+cache.getLeftLimit());
     }
 
     @Override
     public List<DTOclass> subList(int fromIndex, int toIndex) {
         log.trace(">>> subList(fromIndex, toIndex)");
-        return dataFacade.subList(fromIndex, toIndex);
+        return dataFacade.subList(fromIndex+cache.getLeftLimit(), toIndex+cache.getLeftLimit());
     }
 
     /******************* javafx.beans.Observable *******************/

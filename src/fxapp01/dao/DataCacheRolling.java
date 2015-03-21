@@ -32,10 +32,10 @@ import java.util.ListIterator;
  *
  * @author StarukhSA
  */
-public class DataCacheReadOnly<T> implements List<T> {
+public class DataCacheRolling<T> implements List<T> {
     //TODO после отладки заменить реализацию интерфейса List на расширение класса ArrayList
     
-    private static final ILogger log = LogMgr.getLogger(DataCacheReadOnly.class);
+    private static final ILogger log = LogMgr.getLogger(DataCacheRolling.class);
     private static final String entering = ">>> ";
     private static final String exiting = "<<< ";
     // фактическое начало (порядковый номер первой строки) и фактический размер 
@@ -47,7 +47,7 @@ public class DataCacheReadOnly<T> implements List<T> {
     private int maxSize;
     private final List<T> data;
     
-    public DataCacheReadOnly(IDataRangeFetcher dataFetcher) throws IOException {
+    public DataCacheRolling(IDataRangeFetcher dataFetcher) throws IOException {
         String methodName = "constructor(dataFetcher)";
         log.trace(entering+methodName);
         if (dataFetcher == null) {
@@ -63,7 +63,7 @@ public class DataCacheReadOnly<T> implements List<T> {
         log.trace(exiting+methodName);
     }
     
-    public DataCacheReadOnly(IDataRangeFetcher dataFetcher, int defSize, int maxSize) throws IOException {
+    public DataCacheRolling(IDataRangeFetcher dataFetcher, int defSize, int maxSize) throws IOException {
         this(dataFetcher);
         String methodName = "constructor(dataFetcher, defSize, maxSize)";
         log.trace(entering+methodName);
@@ -121,7 +121,7 @@ public class DataCacheReadOnly<T> implements List<T> {
         if (from > to) {
             throw new EArgumentBreaksRule("remove", "(from <= to)");
         }
-        if (! ((from == 0) || (to == data.size()-1)) ) {
+        if (! ((from == getLeftLimit()) || (to == data.size()-1)) ) {
             log.debug("data.size="+data.size());
             throw new EArgumentBreaksRule("remove", "(from == 0) || (to == data.size()-1)");
         }
