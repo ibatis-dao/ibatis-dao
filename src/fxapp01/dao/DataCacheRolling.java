@@ -121,12 +121,12 @@ public class DataCacheRolling<T> implements List<T> {
         if (from > to) {
             throw new EArgumentBreaksRule("remove", "(from <= to)");
         }
-        if (! ((from == getLeftLimit()) || (to == data.size()-1)) ) {
-            log.debug("data.size="+data.size());
-            throw new EArgumentBreaksRule("remove", "(from == 0) || (to == data.size()-1)");
+        if (! ((from == range.getFirst()) || (to == range.getLast())) ) {
+            log.debug("range="+range);
+            throw new EArgumentBreaksRule("remove", "(from == range.first) || (to == range.last)");
         }
         for (int i = from; i <= to; i++) {
-            data.remove(from);
+            data.remove(from-range.getFirst());
         }
         log.debug("after data.remove. data.size="+data.size());
         int delta = to - from + 1;
@@ -237,7 +237,7 @@ public class DataCacheRolling<T> implements List<T> {
     private int AlignToCacheDefSize(int point) {
         /* округляем до ближайшего большего целого размера страницы кеша */
         log.debug("AlignToCacheDefSize(point="+point+")");
-        int pagePart = (point % defSize);
+        int pagePart = (point-getLeftLimit()) % defSize;
         log.debug("pagePart="+pagePart);
         if (point < range.getFirst()) {
             point = point - pagePart;
