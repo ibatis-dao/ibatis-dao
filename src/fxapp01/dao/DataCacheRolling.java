@@ -122,15 +122,8 @@ public class DataCacheRolling<T> implements List<T> {
         */
         return range.IsInbound(index);
     }
-
-    /**
-     *
-     * @param from начальный номер строки в исходных данных.
-     * @param to конечный номер строки в исходных данных.
-     * номера строк исходных данных отличаются от индексов внутреннего кеша
-     * @return
-     */
-    public boolean remove(int from, int to) {
+    
+    private boolean purge(int from, int to) {
         log.trace("remove(from="+from+", to="+to+")");
         if (from > to) {
             throw new EArgumentBreaksRule("remove", "(from <= to)");
@@ -153,6 +146,17 @@ public class DataCacheRolling<T> implements List<T> {
             range.setFirst(range.getFirst()-delta);
         }
         return (from <= to);
+    }
+
+    /**
+     *
+     * @param from начальный номер строки в исходных данных.
+     * @param to конечный номер строки в исходных данных.
+     * номера строк исходных данных отличаются от индексов внутреннего кеша
+     * @return
+     */
+    public boolean remove(int from, int to) {
+        throw new UnsupportedOperationException("remove(from, to) not supported yet");
     }
 
     @Override
@@ -250,16 +254,23 @@ public class DataCacheRolling<T> implements List<T> {
         return data.retainAll(c);
     }
     
+    private int toCacheIndex(int dataRowNo){
+        return dataRowNo-range.getFirst()-getLeftLimit();
+    }
+    
+    private int toDataRowNo(int cacheIndex){
+        return cacheIndex+range.getFirst()+getLeftLimit();
+    }
+    
     /**
      * 
-     * @param point индекс внутреннего кеша. отличается от номера строки в исходных данных. 
-     * не зависит от нумерации строк конкретного источника данных (конкретной БД)
-     * @return возвращает индекс, выровненный по границе страницы кеша
+     * @param point номер строки в исходных данных. 
+     * @return возвращает номер, выровненный по границе страницы кеша
      */
     private int AlignToCacheDefSize(int point) {
         /* округляем до ближайшего большего целого размера страницы кеша */
         log.debug("AlignToCacheDefSize(point="+point+")");
-        int pagePart = (point % defSize);
+        int pagePart = (point-getLeftLimit()) % defSize;
         log.debug("pagePart="+pagePart);
         if (point < range.getFirst()) {
             point = point - pagePart;
@@ -325,17 +336,17 @@ public class DataCacheRolling<T> implements List<T> {
                     log.debug("dist < maxSize * 2");
                     aRange = range.Complement(target);
                     if (target < range.getFirst()) {
-                        log.debug("target < range.first. before remove(x, len)");
+                        log.debug("target < range.first. before purge(x, len)");
                         //сбрасываем часть строк с правого края кеша
                         log.debug("data.size="+data.size()+", aRange.length="+aRange.getLength());
-                        remove(data.size()-aRange.getLength(), data.size()-1);
+                        purge(data.size()-aRange.getLength(), data.size()-1);
                         log.debug("before dataFetcher.fetch(aRange, 0);");
                         //дозагружаем данные слева
                         dataFetcher.fetch(aRange, 0);
                     } else {
-                        log.debug("target >= 0. before remove(0, x). dist="+dist+", aRange.length="+aRange.getLength());
+                        log.debug("target >= 0. before purge(0, x). dist="+dist+", aRange.length="+aRange.getLength());
                         //сбрасываем часть строк с левого края кеша
-                        remove(0, aRange.getLength()-1);
+                        purge(0, aRange.getLength()-1);
                         log.debug("before dataFetcher.fetch(aRange, size()+1);");
                         //дозагружаем данные справа
                         dataFetcher.fetch(aRange, size());
