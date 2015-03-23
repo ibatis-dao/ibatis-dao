@@ -40,12 +40,12 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
-public class ORMConnector {
+public class ORMBackendConnector {
 	
-    protected static ILogger log = LogMgr.getLogger(ORMConnector.class);
+    protected static ILogger log = LogMgr.getLogger(ORMBackendConnector.class);
     private SqlSessionFactory sqlSessionFactory;
 
-    public ORMConnector (String configURI) throws IOException, PersistenceException {
+    public ORMBackendConnector (String configURI) throws IOException, PersistenceException {
         log.trace(">>> constructor");
         if ((configURI == null) || configURI.length() == 0) {
             //String fs = System.getProperty("file.separator"); //не работает для чтения из ресурсов
@@ -84,7 +84,7 @@ public class ORMConnector {
         else return null;
     }
 
-    private void checkDAOMapperClass(Class mapperClass, Object dao) {
+    private void checkORMapperClass(Class mapperClass, Object dao) {
         //проверяем, реализует ли интерфейс mapperClass объект dao.
         //если да, то просто выходим. если нет, ругаемся
         log.trace(">>> checkMapperClass");

@@ -32,7 +32,7 @@ import org.apache.ibatis.parsing.XNode;
 public class ORMFacade {
 
     protected static final ILogger log = LogMgr.getLogger(ORMFacade.class);
-    private static ORMConnector ormConn = null;
+    private static ORMBackendConnector ormConn = null;
     private SqlSession sqlSess; 
 
     public ORMFacade() throws IOException, PersistenceException {
@@ -45,7 +45,7 @@ public class ORMFacade {
         synchronized(this) {
             if (ormConn == null) {
                 try {
-                    ormConn = new ORMConnector(null);
+                    ormConn = new ORMBackendConnector(null);
                 } catch (IOException | PersistenceException e ) {
                     log.error("createDaoFactory() failed", e);
                     throw e;

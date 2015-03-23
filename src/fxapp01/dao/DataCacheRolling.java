@@ -29,7 +29,8 @@ import java.util.List;
 import java.util.ListIterator;
 
 /**
- *
+ * Скользящий (плавающий) кеш данных. В данной версии только read-only. Хранит "окно" данных 
+ * ограниченного размера. "Окно" сдвигается при запросе строки данных за его пределами.
  * @author StarukhSA
  */
 public class DataCacheRolling<T> implements List<T> {
@@ -57,7 +58,7 @@ public class DataCacheRolling<T> implements List<T> {
         this.defSize = 100; //defaults
         this.maxSize = 300;
         this.data = new ArrayList<>();
-        log.debug("before new IntRange");
+        log.debug("before dataFetcher.getRowTotalRange");
         this.outerLimits = dataFetcher.getRowTotalRange(); 
         this.range = new NestedIntRange(outerLimits.getFirst(), 0, outerLimits); 
         log.trace(exiting+methodName);
@@ -107,6 +108,12 @@ public class DataCacheRolling<T> implements List<T> {
         this.maxSize = maxSize;
     }
 
+    /**
+     * 
+     * @param index номер строки в исходных данных. отличается от индекса внутреннего кеша
+     * зависит от нумерации строк конкретного источника данных (конкретной БД)
+     * @return возвращает true, если этот номер строки данных найден в кеше
+     */
     public boolean containsIndex(int index) {
         /*
         index = 99
@@ -116,21 +123,30 @@ public class DataCacheRolling<T> implements List<T> {
         return range.IsInbound(index);
     }
 
+    /**
+     *
+     * @param from начальный номер строки в исходных данных.
+     * @param to конечный номер строки в исходных данных.
+     * номера строк исходных данных отличаются от индексов внутреннего кеша
+     * @return
+     */
     public boolean remove(int from, int to) {
         log.trace("remove(from="+from+", to="+to+")");
         if (from > to) {
             throw new EArgumentBreaksRule("remove", "(from <= to)");
         }
-        if (! ((from == range.getFirst()) || (to == range.getLast())) ) {
-            log.debug("range="+range);
-            throw new EArgumentBreaksRule("remove", "(from == range.first) || (to == range.last)");
+        if (! ((from == 0) || (to == data.size()-1)) ) {
+            log.debug("data.size="+data.size());
+            throw new EArgumentBreaksRule("remove", "(from == 0) || (to == data.size()-1)");
         }
         for (int i = from; i <= to; i++) {
-            data.remove(from-range.getFirst());
+            //TODO 
+            data.remove(from);
         }
         log.debug("after data.remove. data.size="+data.size());
         int delta = to - from + 1;
         range.incLength(-delta);
+        //TODO
         if (from == 0) {
             range.setFirst(range.getFirst()+delta);
         } else {
@@ -234,10 +250,16 @@ public class DataCacheRolling<T> implements List<T> {
         return data.retainAll(c);
     }
     
+    /**
+     * 
+     * @param point индекс внутреннего кеша. отличается от номера строки в исходных данных. 
+     * не зависит от нумерации строк конкретного источника данных (конкретной БД)
+     * @return возвращает индекс, выровненный по границе страницы кеша
+     */
     private int AlignToCacheDefSize(int point) {
         /* округляем до ближайшего большего целого размера страницы кеша */
         log.debug("AlignToCacheDefSize(point="+point+")");
-        int pagePart = (point-getLeftLimit()) % defSize;
+        int pagePart = (point % defSize);
         log.debug("pagePart="+pagePart);
         if (point < range.getFirst()) {
             point = point - pagePart;
@@ -250,18 +272,25 @@ public class DataCacheRolling<T> implements List<T> {
         return point;
     }
 
+    /**
+     * 
+     * @param index номер строки в исходных данных. отличается от индекса внутреннего кеша
+     * зависит от нумерации строк конкретного источника данных (конкретной БД)
+     * @return возвращает объект данных по указанному номеру сроки. если этот номер 
+     * строки данных не найден в кеше, то запрашивает у источника данных требуемый диапазон данных
+     */
     @Override
     public T get(int index) {
     /***************************************************************************
      * 
     ***************************************************************************/
-        index = /*range.getLeftLimit() +*/ index;
+        //index = index-getLeftLimit();
         log.trace(entering+getClass().getName()+".get(index="+index+").-------------------------------------------");
         log.debug("range=("+range+")");
         //проверяем, находится ли строка в пределах текущего диапазона
         if (containsIndex(index)) {
             //внутренний адрес строки в кеше
-            int intIdx = index-range.getFirst();
+            int intIdx = index-range.getFirst()-getLeftLimit();
             log.debug("intIdx="+intIdx);
             //если да, то возвращаем значение из этой строки
             assert((0 <= intIdx) && (intIdx < data.size()));
