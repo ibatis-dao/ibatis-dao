@@ -3,9 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Projects/Java/Netbeans/ibatis-dao/src/fxapp01/dao/DataList.java</file>
-            <file>file:/C:/Projects/Java/Netbeans/ibatis-dao/test/fxapp01/dao/DataCacheTest01.java</file>
-            <file>file:/C:/Projects/Java/Netbeans/ibatis-dao/src/fxapp01/dao/DataCacheRolling.java</file>
+            <file>file:/home/serg/Server1.mount/NetBeansProjects/ibatis-dao/src/fxapp01/dao/DataCacheRolling.java</file>
+            <file>file:/home/serg/Server1.mount/NetBeansProjects/ibatis-dao/src/fxapp01/dao/DataList.java</file>
+            <file>file:/home/serg/Server1.mount/NetBeansProjects/ibatis-dao/src/fxapp01/TestItemObservList.java</file>
         </group>
     </open-files>
 </project-private>
