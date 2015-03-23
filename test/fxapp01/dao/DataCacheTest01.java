@@ -19,6 +19,7 @@ import fxapp01.TestItemObservList;
 import fxapp01.dto.TestItemDTO;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
+import java.beans.IntrospectionException;
 import java.io.IOException;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -54,7 +55,7 @@ public class DataCacheTest01 {
     }
     
     @Test
-    public void testProductRefsObservList() throws IOException {
+    public void testProductRefsObservList() throws IOException, IntrospectionException {
         log.trace(">>> testProductRefsObservList");
         TestItemObservList pl = new TestItemObservList();
         TestItemDTO p;
