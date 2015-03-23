@@ -23,9 +23,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -61,7 +58,12 @@ public class FXApp01Controller implements Initializable {
     
     @FXML
     private void handleButtonAction(ActionEvent event) {
-        log.debug("You clicked me!");
+        try {
+            //com.sun.javafx.runtime.VersionInfo.getRuntimeVersion();
+            log.debug("javafx.runtime.version: " + System.getProperties().get("javafx.runtime.version"));
+        } catch (Exception e) { //java.security.AccessControlException
+            log.error("Error getting javafx.runtime.version", e);
+        }
         label.setText("Hello World!");
         dataOL.debugPrintAll();
     }
@@ -73,7 +75,10 @@ public class FXApp01Controller implements Initializable {
             /* 
             https://docs.oracle.com/javase/8/javafx/user-interface-tutorial/table-view.htm
             http://code.makery.ch/library/javafx-2-tutorial/
+            http://stackoverflow.com/questions/17268529/javafx-tableview-keep-selected-row-in-current-view
             
+            local sorting and filtering 
+            http://code.makery.ch/blog/javafx-8-tableview-sorting-filtering/
             */
             dataOL = new TestItemObservList();
             if (table01 == null) {
@@ -87,6 +92,7 @@ public class FXApp01Controller implements Initializable {
             //table01.setEditable(true);
             //table01.getSortOrder().add(table01Column01);
             //table01Column02.setSortType(TableColumn.SortType.DESCENDING);
+            /*
             table01.setOnSort(
                 new EventHandler<SortEvent<TableView<TestItemDTO>>>() {
 
@@ -101,6 +107,7 @@ public class FXApp01Controller implements Initializable {
                 }
                 }
             );
+            */
             //ObservableList<TableColumn<TestItemDTO,?>> so = table01.getSortOrder();
             // http://stackoverflow.com/questions/25509031/javafx-tableview-sort-policy
             // http://www.tagwith.com/question_968112_javafx-editable-tableview-without-javafx-style-properties
