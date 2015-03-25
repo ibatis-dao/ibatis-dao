@@ -27,7 +27,8 @@ import javafx.collections.ObservableList;
 public interface IHasData<DTOclass> 
     extends Serializable, 
             ObservableList<DTOclass>, 
-            IDataRangeFetcher,
-            ISortOrder 
+            IDataRangeFetcher             
 {
+    ISortOrder getSortOrder();
+    void setSortOrder(ISortOrder sortOrder);
 }

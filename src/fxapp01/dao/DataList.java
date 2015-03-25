@@ -17,6 +17,8 @@ package fxapp01.dao;
 
 import fxapp01.dao.sort.SortOrder;
 import fxapp01.dto.INestedRange;
+import fxapp01.dto.ISortOrder;
+import fxapp01.dto.QueryExtraParam;
 import fxapp01.excpt.ENullArgument;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
@@ -58,7 +60,7 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
     private final IDAO dao;
     private final List<ListChangeListener<? super DTOclass>> changeListeners;
     private final List<InvalidationListener> invListeners;
-    private final SortOrder sortOrder;
+    private ISortOrder sortOrder;
 
     public DataList(IDAO dao) throws IOException {
         log.trace(">>> constructor");
@@ -101,7 +103,11 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
         return listIndex+cache.getLeftLimit();
     }
     
-
+    public void refresh() {
+        cache.clear();
+        fetch(cache.getRange(), cache.getLeftLimit());
+    }
+    
     // ******************* IDataRangeFetcher *******************
 
     /*
@@ -128,7 +134,8 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
         }
         List<DTOclass> l;
         try {
-            l = dao.select(aRowsRange);
+            QueryExtraParam qep = new QueryExtraParam(aRowsRange, getSortOrder());
+            l = dao.select(qep);
         } catch (IOException ex) {
             log.error(null, ex);
             l = new ArrayList<>();
@@ -294,7 +301,6 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
 
     @Override
     public DTOclass get(int index) {
-        // ********************************************************
         //log.trace(">>> get(index="+index+")");
         //возвращаем значение из этой строки
         //assert(cache.containsIndex(index));
@@ -370,32 +376,15 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
     // ******************* fxapp01.dto.ISortOrder *******************
 
     @Override
-    public String build() {
-        return sortOrder.build();
+    public ISortOrder getSortOrder() {
+        return sortOrder;
     }
 
     @Override
-    public String getName(int index) {
-        return sortOrder.getName(index);
-    }
-
-    @Override
-    public Direction getDirection(int index) {
-        return sortOrder.getDirection(index);
-    }
-
-    @Override
-    public void add(String columnName, Direction direction) {
-        sortOrder.add(columnName, direction);
-    }
-
-    @Override
-    public void toggle(int index) {
-        sortOrder.toggle(index);
-    }
-
-    @Override
-    public boolean del(int index) {
-        return sortOrder.del(index);
+    public void setSortOrder(ISortOrder sortOrder){
+        if ((this.sortOrder == null) || (sortOrder == null) || (! this.sortOrder.equals(sortOrder))) {
+            this.sortOrder = sortOrder;
+            refresh();
+        }
     }
 }

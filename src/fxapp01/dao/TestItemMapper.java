@@ -24,9 +24,9 @@ import java.io.IOException;
 
 public interface TestItemMapper {
     List<TestItemDTO> select(INestedRange rowsrange) throws IOException;
+    List<TestItemDTO> select(QueryExtraParam qbe) throws IOException;
     TestItemDTO selectByID(BigInteger id) throws IOException;
     INestedRange selectTotalRange() throws IOException;
-    List<TestItemDTO> selectBE(QueryExtraParam qbe) throws IOException;
     int insertRow(TestItemDTO item) throws IOException;
     int insertRowBySP(TestItemDTO item) throws IOException;
     int insertRowBySP2(TestItemDTO item) throws IOException;

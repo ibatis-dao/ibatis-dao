@@ -120,6 +120,23 @@ public class TestItemDAO implements TestItemMapper, IDAO<TestItemDTO>{
     }
 
     @Override
+    public List<TestItemDTO> select(QueryExtraParam qep) throws IOException {
+        log.trace(">>> selectBE");
+        ORMFacade orm = new ORMFacade();
+        try {
+            TestItemMapper mapper = orm.getMapper(TestItemMapper.class);
+            List<TestItemDTO> res = mapper.select(qep);
+            log.trace("<<< selectBE");
+            return res;
+        } catch (Exception e) {
+            log.error(null, e);
+            throw e;
+        } finally {
+            orm.closeDBSession();
+        }
+    }
+
+    @Override
     public TestItemDTO selectByID(BigInteger id) throws IOException {
         log.trace(">>> selectByID");
         ORMFacade orm = new ORMFacade();
@@ -131,20 +148,6 @@ public class TestItemDAO implements TestItemMapper, IDAO<TestItemDTO>{
         } catch (Exception e) {
             log.error(null, e);
             throw e;
-        } finally {
-            orm.closeDBSession();
-        }
-    }
-
-    @Override
-    public List<TestItemDTO> selectBE(QueryExtraParam qbe) throws IOException {
-        log.trace(">>> selectBE");
-        ORMFacade orm = new ORMFacade();
-        try {
-            TestItemMapper mapper = orm.getMapper(TestItemMapper.class);
-            List<TestItemDTO> res = mapper.selectBE(qbe);
-            log.trace("<<< selectBE");
-            return res;
         } finally {
             orm.closeDBSession();
         }

@@ -16,6 +16,8 @@
 package fxapp01.dao;
 
 import fxapp01.dto.INestedRange;
+import fxapp01.dto.QueryExtraParam;
+import fxapp01.dto.TestItemDTO;
 import java.io.IOException;
 import java.util.List;
 
@@ -32,6 +34,8 @@ public interface IDAO<DTOclass> {
     
     public INestedRange getRowTotalRange() throws IOException;
     
-    public List<DTOclass> select(INestedRange rowsrange) throws IOException;
+    //public List<DTOclass> select(INestedRange rowsrange) throws IOException;
+    
+    public List<TestItemDTO> select(QueryExtraParam qep) throws IOException;
 
 }
