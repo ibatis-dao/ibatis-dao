@@ -15,38 +15,36 @@
  */
 package fxapp01.dto;
 
-import fxapp01.dao.sort.SortOrder;
-
 /**
  *
  * @author serg
  */
 public class QueryExtraParam {
-    private NestedIntRange rowsrange;
-    private SortOrder sortOrder;
+    private INestedRange rowsrange;
+    private ISortOrder sortOrder;
 
-    public QueryExtraParam(NestedIntRange rowsrange){
+    public QueryExtraParam(INestedRange rowsrange){
         this(rowsrange, null);
     }
     
-    public QueryExtraParam(NestedIntRange rowsrange, SortOrder sortOrder){
+    public QueryExtraParam(INestedRange rowsrange, ISortOrder sortOrder){
         this.rowsrange = rowsrange;
         this.sortOrder = sortOrder;
     }
     
-    public NestedIntRange getRowsRange() {
+    public INestedRange getRowsRange() {
         return rowsrange;
     }
 
-    public void setRowsRange(NestedIntRange rowsrange) {
+    public void setRowsRange(INestedRange rowsrange) {
         this.rowsrange = rowsrange;
     }
 
-    public SortOrder getSortOrder() {
+    public ISortOrder getSortOrder() {
         return sortOrder;
     }
 
-    public void setSortOrder(SortOrder sortOrder) {
+    public void setSortOrder(ISortOrder sortOrder) {
         this.sortOrder = sortOrder;
     }
 

@@ -15,6 +15,7 @@
  */
 package fxapp01;
 
+import fxapp01.dto.ISortOrder;
 import fxapp01.dto.TestItemDTO;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
@@ -99,10 +100,12 @@ public class FXApp01Controller implements Initializable {
                 @Override
                 public void handle(SortEvent<TableView<TestItemDTO>> event) {
                     log.debug("******SortEvent start******"+event.getEventType().getName()+", "+event.getSource().getClass().getName());
+                    dataOL.getSortOrder().clear();
                     Iterator<TableColumn<TestItemDTO,?>> it = table01.getSortOrder().iterator();
                     while (it.hasNext()) {
                         TableColumn<TestItemDTO,?> col = it.next();
                         log.debug(col.getId()+"="+col.getSortType().toString());
+                        //dataOL.getSortOrder().add(null, ISortOrder.Direction.ASC);
                     }
                     log.debug("******SortEvent finish******");
                 }

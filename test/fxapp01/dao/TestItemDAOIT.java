@@ -278,7 +278,7 @@ public class TestItemDAOIT {
         log.trace(">>> updateRow");
         TestItemDTO item = new TestItemDTO();
         if (item01 == null) {
-            item.setId(BigInteger.ZERO);
+            item.setId(BigInteger.ONE);
         } else {
             item = item01;
         }
