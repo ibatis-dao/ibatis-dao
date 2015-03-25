@@ -31,6 +31,8 @@ import java.util.ListIterator;
 /**
  * Скользящий (плавающий) кеш данных. В данной версии только read-only. Хранит "окно" данных 
  * ограниченного размера. "Окно" сдвигается при запросе строки данных за его пределами.
+ * Адресация строк кеша во всех публичных методах совпадает с адресацией строк диапазона 
+ * данных range и outerLimits.
  * @author StarukhSA
  */
 public class DataCacheRolling<T> implements List<T> {
@@ -84,6 +86,14 @@ public class DataCacheRolling<T> implements List<T> {
         log.debug("----- printAll -----");
     }
 
+    private int toCacheIndex(int dataRowNo){
+        return dataRowNo-range.getFirst();
+    }
+    
+    private int toDataRowNo(int cacheIndex){
+        return cacheIndex+range.getFirst();
+    }
+    
     public INestedRange<Integer> getRange() {
         return range;
     }
@@ -235,31 +245,29 @@ public class DataCacheRolling<T> implements List<T> {
     public boolean addAll(int index, Collection<? extends T> c) {
         log.trace(entering+"addAll(index="+index+", c)");
         if (c != null) {
+            log.debug("before data.addAll()");
+            boolean res = data.addAll(toCacheIndex(index), c);
             range.incLength(c.size());
+            return res;
+        } else {
+            return false;
         }
-        log.debug("before data.addAll()");
-        return data.addAll(index, c);
     }
 
     @Override
     public boolean removeAll(Collection c) {
         if (c != null) {
+            boolean res = data.removeAll(c);
             range.incLength(- c.size());
+            return res;
+        } else {
+            return false;
         }
-        return data.removeAll(c);
     }
 
     @Override
     public boolean retainAll(Collection c) {
         return data.retainAll(c);
-    }
-    
-    private int toCacheIndex(int dataRowNo){
-        return dataRowNo-range.getFirst()-getLeftLimit();
-    }
-    
-    private int toDataRowNo(int cacheIndex){
-        return cacheIndex+range.getFirst()+getLeftLimit();
     }
     
     /**
@@ -301,7 +309,7 @@ public class DataCacheRolling<T> implements List<T> {
         //проверяем, находится ли строка в пределах текущего диапазона
         if (containsIndex(index)) {
             //внутренний адрес строки в кеше
-            int intIdx = index-range.getFirst()-getLeftLimit();
+            int intIdx = toCacheIndex(index);
             log.debug("intIdx="+intIdx);
             //если да, то возвращаем значение из этой строки
             assert((0 <= intIdx) && (intIdx < data.size()));
@@ -324,9 +332,9 @@ public class DataCacheRolling<T> implements List<T> {
                 //ту часть диапазона, что уже есть в кеше, исключаем из загрузки
                 aRange = range.Complement(target);
                 if (target < 0) {
-                    dataFetcher.fetch(aRange, 0);
+                    dataFetcher.fetch(aRange, range.getFirst());
                 } else {
-                    dataFetcher.fetch(aRange, size());
+                    dataFetcher.fetch(aRange, range.getLast()+1);
                 }
             } else {
                 //если расстояние меньше удвоенного макс. размера кеша,
@@ -342,14 +350,14 @@ public class DataCacheRolling<T> implements List<T> {
                         purge(data.size()-aRange.getLength(), data.size()-1);
                         log.debug("before dataFetcher.fetch(aRange, 0);");
                         //дозагружаем данные слева
-                        dataFetcher.fetch(aRange, 0);
+                        dataFetcher.fetch(aRange, range.getFirst());
                     } else {
                         log.debug("target >= 0. before purge(0, x). dist="+dist+", aRange.length="+aRange.getLength());
                         //сбрасываем часть строк с левого края кеша
                         purge(0, aRange.getLength()-1);
                         log.debug("before dataFetcher.fetch(aRange, size()+1);");
                         //дозагружаем данные справа
-                        dataFetcher.fetch(aRange, size());
+                        dataFetcher.fetch(aRange, range.getLast()+1);
                     }
                 } else {
                     //расстояние равно или больше удвоенного макс. размера кеша,
@@ -358,7 +366,7 @@ public class DataCacheRolling<T> implements List<T> {
                     //сбрасываем кеш полностью
                     clear(); 
                     //загружаем данные 
-                    dataFetcher.fetch(aRange, 0);
+                    dataFetcher.fetch(aRange, range.getFirst());
                     range.setFirst(index);
                 }
             }
