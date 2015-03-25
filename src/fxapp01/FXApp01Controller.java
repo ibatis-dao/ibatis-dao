@@ -92,30 +92,31 @@ public class FXApp01Controller implements Initializable {
             //table01.setEditable(true);
             //table01.getSortOrder().add(table01Column01);
             //table01Column02.setSortType(TableColumn.SortType.DESCENDING);
-            /*
+            
             table01.setOnSort(
                 new EventHandler<SortEvent<TableView<TestItemDTO>>>() {
 
                 @Override
                 public void handle(SortEvent<TableView<TestItemDTO>> event) {
-                    log.warn("******SortEvent******"+event.getEventType().getName()+", "+event.getSource().getClass().getName());
+                    log.debug("******SortEvent start******"+event.getEventType().getName()+", "+event.getSource().getClass().getName());
                     Iterator<TableColumn<TestItemDTO,?>> it = table01.getSortOrder().iterator();
                     while (it.hasNext()) {
                         TableColumn<TestItemDTO,?> col = it.next();
-                        log.warn(col.getId()+"="+col.getSortType().toString());
+                        log.debug(col.getId()+"="+col.getSortType().toString());
                     }
+                    log.debug("******SortEvent finish******");
                 }
                 }
             );
-            */
+            
             //ObservableList<TableColumn<TestItemDTO,?>> so = table01.getSortOrder();
             // http://stackoverflow.com/questions/25509031/javafx-tableview-sort-policy
             // http://www.tagwith.com/question_968112_javafx-editable-tableview-without-javafx-style-properties
             table01Column01.setCellValueFactory(//new PropertyValueFactory<ProductRefs, Integer>("id")
-                    new PropertyValueFactory<TestItemDTO,Integer>("id")
+                    new PropertyValueFactory<>("id")
             );
             table01Column02.setCellValueFactory(//new PropertyValueFactory<ProductRefs, String>("name")
-                    new PropertyValueFactory<TestItemDTO,String>("name")
+                    new PropertyValueFactory<>("name")
             );
             //getVisibleRows();
             log.trace("<<< initialize");

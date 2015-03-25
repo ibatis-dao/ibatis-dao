@@ -15,13 +15,19 @@
  */
 package fxapp01.dao;
 
+import fxapp01.dto.ISortOrder;
 import java.io.Serializable;
 import javafx.collections.ObservableList;
 
 /**
  *
  * @author serg
+ * @param <DTOclass> класс объекта, представляющего строку данных
  */
-public interface IHasData<DTOclass> extends Serializable, ObservableList<DTOclass>, IDataRangeFetcher  {
-    
+public interface IHasData<DTOclass> 
+    extends Serializable, 
+            ObservableList<DTOclass>, 
+            IDataRangeFetcher,
+            ISortOrder 
+{
 }

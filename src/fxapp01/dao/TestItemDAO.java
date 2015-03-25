@@ -16,17 +16,15 @@
 package fxapp01.dao;
 
 import fxapp01.dto.INestedRange;
+import fxapp01.dto.QueryExtraParam;
 import java.math.BigInteger;
 import java.util.List;
 import fxapp01.dto.TestItemDTO;
-import fxapp01.dto.TestItemQBE;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 import java.beans.IntrospectionException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  *
@@ -37,11 +35,9 @@ public class TestItemDAO implements TestItemMapper, IDAO<TestItemDTO>{
     private final ILogger log = LogMgr.getLogger(this.getClass());
     private INestedRange rowRange = null;
     private final DAOProperties beanProperties;
-    private int pageSize;
     
     public TestItemDAO() throws IOException, IntrospectionException {
         log.trace(">>> constructor");
-        ORMFacade orm = new ORMFacade();
         beanProperties = new DAOProperties(TestItemDTO.class);
         log.trace("<<< constructor");
     }
@@ -141,7 +137,7 @@ public class TestItemDAO implements TestItemMapper, IDAO<TestItemDTO>{
     }
 
     @Override
-    public List<TestItemDTO> selectBE(TestItemQBE qbe) throws IOException {
+    public List<TestItemDTO> selectBE(QueryExtraParam qbe) throws IOException {
         log.trace(">>> selectBE");
         ORMFacade orm = new ORMFacade();
         try {

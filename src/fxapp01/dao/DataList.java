@@ -15,6 +15,7 @@
  */
 package fxapp01.dao;
 
+import fxapp01.dao.sort.SortOrder;
 import fxapp01.dto.INestedRange;
 import fxapp01.excpt.ENullArgument;
 import fxapp01.log.ILogger;
@@ -57,12 +58,14 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
     private final IDAO dao;
     private final List<ListChangeListener<? super DTOclass>> changeListeners;
     private final List<InvalidationListener> invListeners;
+    private final SortOrder sortOrder;
 
     public DataList(IDAO dao) throws IOException {
         log.trace(">>> constructor");
         this.changeListeners = new ArrayList<>();
         this.invListeners = new ArrayList<>();
         this.dao = dao;
+        this.sortOrder = new SortOrder();
         log.debug("before new DataCacheRolling");
         IDataRangeFetcher dps = this; // 
         //TODO желательно минимальный и максимальный диапазон окна определять 
@@ -85,8 +88,23 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
     public void debugPrintAll() {
         cache.debugPrintAll();
     }
+    
+    private int toListIndex(int dataRowNo){
+        return dataRowNo-cache.getLeftLimit();
+    }
+    
+    /*
+    * индекс List всегда начинается от 0. Индекс данных начинается от нижней границы диапазона данных
+    * конвертируем индекс списка в номер строки диапазона
+    */
+    private int toDataRowNo(int listIndex){
+        return listIndex+cache.getLeftLimit();
+    }
+    
 
-    /******************* IDataRangeFetcher *******************
+    // ******************* IDataRangeFetcher *******************
+
+    /*
      * @return 
      * @throws java.io.IOException 
     */
@@ -104,31 +122,6 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
      */
     @Override
     public void fetch(INestedRange aRowsRange, int pos) {
-    /* мета-описание логики работы:
-    1. проверяем, есть ли в кеше данные (первоначальная загрузка)
-    если данных нет, а запрошенный диапазон равен дипазону кеша, то считаем, что это первая загрузка
-    загружаем данные и корректируем дипазон в соответствии с фактически загруженным кол-вом строк
-    корректировка нужна, чтобы: 
-        1.учесть особенности нумерации строк в разных БД, (н-р, в postgres offset 
-        начинается с 0, в oracle rownum начинается с 1)
-        2.учесть вероятность того, что из БД будут возвращено не то кол-во записей, 
-        которое изначально предполагалось, поскольку записи могут быть добавлены/удалены 
-        другими пользователями и кол-во строк в таблице изменится
-    2. если ранее загруженная и запрошенная сейчас страницы пересекаются 
-    (имеют общий диапазон), загружаем только ту часть запрошенной страницы, 
-    которая выходит за рамки ранее загруженной. корректируем диапазон в соответствии 
-    с фактически загруженным кол-вом. проверяем, не превышен ли размер кеша и 
-    удаляем лишние данные. помещаем загруженные данные в начало или в конец кеша - 
-    в зависимости от того, с какой стороны находится запрошенная страница по отношению 
-    к ранее загруженной.
-    3. если запрошенная страница не пересекается с текущей.
-    смотрим, как далеко она находится. если расстояние от текущей до запрошенной 
-    не превышает максимальный размер кеша, загружаем весь диапазон. корректируем 
-    дипазон под кол-во фактически загруженных строк. добавляем в кеш.
-    4. если расстояние от текущей до запрошенной страницы превышает максимальный 
-    размер кеша, очищаем текущий кеш и загружаем данные запрошенного диапазона, 
-    как при первоначальной загрузке
-    */
         log.trace(">>> fetch(aRowsRange="+aRowsRange+"), pos="+pos+")");
         if (aRowsRange == null) {
             throw new ENullArgument("fetch");
@@ -145,10 +138,9 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
         log.trace("<<< fetch");
     }
 
-    /******************* javafx.collections.ObservableList *******************/
+    // ******************* javafx.collections.ObservableList *******************
     
     /**
-     * javafx.collections.ObservableList
      * @param elements
      * @return 
      */
@@ -185,7 +177,7 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
     @Override
     public void remove(int from, int to) {
         log.trace(">>> remove(from, to)");
-        dataFacade.remove(from+cache.getLeftLimit(), to+cache.getLeftLimit());
+        dataFacade.remove(toDataRowNo(from), toDataRowNo(to));
     }
 
     @Override
@@ -202,14 +194,17 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
         changeListeners.remove(listener);
     }
 
-    /******************* java.util.List *******************/
+    // ******************* java.util.List *******************
+    
+    /*
+    * @return  
+    */
     @Override
     public int size() {
-        //**********************************************************************
         int sz = dataFacade.size();
         int rc;
         try {
-            rc = dao.getRowTotalRange().getLength().intValue();
+            rc = getRowTotalRange().getLength().intValue();
         } catch (IOException ex) {
             log.error(null, ex);
             rc = 0;
@@ -276,7 +271,7 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
     @Override
     public boolean addAll(int index, Collection<? extends DTOclass> c) {
         log.trace(">>> addAll(index, Collection)");
-        return dataFacade.addAll(index+cache.getLeftLimit(), c);
+        return dataFacade.addAll(toDataRowNo(index), c);
     }
 
     @Override
@@ -299,43 +294,41 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
 
     @Override
     public DTOclass get(int index) {
-        //********************************************************
+        // ********************************************************
         //log.trace(">>> get(index="+index+")");
-        //индекс List всегда начинается от 0. Индекс данных начинается от нижней границы диапазона данных
-        //конвертируем индекс списка в номер строки диапазона
         //возвращаем значение из этой строки
         //assert(cache.containsIndex(index));
-        return cache.get(index+cache.getLeftLimit());
+        return cache.get(toDataRowNo(index));
     }
 
     @Override
     public DTOclass set(int index, DTOclass element) {
         log.trace(">>> set(index, element)");
-        return dataFacade.set(index+cache.getLeftLimit(), element);
+        return dataFacade.set(toDataRowNo(index), element);
     }
 
     @Override
     public void add(int index, DTOclass element) {
         log.trace(">>> add(index, element)");
-        dataFacade.add(index+cache.getLeftLimit(), element);
+        dataFacade.add(toDataRowNo(index), element);
     }
 
     @Override
     public DTOclass remove(int index) {
         log.trace(">>> remove(index)");
-        return dataFacade.remove(index+cache.getLeftLimit());
+        return dataFacade.remove(toDataRowNo(index));
     }
 
     @Override
     public int indexOf(Object o) {
         log.trace(">>> indexOf(Object)");
-        return dataFacade.indexOf(o)-cache.getLeftLimit();
+        return toListIndex(dataFacade.indexOf(o));
     }
 
     @Override
     public int lastIndexOf(Object o) {
         log.trace(">>> lastIndexOf(Object)");
-        return dataFacade.lastIndexOf(o)-cache.getLeftLimit();
+        return toListIndex(dataFacade.lastIndexOf(o));
     }
 
     @Override
@@ -347,13 +340,13 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
     @Override
     public ListIterator<DTOclass> listIterator(int index) {
         log.trace(">>> listIterator(index)");
-        return dataFacade.listIterator(index+cache.getLeftLimit());
+        return dataFacade.listIterator(index);
     }
 
     @Override
     public List<DTOclass> subList(int fromIndex, int toIndex) {
         log.trace(">>> subList(fromIndex, toIndex)");
-        return dataFacade.subList(fromIndex+cache.getLeftLimit(), toIndex+cache.getLeftLimit());
+        return dataFacade.subList(fromIndex, toIndex);
     }
 
     /******************* javafx.beans.Observable *******************/
@@ -372,5 +365,37 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
     public void removeListener(InvalidationListener listener) {
         log.trace(">>> removeListener(InvalidationListener)");
         invListeners.remove(listener);
+    }
+
+    // ******************* fxapp01.dto.ISortOrder *******************
+
+    @Override
+    public String build() {
+        return sortOrder.build();
+    }
+
+    @Override
+    public String getName(int index) {
+        return sortOrder.getName(index);
+    }
+
+    @Override
+    public Direction getDirection(int index) {
+        return sortOrder.getDirection(index);
+    }
+
+    @Override
+    public void add(String columnName, Direction direction) {
+        sortOrder.add(columnName, direction);
+    }
+
+    @Override
+    public void toggle(int index) {
+        sortOrder.toggle(index);
+    }
+
+    @Override
+    public boolean del(int index) {
+        return sortOrder.del(index);
     }
 }

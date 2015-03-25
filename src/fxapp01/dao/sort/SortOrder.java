@@ -29,7 +29,7 @@ public class SortOrder implements ISortOrder {
     
     private static final ILogger log = LogMgr.getLogger(SortOrder.class);
     private final ArrayList<SortOrderItem> list = new ArrayList<>();
-    private final Direction[] allDirs = Direction.values(); //ordered array of all enum values
+    private static final Direction[] allDirs = Direction.values(); //ordered array of all enum values
 
     private class SortOrderItem {
         private String colname;

@@ -16,17 +16,17 @@
 package fxapp01.dao;
 
 import fxapp01.dto.INestedRange;
+import fxapp01.dto.QueryExtraParam;
 import java.math.BigInteger;
 import java.util.List;
 import fxapp01.dto.TestItemDTO;
-import fxapp01.dto.TestItemQBE;
 import java.io.IOException;
 
 public interface TestItemMapper {
     List<TestItemDTO> select(INestedRange rowsrange) throws IOException;
     TestItemDTO selectByID(BigInteger id) throws IOException;
     INestedRange selectTotalRange() throws IOException;
-    List<TestItemDTO> selectBE(TestItemQBE qbe) throws IOException;
+    List<TestItemDTO> selectBE(QueryExtraParam qbe) throws IOException;
     int insertRow(TestItemDTO item) throws IOException;
     int insertRowBySP(TestItemDTO item) throws IOException;
     int insertRowBySP2(TestItemDTO item) throws IOException;
