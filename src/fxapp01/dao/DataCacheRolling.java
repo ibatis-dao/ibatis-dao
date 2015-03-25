@@ -287,6 +287,12 @@ public class DataCacheRolling<T> implements List<T> {
                 point = point + defSize - pagePart - 1;
             }
         }
+        if (point < outerLimits.getFirst()) {
+            point = outerLimits.getFirst();
+        }
+        if (point > outerLimits.getLast()) {
+            point = outerLimits.getLast();
+        }
         log.debug("point="+point);
         return point;
     }
@@ -321,7 +327,8 @@ public class DataCacheRolling<T> implements List<T> {
             int target = AlignToCacheDefSize(index);
             log.debug("after AlignToCacheDefSize. index="+index+", target="+target);
             //рассчитываем расстояние до указаной строки в целых страницах кеша
-            int dist = Math.abs(range.getMaxDistance(target));
+            int dist;
+            dist = Math.abs(range.getMaxDistance(target));
             log.debug("dist="+dist);
             INestedRange<Integer> aRange;
             //если расчетная длина диапазона меньше максимально допустимого размера кеша
@@ -382,29 +389,29 @@ public class DataCacheRolling<T> implements List<T> {
 
     @Override
     public T set(int index, T element) {
-        return data.set(index, element);
+        return data.set(toCacheIndex(index), element);
     }
 
     @Override
     public void add(int index, T element) {
+        data.add(toCacheIndex(index), element);
         range.incLength(1);
-        data.add(index, element);
     }
 
     @Override
     public T remove(int index) {
         range.incLength(-1);
-        return data.remove(index);
+        return data.remove(toCacheIndex(index));
     }
 
     @Override
     public int indexOf(Object o) {
-        return data.indexOf(o);
+        return toDataRowNo(data.indexOf(o));
     }
 
     @Override
     public int lastIndexOf(Object o) {
-        return data.lastIndexOf(o);
+        return toDataRowNo(data.lastIndexOf(o));
     }
 
     @Override
@@ -414,11 +421,11 @@ public class DataCacheRolling<T> implements List<T> {
 
     @Override
     public ListIterator<T> listIterator(int index) {
-        return data.listIterator(index);
+        return data.listIterator(toCacheIndex(index));
     }
 
     @Override
     public List<T> subList(int fromIndex, int toIndex) {
-        return data.subList(fromIndex, toIndex);
+        return data.subList(toCacheIndex(fromIndex), toCacheIndex(toIndex));
     }
 }

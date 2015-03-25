@@ -100,9 +100,10 @@ public class TestItemDAOIT {
     public void testSetBeanProperty() throws IOException, IntrospectionException, InvocationTargetException, IllegalAccessException {
         log.trace(">>> setBeanProperty");
         Object bean = new TestItemDTO();
-        int propIndex = 0;
-        Object propValue = "test_0001";
         TestItemDAO instance = new TestItemDAO();
+        int propIndex = 2;
+        log.debug("propIndex="+propIndex);
+        Object propValue = "test_0001";
         instance.setBeanPropertyValue(bean, propIndex, propValue);
     }
 
@@ -185,7 +186,7 @@ public class TestItemDAOIT {
             log.debug(p.getName());
             numRows = numRows + 1;
         }
-        Assert.assertTrue("ProductRefs retrieved not in one row", (numRows == 1));
+        Assert.assertTrue("TestItemDTO retrieved not in one row", (numRows == 1));
         example = new TestItemDTO();
         example.setName("test");
         qbe.setExample(example);
@@ -197,7 +198,7 @@ public class TestItemDAOIT {
             log.debug(p.getName());
             numRows = numRows + 1;
         }
-        Assert.assertTrue("ProductRefs retrieved more than one row", (numRows > 0));
+        Assert.assertTrue("TestItemDTO retrieved more than one row", (numRows > 0));
         SortOrder so = new SortOrder();
         List<String> colNames = dao.getColumnNames();
         String s;

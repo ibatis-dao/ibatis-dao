@@ -10,7 +10,7 @@
 
     <select id="selectTotalRange" databaseId="oracle" resultType="IntRange">
         <!-- database specific minimum number of row and rows count -->
-    select 1 as first, count(i.id) as length from lisa.tmp$items i
+    select 1 as first, count(i.id) as length from tmp$items i
     </select>
     
     <select id="selectTotalRange" databaseId="postgresql" resultType="IntRange">
@@ -29,7 +29,7 @@
     with t001 as (
             select i.id, 
                    i.name
-              from lisa.tmp$items i 
+              from tmp$items i 
              order by i.id
           )
     select id, name
@@ -58,7 +58,7 @@
     <select id="selectBE" databaseId="oracle" parameterType="TestItemQBE" resultMap="TestItemMap">
     with t001 as (
         select i.id, i.name 
-          from lisa.tmp$items i
+          from tmp$items i
         <where>
             <if test="example.id != null and example.id != 0">
                 id = #{example.id}
@@ -172,7 +172,7 @@
     <delete id="deleteRow" databaseId="oracle" statementType="CALLABLE" parameterType="TestItemDTO">
     begin
         TMP$ITEMS_PKG.deleteData(
-            #{id,mode=INOUT,jdbcType=BIGINT,javaType=BigInteger}
+            #{id,mode=IN,jdbcType=BIGINT,javaType=BigInteger}
         );
     end;
     </delete>
