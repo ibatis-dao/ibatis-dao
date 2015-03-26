@@ -19,25 +19,31 @@ package fxapp01.dto;
  *
  * @author serg
  */
-public class QueryExtraParam {
-    private INestedRange rowsrange;
+public class SQLParams {
+    private INestedRange rowsRange;
     private ISortOrder sortOrder;
+    private Object example; // query by example
 
-    public QueryExtraParam(INestedRange rowsrange){
-        this(rowsrange, null);
+    public SQLParams(INestedRange rowsRange){
+        this(rowsRange, null, null);
     }
     
-    public QueryExtraParam(INestedRange rowsrange, ISortOrder sortOrder){
-        this.rowsrange = rowsrange;
+    public SQLParams(INestedRange rowsRange, ISortOrder sortOrder){
+        this(rowsRange, sortOrder, null);
+    }
+    
+    public SQLParams(INestedRange rowsRange, ISortOrder sortOrder, Object example){
+        this.rowsRange = rowsRange;
         this.sortOrder = sortOrder;
+        this.example = example;
     }
     
     public INestedRange getRowsRange() {
-        return rowsrange;
+        return rowsRange;
     }
 
-    public void setRowsRange(INestedRange rowsrange) {
-        this.rowsrange = rowsrange;
+    public void setRowsRange(INestedRange rowsRange) {
+        this.rowsRange = rowsRange;
     }
 
     public ISortOrder getSortOrder() {
@@ -46,6 +52,14 @@ public class QueryExtraParam {
 
     public void setSortOrder(ISortOrder sortOrder) {
         this.sortOrder = sortOrder;
+    }
+
+    public Object getExample() {
+        return example; // query by example
+    }
+
+    public void setExample(Object example) {
+        this.example = example; // query by example
     }
 
 }

@@ -33,6 +33,7 @@ import fxapp01.dto.INestedRange;
 import fxapp01.dto.TestItemDTO;
 import fxapp01.dto.LimitedIntRange;
 import fxapp01.dto.NestedIntRange;
+import fxapp01.dto.SQLParams;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 import java.beans.IntrospectionException;
@@ -142,7 +143,7 @@ public class ProductRefsTblMdl extends AbstractTableModel {
         // фактически запрашиваем данные для вычисленного диапазона
         List<TestItemDTO> l;
         try {
-            l = dao.select(aRowsRange);
+            l = dao.select(new SQLParams(aRowsRange));
         } catch (IOException ex) {
             log.error(null, ex);
             l = new ArrayList<>();
@@ -243,7 +244,8 @@ public class ProductRefsTblMdl extends AbstractTableModel {
     public void setValueAt(Object value, int row, int column) {
         List<TestItemDTO> l;
         try {
-            l = dao.select(new NestedIntRange(row, 1, outerLimits));
+            
+            l = dao.select(new SQLParams(new NestedIntRange(row, 1, outerLimits)));
         } catch (IOException ex) {
             log.error(null, ex);
             l = new ArrayList<>();

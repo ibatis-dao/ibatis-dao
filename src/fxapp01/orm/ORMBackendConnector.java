@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fxapp01.dao;
+package fxapp01.orm;
 
 /*
 http://mybatis.github.io/mybatis-3/
@@ -21,6 +21,7 @@ http://mybatis.github.io/generator/
 http://blog.mybatis.org/p/products.html
 */
 
+import fxapp01.dao.BeanPropertyMapping;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 
@@ -55,7 +56,7 @@ public class ORMBackendConnector {
         log.debug("configURI="+configURI);
         InputStream config = Resources.getResourceAsStream(configURI);
         log.debug("config ready");
-        setSqlSessionFactory(new SqlSessionFactoryBuilder().build(config));
+        this.sqlSessionFactory = new SqlSessionFactoryBuilder().build(config);
         log.debug("SqlSessionFactoryBuilder created");
     }	
 
@@ -128,7 +129,7 @@ public class ORMBackendConnector {
 
     public List<BeanPropertyMapping> getBeanPropertiesMapping(Class beanClass) {
         log.trace(">>> getDAOProperties()");
-        List<BeanPropertyMapping> DAOprops = new ArrayList<BeanPropertyMapping>();
+        List<BeanPropertyMapping> DAOprops = new ArrayList<>();
         Configuration conf = getConfiguration();
         if (conf != null) {
             //

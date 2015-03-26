@@ -18,7 +18,7 @@ package fxapp01.dao;
 import fxapp01.dao.sort.SortOrder;
 import fxapp01.dto.INestedRange;
 import fxapp01.dto.ISortOrder;
-import fxapp01.dto.QueryExtraParam;
+import fxapp01.dto.SQLParams;
 import fxapp01.excpt.ENullArgument;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
@@ -75,7 +75,6 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
         this.cache = new DataCacheRolling<>(dps, 20, 40);
         log.debug("before FXCollections.observableList");
         this.dataFacade = FXCollections.observableList(cache);
-        log.debug("before new ProductRefsDAO");
         log.debug("before requestDataPage");
         INestedRange<Integer> initRange = cache.getRange().clone();
         initRange.setLength(20);
@@ -134,7 +133,7 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
         }
         List<DTOclass> l;
         try {
-            QueryExtraParam qep = new QueryExtraParam(aRowsRange, getSortOrder());
+            SQLParams qep = new SQLParams(aRowsRange, getSortOrder());
             l = dao.select(qep);
         } catch (IOException ex) {
             log.error(null, ex);
@@ -377,14 +376,24 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
 
     @Override
     public ISortOrder getSortOrder() {
-        return sortOrder;
+        return new SortOrder(sortOrder);
+    }
+    
+    private boolean isSortOrderChanged(ISortOrder sortOrder) {
+        if (this.sortOrder == null) {
+            return (sortOrder != null);
+        } else {
+            //обработать sortOrder == null ?
+            return (! this.sortOrder.equals(sortOrder));
+        }
     }
 
     @Override
     public void setSortOrder(ISortOrder sortOrder){
-        if ((this.sortOrder == null) || (sortOrder == null) || (! this.sortOrder.equals(sortOrder))) {
+        if (isSortOrderChanged(sortOrder)) {
             this.sortOrder = sortOrder;
             refresh();
         }
     }
+    
 }

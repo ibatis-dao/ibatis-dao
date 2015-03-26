@@ -15,7 +15,7 @@
  */
 package fxapp01.dao.filter;
 
-import fxapp01.dao.ORMFacade;
+import fxapp01.orm.ORMFacade;
 import fxapp01.excpt.EArgumentBreaksRule;
 import fxapp01.excpt.ENullArgument;
 import fxapp01.log.ILogger;

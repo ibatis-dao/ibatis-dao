@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fxapp01.dao;
+package fxapp01.orm;
 
+import fxapp01.dao.BeanPropertyMapping;
 import fxapp01.excpt.ENullArgument;
 import java.io.IOException;
 import java.sql.Connection;

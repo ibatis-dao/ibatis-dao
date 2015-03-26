@@ -22,20 +22,39 @@ import fxapp01.log.LogMgr;
 import java.util.ArrayList;
 
 /**
- *
+ * класс для поддержки списка сортировки в объектах доступа к данным
  * @author serg
  */
 public class SortOrder implements ISortOrder {
     
-    private static final ILogger log = LogMgr.getLogger(SortOrder.class);
-    private final ArrayList<SortOrderItem> list = new ArrayList<>();
+    protected static final ILogger log = LogMgr.getLogger(SortOrder.class);
+    private final ArrayList<SortOrderItem> list;
     private static final Direction[] allDirs = Direction.values(); //ordered array of all enum values
 
     private class SortOrderItem {
         private String colname;
         private ISortOrder.Direction direction;
+        private boolean isSortable = true; // по умолчанию все колонки можно сортировать
     }
 
+    public SortOrder() {
+        list = new ArrayList<>();
+    }
+    
+    public SortOrder(ISortOrder sortOrder) {
+        this();
+        clone(sortOrder);
+    }
+    
+    private void clone(ISortOrder sortOrder) {
+        if (sortOrder != null) {
+            clear();
+            for (int i = 0; i < sortOrder.size(); i++) {
+                add(sortOrder.getName(i), sortOrder.getDirection(i));
+            }
+        }
+    }
+    
     @Override
     public String toString() {
         return build();
@@ -44,6 +63,17 @@ public class SortOrder implements ISortOrder {
     @Override
     public int size() {
         return list.size();
+    }
+
+    @Override
+    public boolean isSortable(int index) {
+        SortOrderItem item = list.get(index);
+        if (item != null) {
+            // TODO добавить фактический обработчик, который будет определять, 
+            // можно ли сортировать по указанной колонке
+            return item.isSortable; 
+        }
+        return false;
     }
 
     @Override
@@ -90,7 +120,7 @@ public class SortOrder implements ISortOrder {
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         String result = "";
         for (int i = 0; i < list.size(); i++) {
-            if (getDirection(i) != Direction.NONE) {
+            if ((isSortable(i)) && (getDirection(i) != Direction.NONE)) {
                 String s = getName(i) + " " + getDirection(i).toString();
                 if (result.isEmpty()) {
                     result = s;

@@ -16,6 +16,7 @@
 
 package fxapp01.dao;
 
+import fxapp01.dao.sort.SortOrderTest;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 import org.junit.After;
@@ -35,7 +36,8 @@ import org.junit.runners.Suite;
     TestItemDAOIT.class,
     DataCacheTest01.class,
     BeanPropertiesTest.class,
-    BeanPropertiesDescribedTest.class
+    BeanPropertiesDescribedTest.class,
+    SortOrderTest.class
 } )
 public class DAOAllTests {
 

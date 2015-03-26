@@ -15,6 +15,7 @@
  */
 package fxapp01.dao;
 
+import fxapp01.orm.ORMFacade;
 import java.beans.IntrospectionException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;

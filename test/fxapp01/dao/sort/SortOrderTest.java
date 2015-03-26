@@ -58,7 +58,7 @@ public class SortOrderTest {
      */
     @Test
     public void testBuild() {
-        log.debug("build");
+        log.trace("build");
         SortOrder instance = new SortOrder();
         String expResult;
         String result = instance.build();
@@ -81,7 +81,7 @@ public class SortOrderTest {
      */
     @Test
     public void testSize() {
-        log.debug("size");
+        log.trace("size");
         SortOrder instance = new SortOrder();
         int expResult = 0;
         int result = instance.size();
@@ -97,7 +97,7 @@ public class SortOrderTest {
      */
     @Test
     public void testGetName() {
-        log.debug("getName");
+        log.trace("getName");
         int index = 0;
         SortOrder instance = new SortOrder();
         String expResult = "test01";
@@ -111,7 +111,7 @@ public class SortOrderTest {
      */
     @Test
     public void testGetDirection() {
-        log.debug("getDirection");
+        log.trace("getDirection");
         int index = 0;
         SortOrder instance = new SortOrder();
         ISortOrder.Direction expResult = ISortOrder.Direction.ASC;
@@ -125,7 +125,7 @@ public class SortOrderTest {
      */
     @Test
     public void testAdd() {
-        log.debug("add");
+        log.trace("add");
         SortOrder instance = new SortOrder();
         int result = instance.size();
         assertEquals(0, result);
@@ -146,7 +146,7 @@ public class SortOrderTest {
      */
     @Test
     public void testDel() {
-        log.debug("del");
+        log.trace("del");
         int index = 0;
         SortOrder instance = new SortOrder();
         instance.add("test01", ISortOrder.Direction.NONE);
@@ -159,7 +159,7 @@ public class SortOrderTest {
      */
     @Test
     public void testClear() {
-        log.debug("clear");
+        log.trace("clear");
         SortOrder instance = new SortOrder();
         instance.add("test01", ISortOrder.Direction.NONE);
         instance.clear();
@@ -172,7 +172,7 @@ public class SortOrderTest {
      */
     @Test
     public void testToggle() {
-        log.debug("toggle");
+        log.trace("toggle");
         SortOrder instance = new SortOrder();
         instance.add("test01", ISortOrder.Direction.NONE);
         int index = 0;
@@ -188,6 +188,18 @@ public class SortOrderTest {
         expected = ISortOrder.Direction.NONE;
         result = instance.getDirection(index);
         assertEquals(expected, result);
+    }
+
+    /**
+     * Test of toString method, of class SortOrder.
+     */
+    @Test
+    public void testToString() {
+        log.trace("toString");
+        SortOrder instance = new SortOrder();
+        String expResult = "";
+        String result = instance.toString();
+        assertEquals(expResult, result);
     }
     
 }

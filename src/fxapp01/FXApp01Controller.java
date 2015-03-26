@@ -15,6 +15,7 @@
  */
 package fxapp01;
 
+import fxapp01.dao.sort.SortOrderHelper;
 import fxapp01.dto.ISortOrder;
 import fxapp01.dto.TestItemDTO;
 import fxapp01.log.ILogger;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.ResourceBundle;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -75,6 +77,7 @@ public class FXApp01Controller implements Initializable {
             log.trace(">>> initialize");
             /* 
             https://docs.oracle.com/javase/8/javafx/user-interface-tutorial/table-view.htm
+            https://docs.oracle.com/javafx/2/api/javafx/scene/control/TableView.html
             http://code.makery.ch/library/javafx-2-tutorial/
             http://stackoverflow.com/questions/17268529/javafx-tableview-keep-selected-row-in-current-view
             
@@ -100,13 +103,7 @@ public class FXApp01Controller implements Initializable {
                 @Override
                 public void handle(SortEvent<TableView<TestItemDTO>> event) {
                     log.debug("******SortEvent start******"+event.getEventType().getName()+", "+event.getSource().getClass().getName());
-                    dataOL.getSortOrder().clear();
-                    Iterator<TableColumn<TestItemDTO,?>> it = table01.getSortOrder().iterator();
-                    while (it.hasNext()) {
-                        TableColumn<TestItemDTO,?> col = it.next();
-                        log.debug(col.getId()+"="+col.getSortType().toString());
-                        //dataOL.getSortOrder().add(null, ISortOrder.Direction.ASC);
-                    }
+                    dataOL.setSortOrder(new SortOrderHelper(table01.getSortOrder()));
                     log.debug("******SortEvent finish******");
                 }
                 }

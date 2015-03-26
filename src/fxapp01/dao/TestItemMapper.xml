@@ -18,6 +18,7 @@
     select 0 "first", count(id)-1 "length" from public."test02"
     </select>
     
+    <!--
     <select id="select" databaseId="postgresql" parameterType="IntRange" resultMap="TestItemMap">
     select id, name
       from test02
@@ -41,7 +42,8 @@
       )
      where rn between #{first} and #{last}
     </select>
-
+    -->
+    
     <select id="selectByID" databaseId="oracle" parameterType="BigInteger" resultMap="TestItemMap">
     select i.id, i.name
       from tmp$items i
@@ -55,15 +57,15 @@
      where id = #{id}
     </select>
     
-    <select id="selectBE" databaseId="oracle" parameterType="TestItemQBE" resultMap="TestItemMap">
+    <select id="select" databaseId="oracle" parameterType="SQLParams" resultMap="TestItemMap">
     with t001 as (
         select i.id, i.name 
           from tmp$items i
         <where>
-            <if test="example.id != null and example.id != 0">
+            <if test="example != null and example.id != null and example.id != 0">
                 id = #{example.id}
             </if>
-            <if test="example.name != null">
+            <if test="example != null and example.name != null">
                 AND name like '%'||#{example.name}||'%'
             </if>
         </where>
@@ -81,7 +83,7 @@
      where rn between #{rowsRange.first} and #{rowsRange.last}
     </select>
 
-    <select id="selectBE" databaseId="postgresql" parameterType="TestItemQBE" resultMap="TestItemMap">
+    <select id="select" databaseId="postgresql" parameterType="SQLParams" resultMap="TestItemMap">
     select id, name
       from test02
         <where>

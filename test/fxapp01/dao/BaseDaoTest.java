@@ -15,6 +15,7 @@
  */
 package fxapp01.dao;
 
+import fxapp01.orm.ORMFacade;
 import fxapp01.dto.TestItemDTO;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;

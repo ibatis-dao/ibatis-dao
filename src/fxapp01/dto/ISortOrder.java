@@ -16,7 +16,7 @@
 package fxapp01.dto;
 
 /**
- * список сортировки
+ * список сортировки в объектах доступа к данным
  * @author serg
  */
 public interface ISortOrder {
@@ -28,6 +28,7 @@ public interface ISortOrder {
     /* возвращает имя поля с направлением сортировки */
     String build();
     int size();
+    boolean isSortable(int index);
     String getName(int index);
     ISortOrder.Direction getDirection(int index);
     void add(String columnName, ISortOrder.Direction direction);

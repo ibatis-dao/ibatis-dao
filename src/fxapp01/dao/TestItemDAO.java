@@ -15,8 +15,9 @@
  */
 package fxapp01.dao;
 
+import fxapp01.orm.ORMFacade;
 import fxapp01.dto.INestedRange;
-import fxapp01.dto.QueryExtraParam;
+import fxapp01.dto.SQLParams;
 import java.math.BigInteger;
 import java.util.List;
 import fxapp01.dto.TestItemDTO;
@@ -101,7 +102,7 @@ public class TestItemDAO implements TestItemMapper, IDAO<TestItemDTO>{
             orm.closeDBSession();
         }
     }
-
+/*
     @Override
     public List<TestItemDTO> select(INestedRange rowsrange) throws IOException {
         log.trace(">>> select");
@@ -118,14 +119,14 @@ public class TestItemDAO implements TestItemMapper, IDAO<TestItemDTO>{
             orm.closeDBSession();
         }
     }
-
+*/
     @Override
-    public List<TestItemDTO> select(QueryExtraParam qep) throws IOException {
+    public List<TestItemDTO> select(SQLParams sqlprm) throws IOException {
         log.trace(">>> selectBE");
         ORMFacade orm = new ORMFacade();
         try {
             TestItemMapper mapper = orm.getMapper(TestItemMapper.class);
-            List<TestItemDTO> res = mapper.select(qep);
+            List<TestItemDTO> res = mapper.select(sqlprm);
             log.trace("<<< selectBE");
             return res;
         } catch (Exception e) {
