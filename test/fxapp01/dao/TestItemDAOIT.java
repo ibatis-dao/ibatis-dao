@@ -167,18 +167,18 @@ public class TestItemDAOIT {
     }
 
     /**
-     * Test of selectBE method, of class TestItemDAO.
+     * Test of select(QueryExtraParam qep) method, of class TestItemDAO.
      * @throws java.lang.Exception
      */
     @Test
-    public void testSelectBE() throws Exception {
+    public void testSelectWithParams() throws Exception {
         log.trace(">>> testSelectBE");
         TestItemDAO dao = new TestItemDAO();
         NestedIntRange range = new NestedIntRange(0, 10, null);
         TestItemDTO example = new TestItemDTO();
         example.setId(BigInteger.ONE);
         TestItemQBE qbe = new TestItemQBE(example, range, null);
-        List<TestItemDTO> l = dao.selectBE(qbe);
+        List<TestItemDTO> l = dao.select(qbe);
         int numRows = 0;
         Iterator<TestItemDTO> itr = l.iterator();
         while (itr.hasNext()){
@@ -190,7 +190,7 @@ public class TestItemDAOIT {
         example = new TestItemDTO();
         example.setName("test");
         qbe.setExample(example);
-        l = dao.selectBE(qbe);
+        l = dao.select(qbe);
         numRows = 0;
         itr = l.iterator();
         while (itr.hasNext()){
@@ -208,7 +208,7 @@ public class TestItemDAOIT {
         }
         
         qbe = new TestItemQBE(example, range, so);
-        l = dao.selectBE(qbe);
+        l = dao.select(qbe);
         
         log.trace("<<< testSelectBE");
     }
