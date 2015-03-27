@@ -87,10 +87,10 @@
     select id, name
       from test02
         <where>
-            <if test="example.id != null and example.id != 0">
+            <if test="example != null and example.id != null and example.id != 0">
                 id = #{example.id}
             </if>
-            <if test="example.name != null">
+            <if test="example != null and example.name != null">
                 AND name like '%'||#{example.name}||'%'
             </if>
         </where>

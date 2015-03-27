@@ -103,8 +103,8 @@ public class FXApp01Controller implements Initializable {
                 @Override
                 public void handle(SortEvent<TableView<TestItemDTO>> event) {
                     log.debug("******SortEvent start******"+event.getEventType().getName()+", "+event.getSource().getClass().getName());
-                    dataOL.setSortOrder(new SortOrderHelper(table01.getSortOrder()));
-                    event.consume();
+                    dataOL.setSortOrder(new SortOrderHelper<TestItemDTO>(table01.getSortOrder()));
+                    //event.consume();
                     log.debug("******SortEvent finish******");
                 }
                 }

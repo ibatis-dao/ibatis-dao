@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import javafx.beans.InvalidationListener;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -58,14 +59,14 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
     private final DataCacheRolling<DTOclass> cache;
     private final ObservableList<DTOclass> dataFacade;
     private final IDAO dao;
-    private final List<ListChangeListener<? super DTOclass>> changeListeners;
-    private final List<InvalidationListener> invListeners;
+    //private final List<ListChangeListener<? super DTOclass>> changeListeners;
+    //private final List<InvalidationListener> invListeners;
     private IDAOSortOrder sortOrder;
 
     public DataList(IDAO dao) throws IOException {
         log.trace(">>> constructor");
-        this.changeListeners = new ArrayList<>();
-        this.invListeners = new ArrayList<>();
+        //this.changeListeners = new ArrayList<>();
+        //this.invListeners = new ArrayList<>();
         this.dao = dao;
         this.sortOrder = new SortOrder();
         log.debug("before new DataCacheRolling");
@@ -102,13 +103,39 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
         return listIndex+cache.getLeftLimit();
     }
     
+/*
+    private void fireInvalidationEvent() {
+        log.debug("invListeners.size="+dataFacade..size());
+        for (InvalidationListener il : invListeners) {
+            log.debug("il="+il);
+            if (il != null) {
+                il.invalidated(dataFacade);
+            }
+        }
+    }
+    
+    private void fireChangeEvent() {
+        log.debug("changeListeners.size="+changeListeners.size());
+        for (ListChangeListener<? super DTOclass> cl : changeListeners) {
+            log.debug("cl="+cl);
+            if (cl != null) {
+                ListChangeListener.Change<? extends DTOclass> c;
+                cl.onChanged(c);
+            }
+        }
+    }
+*/
+    
     public void refresh() {
         log.trace("refresh");
+        INestedRange<Integer> r = cache.getRange().clone();
         //cache.clear();
         clear();
         log.debug("after clear(). "+size());
         //TODO fetch должен здесь заменять диапазон, а он прибавляет его. надо подумать, что с этим делать
-        fetch(cache.getRange(), cache.getLeftLimit());
+        fetch(r, cache.getLeftLimit());
+        debugPrintAll();
+        //fireInvalidationEvent();
     }
     
     // ******************* IDataRangeFetcher *******************
@@ -194,14 +221,16 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
     public void addListener(ListChangeListener<? super DTOclass> listener) {
         //throw new UnsupportedOperationException("Not supported yet.");
         log.trace(">>> addListener(ListChangeListener)"+listener);
-        changeListeners.add(listener);
+        dataFacade.addListener(listener);
+        //changeListeners.add(listener);
     }
 
     @Override
     public void removeListener(ListChangeListener<? super DTOclass> listener) {
         //throw new UnsupportedOperationException("Not supported yet.");
         log.trace(">>> removeListener(ListChangeListener)"+listener);
-        changeListeners.remove(listener);
+        dataFacade.removeListener(listener);
+        //changeListeners.remove(listener);
     }
 
     // ******************* java.util.List *******************
@@ -299,7 +328,9 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
     @Override
     public void clear() {
         log.trace(">>> clear");
+        cache.clear();
         dataFacade.clear();
+        log.trace("<<< clear");
     }
 
     @Override
@@ -367,13 +398,15 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
     @Override
     public void addListener(InvalidationListener listener) {
         log.trace(">>> addListener(InvalidationListener)");
-        invListeners.add(listener);
+        dataFacade.addListener(listener);
+        //invListeners.add(listener);
     }
 
     @Override
     public void removeListener(InvalidationListener listener) {
         log.trace(">>> removeListener(InvalidationListener)");
-        invListeners.remove(listener);
+        dataFacade.removeListener(listener);
+        //invListeners.remove(listener);
     }
 
     // ******************* fxapp01.dto.ISortOrder *******************
