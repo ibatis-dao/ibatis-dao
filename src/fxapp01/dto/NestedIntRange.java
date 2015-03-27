@@ -54,7 +54,14 @@ public class NestedIntRange implements INestedRange<Integer> {
     public NestedIntRange() {
         
     }
-    
+
+    public NestedIntRange(INestedRange<Integer> range) {
+        this();
+        if (range != null) {
+            init(range.getFirst(), range.getLength(), range.getParentRange());
+        }
+    }
+
     public NestedIntRange(Integer first, Integer length, INestedRange<Integer> parentRange) {
         init(first, length, null);
         log.trace(entering+contructorMthdName+"(first="+first+", length="+length+", parentRange="+parentRange+")");
@@ -175,7 +182,7 @@ public class NestedIntRange implements INestedRange<Integer> {
         return parentRange;
     }
     
-    private static NestedIntRange castItf(INestedRange<Integer> itf) {
+    private static NestedIntRange castItf(INestedRange itf) {
         if (itf != null) {
             if (itf.getClass().isAssignableFrom(NestedIntRange.class)) {
                 return (NestedIntRange)itf;
@@ -189,10 +196,10 @@ public class NestedIntRange implements INestedRange<Integer> {
 
     @Override
     public void setParentRange(INestedRange<Integer> parentRange) {
-        NestedIntRange p = castItf(parentRange);
-        IsIntRule1Ok(setLeftLimitMthdName, p, first); // leftLimit <= first
-        IsIntRule3Ok(setLeftLimitMthdName, first, length, p); // first+length-1 <= rightLimit
-        this.parentRange = p;
+        //NestedIntRange p = castItf(parentRange);
+        IsIntRule1Ok(setLeftLimitMthdName, parentRange, first); // leftLimit <= first
+        IsIntRule3Ok(setLeftLimitMthdName, first, length, parentRange); // first+length-1 <= rightLimit
+        this.parentRange = parentRange;
     }
 
     /**
@@ -471,7 +478,7 @@ public class NestedIntRange implements INestedRange<Integer> {
     */
     /*
     @Override
-    public Integer getMinDistance(INestedRange<Integer> aRange) {
+    public Integer getMinDistance(NestedIntRange aRange) {
         Integer minLen = Math.min(Math.abs(first - aRange.getFirst()), Math.abs(first - aRange.getLast()));
         minLen = Math.min(minLen, Math.min(Math.abs(getLast() - aRange.getFirst()), Math.abs(getLast() - aRange.getLast())));
         log.debug("getMinDistance(). minLen="+minLen);
@@ -483,7 +490,7 @@ public class NestedIntRange implements INestedRange<Integer> {
     */
     /*
     @Override
-    public Integer getMaxDistance(INestedRange<Integer> aRange) {
+    public Integer getMaxDistance(NestedIntRange aRange) {
         Integer maxLen = Math.max(Math.abs(first - aRange.getFirst()), Math.abs(first - aRange.getLast()));
         maxLen = Math.max(maxLen, Math.max(Math.abs(getLast() - aRange.getFirst()), Math.abs(getLast() - aRange.getLast())));
         log.debug("getMaxDistance(). maxLen="+maxLen);

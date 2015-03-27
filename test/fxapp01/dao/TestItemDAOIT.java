@@ -17,10 +17,10 @@ package fxapp01.dao;
 
 import fxapp01.dao.sort.SortOrder;
 import fxapp01.dto.INestedRange;
-import fxapp01.dto.ISortOrder;
+import fxapp01.dao.sort.ISortOrder;
 import fxapp01.dto.NestedIntRange;
+import fxapp01.dto.SQLParams;
 import fxapp01.dto.TestItemDTO;
-import fxapp01.dto.TestItemQBE;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 import java.beans.IntrospectionException;
@@ -135,6 +135,7 @@ public class TestItemDAOIT {
      * Test of select method, of class TestItemDAO.
      * @throws java.lang.Exception
      */
+    /*
     @Test
     public void testSelect() throws Exception {
         log.trace(">>> testSelectByRange");
@@ -151,6 +152,7 @@ public class TestItemDAOIT {
         Assert.assertTrue("ProductRefs retrieved not in 3 rows", (numRows == 3));
         log.trace("<<< testSelectByRange");
     }
+    */
 
     /**
      * Test of selectByID method, of class TestItemDAO.
@@ -172,13 +174,13 @@ public class TestItemDAOIT {
      */
     @Test
     public void testSelectWithParams() throws Exception {
-        log.trace(">>> testSelectBE");
+        log.trace(">>> testSelectWithParams");
         TestItemDAO dao = new TestItemDAO();
         NestedIntRange range = new NestedIntRange(0, 10, null);
         TestItemDTO example = new TestItemDTO();
         example.setId(BigInteger.ONE);
-        TestItemQBE qbe = new TestItemQBE(example, range, null);
-        List<TestItemDTO> l = dao.select(qbe);
+        SQLParams par = new SQLParams(range, null, example);
+        List<TestItemDTO> l = dao.select(par);
         int numRows = 0;
         Iterator<TestItemDTO> itr = l.iterator();
         while (itr.hasNext()){
@@ -189,8 +191,8 @@ public class TestItemDAOIT {
         Assert.assertTrue("TestItemDTO retrieved not in one row", (numRows == 1));
         example = new TestItemDTO();
         example.setName("test");
-        qbe.setExample(example);
-        l = dao.select(qbe);
+        par.setExample(example);
+        l = dao.select(par);
         numRows = 0;
         itr = l.iterator();
         while (itr.hasNext()){
@@ -207,10 +209,10 @@ public class TestItemDAOIT {
             so.add(s, ISortOrder.Direction.ASC);
         }
         
-        qbe = new TestItemQBE(example, range, so);
-        l = dao.select(qbe);
+        par = new SQLParams(range, so, example);
+        l = dao.select(par);
         
-        log.trace("<<< testSelectBE");
+        log.trace("<<< testSelectWithParams");
     }
 
     /**

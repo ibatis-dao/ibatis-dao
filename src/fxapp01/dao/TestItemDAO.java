@@ -121,12 +121,12 @@ public class TestItemDAO implements TestItemMapper, IDAO<TestItemDTO>{
     }
 */
     @Override
-    public List<TestItemDTO> select(SQLParams sqlprm) throws IOException {
+    public List<TestItemDTO> select(SQLParams prm) throws IOException {
         log.trace(">>> selectBE");
         ORMFacade orm = new ORMFacade();
         try {
             TestItemMapper mapper = orm.getMapper(TestItemMapper.class);
-            List<TestItemDTO> res = mapper.select(sqlprm);
+            List<TestItemDTO> res = mapper.select(prm);
             log.trace("<<< selectBE");
             return res;
         } catch (Exception e) {

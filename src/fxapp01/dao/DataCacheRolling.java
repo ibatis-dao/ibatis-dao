@@ -183,6 +183,7 @@ public class DataCacheRolling<T> implements List<T> {
         log.trace(">>> clear");
         data.clear();
         range.setLength(0);
+        log.trace("<<< clear. "+size());
     }
     
     @Override

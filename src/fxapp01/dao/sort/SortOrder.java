@@ -15,40 +15,85 @@
  */
 package fxapp01.dao.sort;
 
-import fxapp01.dto.ISortOrder;
+import fxapp01.dao.IDAO;
 import fxapp01.excpt.ENullArgument;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * класс для поддержки списка сортировки в объектах доступа к данным
  * @author serg
  */
-public class SortOrder implements ISortOrder {
+public class SortOrder implements IDAOSortOrder {
     
     protected static final ILogger log = LogMgr.getLogger(SortOrder.class);
     private final ArrayList<SortOrderItem> list;
+    private IDAO dao;
+    private List<String> daoColumnNames;
     private static final Direction[] allDirs = Direction.values(); //ordered array of all enum values
 
     private class SortOrderItem {
-        private String colname;
+        private String colName;
         private ISortOrder.Direction direction;
         private boolean isSortable = true; // по умолчанию все колонки можно сортировать
     }
 
     public SortOrder() {
-        list = new ArrayList<>();
+        this.list = new ArrayList<>();
+        this.dao = null;
     }
     
-    public SortOrder(ISortOrder sortOrder) {
+    public SortOrder(IDAO dao) {
+        this();
+        setDAO(dao);
+    }
+    
+    public SortOrder(IDAOSortOrder sortOrder) {
         this();
         clone(sortOrder);
     }
     
-    private void clone(ISortOrder sortOrder) {
+    // *************** IDAOSortOrder ********************
+    
+    @Override
+    public IDAO getDAO() {
+        return dao;
+    }
+    
+    private void setDAO(IDAO dao) {
+        this.dao = dao;
+        if (dao != null) {
+            daoColumnNames = dao.getColumnNames();
+        } else {
+            daoColumnNames = null;
+        }
+        setIsSortable();
+    }
+
+    private boolean isDaoContainsColumnName(String columnName) {
+        if (daoColumnNames != null) {
+            return daoColumnNames.contains(columnName);
+        } else {
+            return true;
+        }
+    }
+
+    private void setIsSortable(){
+        for (SortOrderItem item : list) {
+            if (item != null) {
+                item.isSortable = isDaoContainsColumnName(item.colName); 
+            }
+        }
+    }
+    
+    // *************** ISortOrder ********************
+
+    private void clone(IDAOSortOrder sortOrder) {
         if (sortOrder != null) {
             clear();
+            setDAO(sortOrder.getDAO());
             for (int i = 0; i < sortOrder.size(); i++) {
                 add(sortOrder.getName(i), sortOrder.getDirection(i));
             }
@@ -80,7 +125,7 @@ public class SortOrder implements ISortOrder {
     public String getName(int index) {
         SortOrderItem item = list.get(index);
         if (item != null) {
-            return item.colname;
+            return item.colName;
         }
         return null;
     }
@@ -100,8 +145,9 @@ public class SortOrder implements ISortOrder {
             throw new ENullArgument("add");
         }
         SortOrderItem item = new SortOrderItem();
-        item.colname = columnName;
+        item.colName = columnName;
         item.direction = direction;
+        item.isSortable = isDaoContainsColumnName(columnName); 
         list.add(item);
     }
 
@@ -136,8 +182,11 @@ public class SortOrder implements ISortOrder {
         if (aDir == null) {
             throw new ENullArgument("nextEnumValue");
         }
-        assert(allDirs.length != 0);
-        return allDirs[(aDir.ordinal()+1) % allDirs.length];
+        if (allDirs.length != 0) {
+            return allDirs[(aDir.ordinal()+1) % allDirs.length];
+        } else {
+            return null;
+        }
     }
 
     @Override

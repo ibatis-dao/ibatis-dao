@@ -31,7 +31,6 @@ import javafx.scene.chart.BarChart;
 import fxapp01.dao.TestItemDAO;
 import fxapp01.dto.INestedRange;
 import fxapp01.dto.TestItemDTO;
-import fxapp01.dto.LimitedIntRange;
 import fxapp01.dto.NestedIntRange;
 import fxapp01.dto.SQLParams;
 import fxapp01.log.ILogger;
@@ -39,8 +38,6 @@ import fxapp01.log.LogMgr;
 import java.beans.IntrospectionException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * data model for swing JTable
@@ -57,8 +54,8 @@ public class ProductRefsTblMdl extends AbstractTableModel {
     
     // фактическое начало (порядковый номер первой строки) и фактический размер 
     // окна данных в рамках источника данных. 
-    private final INestedRange<Integer> outerLimits; 
-    private final INestedRange<Integer> cacheRowsRange; 
+    private final NestedIntRange outerLimits; 
+    private final NestedIntRange cacheRowsRange; 
     // базовый размер окна 
     private int baseDataPageSize;
     // размер кеша данных относительно размера окна данных

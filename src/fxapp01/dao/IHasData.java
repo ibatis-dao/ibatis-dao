@@ -15,7 +15,7 @@
  */
 package fxapp01.dao;
 
-import fxapp01.dto.ISortOrder;
+import fxapp01.dao.sort.IDAOSortOrder;
 import java.io.Serializable;
 import javafx.collections.ObservableList;
 
@@ -29,6 +29,6 @@ public interface IHasData<DTOclass>
             ObservableList<DTOclass>, 
             IDataRangeFetcher             
 {
-    ISortOrder getSortOrder();
-    void setSortOrder(ISortOrder sortOrder);
+    IDAOSortOrder getSortOrder();
+    void setSortOrder(IDAOSortOrder sortOrder);
 }

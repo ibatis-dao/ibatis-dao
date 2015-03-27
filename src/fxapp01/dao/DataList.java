@@ -15,9 +15,9 @@
  */
 package fxapp01.dao;
 
+import fxapp01.dao.sort.IDAOSortOrder;
 import fxapp01.dao.sort.SortOrder;
 import fxapp01.dto.INestedRange;
-import fxapp01.dto.ISortOrder;
 import fxapp01.dto.SQLParams;
 import fxapp01.excpt.ENullArgument;
 import fxapp01.log.ILogger;
@@ -60,7 +60,7 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
     private final IDAO dao;
     private final List<ListChangeListener<? super DTOclass>> changeListeners;
     private final List<InvalidationListener> invListeners;
-    private ISortOrder sortOrder;
+    private IDAOSortOrder sortOrder;
 
     public DataList(IDAO dao) throws IOException {
         log.trace(">>> constructor");
@@ -103,7 +103,11 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
     }
     
     public void refresh() {
-        cache.clear();
+        log.trace("refresh");
+        //cache.clear();
+        clear();
+        log.debug("after clear(). "+size());
+        //TODO fetch должен здесь заменять диапазон, а он прибавляет его. надо подумать, что с этим делать
         fetch(cache.getRange(), cache.getLeftLimit());
     }
     
@@ -189,14 +193,14 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
     @Override
     public void addListener(ListChangeListener<? super DTOclass> listener) {
         //throw new UnsupportedOperationException("Not supported yet.");
-        log.trace(">>> addListener(ListChangeListener)");
+        log.trace(">>> addListener(ListChangeListener)"+listener);
         changeListeners.add(listener);
     }
 
     @Override
     public void removeListener(ListChangeListener<? super DTOclass> listener) {
         //throw new UnsupportedOperationException("Not supported yet.");
-        log.trace(">>> removeListener(ListChangeListener)");
+        log.trace(">>> removeListener(ListChangeListener)"+listener);
         changeListeners.remove(listener);
     }
 
@@ -375,11 +379,13 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
     // ******************* fxapp01.dto.ISortOrder *******************
 
     @Override
-    public ISortOrder getSortOrder() {
+    public IDAOSortOrder getSortOrder() {
+        //возвращается копия объекта, чтобы через него нельзя было поменять сортировку
         return new SortOrder(sortOrder);
     }
     
-    private boolean isSortOrderChanged(ISortOrder sortOrder) {
+    private boolean isSortOrderChanged(IDAOSortOrder sortOrder) {
+        log.trace("isSortOrderChanged");
         if (this.sortOrder == null) {
             return (sortOrder != null);
         } else {
@@ -389,10 +395,14 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
     }
 
     @Override
-    public void setSortOrder(ISortOrder sortOrder){
+    public void setSortOrder(IDAOSortOrder sortOrder){
+        log.trace("setSortOrder");
         if (isSortOrderChanged(sortOrder)) {
+            log.debug("isSortOrderChanged=true");
             this.sortOrder = sortOrder;
             refresh();
+        } else {
+            log.debug("isSortOrderChanged=false");
         }
     }
     

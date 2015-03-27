@@ -13,33 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fxapp01.dto;
-
-import fxapp01.dao.sort.SortOrder;
+package fxapp01.dao.sort;
 
 /**
- *
+ * список сортировки в объектах доступа к данным
  * @author serg
  */
-public class TestItemQBE extends QueryExtraParam {
-
-    private TestItemDTO example;
+public interface ISortOrder {
     
-    public TestItemQBE(TestItemDTO example, NestedIntRange rowsrange) {
-        this(example, rowsrange, null);
-    }
-
-    public TestItemQBE(TestItemDTO example, NestedIntRange rowsrange, SortOrder sortOrder) {
-        super(rowsrange, sortOrder);
-        this.example = example;
+    public enum Direction {
+        ASC, DESC, NONE
     }
     
-    public TestItemDTO getExample() {
-        return this.example;
-    }
-
-    public void setExample(TestItemDTO example) {
-        this.example = example;
-    }
-
+    /* возвращает имя поля с направлением сортировки */
+    String build();
+    int size();
+    boolean isSortable(int index);
+    String getName(int index);
+    ISortOrder.Direction getDirection(int index);
+    void add(String columnName, ISortOrder.Direction direction);
+    void toggle(int index);
+    boolean del(int index);
+    void clear();
 }

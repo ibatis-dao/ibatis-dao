@@ -15,42 +15,44 @@
  */
 package fxapp01.dto;
 
+import fxapp01.dao.sort.IDAOSortOrder;
+
 /**
  *
  * @author serg
  */
 public class SQLParams {
-    private INestedRange rowsRange;
-    private ISortOrder sortOrder;
+    private NestedIntRange rowsRange;
+    private IDAOSortOrder sortOrder;
     private Object example; // query by example
 
     public SQLParams(INestedRange rowsRange){
         this(rowsRange, null, null);
     }
     
-    public SQLParams(INestedRange rowsRange, ISortOrder sortOrder){
+    public SQLParams(INestedRange rowsRange, IDAOSortOrder sortOrder){
         this(rowsRange, sortOrder, null);
     }
     
-    public SQLParams(INestedRange rowsRange, ISortOrder sortOrder, Object example){
-        this.rowsRange = rowsRange;
+    public SQLParams(INestedRange rowsRange, IDAOSortOrder sortOrder, Object example){
+        this.rowsRange = new NestedIntRange(rowsRange);
         this.sortOrder = sortOrder;
         this.example = example;
     }
     
-    public INestedRange getRowsRange() {
+    public NestedIntRange getRowsRange() {
         return rowsRange;
     }
 
     public void setRowsRange(INestedRange rowsRange) {
-        this.rowsRange = rowsRange;
+        this.rowsRange = new NestedIntRange(rowsRange);
     }
 
-    public ISortOrder getSortOrder() {
+    public IDAOSortOrder getSortOrder() {
         return sortOrder;
     }
 
-    public void setSortOrder(ISortOrder sortOrder) {
+    public void setSortOrder(IDAOSortOrder sortOrder) {
         this.sortOrder = sortOrder;
     }
 

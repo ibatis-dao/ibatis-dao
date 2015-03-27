@@ -15,7 +15,6 @@
  */
 package fxapp01.dao.sort;
 
-import fxapp01.dto.ISortOrder;
 import java.util.Iterator;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
