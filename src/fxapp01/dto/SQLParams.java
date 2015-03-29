@@ -15,6 +15,7 @@
  */
 package fxapp01.dto;
 
+import fxapp01.dao.filter.ISqlFilterable;
 import fxapp01.dao.sort.IDAOSortOrder;
 
 /**
@@ -24,6 +25,7 @@ import fxapp01.dao.sort.IDAOSortOrder;
 public class SQLParams {
     private NestedIntRange rowsRange;
     private IDAOSortOrder sortOrder;
+    private ISqlFilterable filter;
     private Object example; // query by example
 
     public SQLParams(INestedRange rowsRange){
@@ -34,10 +36,15 @@ public class SQLParams {
         this(rowsRange, sortOrder, null);
     }
     
-    public SQLParams(INestedRange rowsRange, IDAOSortOrder sortOrder, Object example){
+    public SQLParams(INestedRange rowsRange, ISqlFilterable filter){
+        this(rowsRange, null, filter);
+    }
+    
+    public SQLParams(INestedRange rowsRange, IDAOSortOrder sortOrder, ISqlFilterable filter){
         this.rowsRange = new NestedIntRange(rowsRange);
         this.sortOrder = sortOrder;
-        this.example = example;
+        this.filter = filter;
+        this.example = null;
     }
     
     public NestedIntRange getRowsRange() {
@@ -54,6 +61,14 @@ public class SQLParams {
 
     public void setSortOrder(IDAOSortOrder sortOrder) {
         this.sortOrder = sortOrder;
+    }
+
+    public ISqlFilterable getFilter() {
+        return filter;
+    }
+
+    public void setFilter(ISqlFilterable filter) {
+        this.filter = filter;
     }
 
     public Object getExample() {

@@ -15,6 +15,7 @@
  */
 package fxapp01.dao;
 
+import fxapp01.dao.filter.ISqlFilterable;
 import fxapp01.dao.sort.IDAOSortOrder;
 import java.io.Serializable;
 import javafx.collections.ObservableList;
@@ -27,8 +28,11 @@ import javafx.collections.ObservableList;
 public interface IHasData<DTOclass> 
     extends Serializable, 
             ObservableList<DTOclass>, 
-            IDataRangeFetcher             
+            IDataRangeFetcher<DTOclass>             
 {
     IDAOSortOrder getSortOrder();
     void setSortOrder(IDAOSortOrder sortOrder);
+    
+    ISqlFilterable getFilter();
+    void setFilter(ISqlFilterable filter);
 }

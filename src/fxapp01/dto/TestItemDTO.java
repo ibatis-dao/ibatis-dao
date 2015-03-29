@@ -69,9 +69,10 @@ public class TestItemDTO implements Serializable, IHasID<BigInteger> {
                 return false;
             } else {
                 TestItemDTO p = (TestItemDTO)o;
+                String thisname = getName();
                 return (
                     (IdProperty().get() == p.IdProperty().get()) &&
-                    (NameProperty().get().equals(p.NameProperty().get()))
+                    ((thisname != null) && (thisname.contentEquals(p.getName())))
                 );
             }
         }

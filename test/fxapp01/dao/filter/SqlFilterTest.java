@@ -106,7 +106,7 @@ public class SqlFilterTest {
         Filter instance = new Filter.IsNull(1);
         instance.setOneArg("test01");
         String expResult = "test01 is null";
-        String result = instance.getText();
+        String result = instance.getFilterSqlText();
         assertTrue(expResult.contentEquals(result));
     }
     
@@ -126,120 +126,120 @@ public class SqlFilterTest {
         // And
         instance = new Filter.And(fldName1, fldName2);
         expResult = "("+fldName1+") and ("+fldName2+")";
-        result = instance.getText();
+        result = instance.getFilterSqlText();
         assertTrue(expResult.contentEquals(result));
         // Between
         instance = new Filter.Between(fldName1, argName1, argName2);
         expResult = fldName1+" between "+argName1+" and "+argName2;
-        result = instance.getText();
+        result = instance.getFilterSqlText();
         assertTrue(expResult.contentEquals(result));
         // Equals
         instance = new Filter.Equals(fldName1, fldName2);
         expResult = fldName1+" = "+fldName2;
-        result = instance.getText();
+        result = instance.getFilterSqlText();
         assertTrue(expResult.contentEquals(result));
         // NotEquals
         instance = new Filter.NotEquals(fldName1, fldName2);
         expResult = fldName1+" <> "+fldName2;
-        result = instance.getText();
+        result = instance.getFilterSqlText();
         assertTrue(expResult.contentEquals(result));
         // Greater
         instance = new Filter.Greater(fldName1, fldName2);
         expResult = fldName1+" > "+fldName2;
-        result = instance.getText();
+        result = instance.getFilterSqlText();
         assertTrue(expResult.contentEquals(result));
         // GreaterOrEquals
         instance = new Filter.GreaterOrEquals(fldName1, fldName2);
         expResult = fldName1+" >= "+fldName2;
-        result = instance.getText();
+        result = instance.getFilterSqlText();
         assertTrue(expResult.contentEquals(result));
         // IsNull
         instance = new Filter.IsNull(fldName1);
         expResult = fldName1+" is null";
-        result = instance.getText();
+        result = instance.getFilterSqlText();
         assertTrue(expResult.contentEquals(result));
         // IsNotNull
         instance = new Filter.IsNotNull(fldName1);
         expResult = "";
-        result = instance.getText();
+        result = instance.getFilterSqlText();
         log.debug(result);
         assertFalse(expResult.contentEquals(result));
         // Less
         instance = new Filter.Less(fldName1, fldName2);
         expResult = "";
-        result = instance.getText();
+        result = instance.getFilterSqlText();
         log.debug(result);
         assertFalse(expResult.contentEquals(result));
         // LessOrEquals
         instance = new Filter.LessOrEquals(fldName1, fldName2);
         expResult = "";
-        result = instance.getText();
+        result = instance.getFilterSqlText();
         log.debug(result);
         assertFalse(expResult.contentEquals(result));
         // Like
         instance = new Filter.Like(fldName1, fldName2);
         expResult = "";
-        result = instance.getText();
+        result = instance.getFilterSqlText();
         log.debug(result);
         assertFalse(expResult.contentEquals(result));
         // NotLike
         instance = new Filter.NotLike(fldName1, fldName2);
         expResult = "";
-        result = instance.getText();
+        result = instance.getFilterSqlText();
         log.debug(result);
         assertFalse(expResult.contentEquals(result));
         // Not
         instance = new Filter.Not(fldName1);
         expResult = "";
-        result = instance.getText();
+        result = instance.getFilterSqlText();
         log.debug(result);
         assertFalse(expResult.contentEquals(result));
         // Or
         instance = new Filter.Or(fldName1, fldName2);
         expResult = "";
-        result = instance.getText();
+        result = instance.getFilterSqlText();
         log.debug(result);
         assertFalse(expResult.contentEquals(result));
         // Containing
         instance = new Filter.Containing(fldName1, fldName2);
         expResult = "";
-        result = instance.getText();
+        result = instance.getFilterSqlText();
         log.debug(result);
         assertFalse(expResult.contentEquals(result));
         // StartsWith
         instance = new Filter.StartsWith(fldName1, fldName2);
         expResult = "";
-        result = instance.getText();
+        result = instance.getFilterSqlText();
         log.debug(result);
         assertFalse(expResult.contentEquals(result));
         // EndsWith
         instance = new Filter.EndsWith(fldName1, fldName2);
         expResult = "";
-        result = instance.getText();
+        result = instance.getFilterSqlText();
         log.debug(result);
         assertFalse(expResult.contentEquals(result));
         // In
         instance = new Filter.In(fldName1, fldName2);
         expResult = "";
-        result = instance.getText();
+        result = instance.getFilterSqlText();
         log.debug(result);
         assertFalse(expResult.contentEquals(result));
         // NotIn
         instance = new Filter.NotIn(fldName1, fldName2);
         expResult = fldName1+" not in "+fldName2;
-        result = instance.getText();
+        result = instance.getFilterSqlText();
         log.debug(result);
         assertTrue(expResult.contentEquals(result));
         // Exists
         instance = new Filter.Exists(fldName1);
         expResult = "exists "+fldName1;
-        result = instance.getText();
+        result = instance.getFilterSqlText();
         log.debug(result);
         assertTrue(expResult.contentEquals(result));
         // NotExists
         instance = new Filter.NotExists(fldName1);
         expResult = "not exists "+fldName1;
-        result = instance.getText();
+        result = instance.getFilterSqlText();
         log.debug(result);
         assertTrue(expResult.contentEquals(result));
     }
@@ -253,15 +253,15 @@ public class SqlFilterTest {
         String fldName1 = "test01";
         String fldName2 = "test02";
         // IsNull
-        ISqlFilterable IsNullinstance = new Filter.IsNull(fldName1);
+        ISqlFilterable IsNullInstance = new Filter.IsNull(fldName1);
         // Equals
-        ISqlFilterable Equalsinstance = new Filter.Equals(fldName1, fldName2);
+        ISqlFilterable EqualsInstance = new Filter.Equals(fldName1, fldName2);
         // Or
-        ISqlFilterable Orinstance = new Filter.Or(IsNullinstance, Equalsinstance);
+        ISqlFilterable OrInstance = new Filter.Or(IsNullInstance, EqualsInstance);
         // Not
-        ISqlFilterable Notinstance = new Filter.Not(Orinstance);
+        ISqlFilterable NotInstance = new Filter.Not(OrInstance);
         String expResult = "not (("+fldName1+" is null) or ("+fldName1+" = "+fldName2+"))";
-        String result = Notinstance.getText();
+        String result = NotInstance.getFilterSqlText();
         log.debug(result);
         assertTrue(expResult.contentEquals(result));
     }

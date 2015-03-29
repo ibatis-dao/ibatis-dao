@@ -41,13 +41,13 @@ import static org.junit.Assert.*;
  *
  * @author serg
  */
-public class TestItemDAOIT {
+public class TestItemDAOTest {
     
     private final ILogger log = LogMgr.getLogger(this.getClass()); 
     private TestItemDTO item01 = null;
     private TestItemDTO item02 = null;
 
-    public TestItemDAOIT() {
+    public TestItemDAOTest() {
     }
     
     @BeforeClass
@@ -179,7 +179,8 @@ public class TestItemDAOIT {
         NestedIntRange range = new NestedIntRange(0, 10, null);
         TestItemDTO example = new TestItemDTO();
         example.setId(BigInteger.ONE);
-        SQLParams par = new SQLParams(range, null, example);
+        SQLParams par = new SQLParams(range, null, null);
+        par.setExample(example);
         List<TestItemDTO> l = dao.select(par);
         int numRows = 0;
         Iterator<TestItemDTO> itr = l.iterator();
@@ -209,7 +210,8 @@ public class TestItemDAOIT {
             so.add(s, ISortOrder.Direction.ASC);
         }
         
-        par = new SQLParams(range, so, example);
+        par = new SQLParams(range, so, null);
+        par.setExample(example);
         l = dao.select(par);
         
         log.trace("<<< testSelectWithParams");
@@ -299,15 +301,11 @@ public class TestItemDAOIT {
     public void testDeleteRow() throws Exception {
         log.trace("deleteRow");
         TestItemDTO item = new TestItemDTO();
-        if (item02 == null) {
-            item.setId(BigInteger.ZERO);
-        } else {
-            item = item02;
-        }
+        item.setName("test_"+Math.random());
         TestItemDAO instance = new TestItemDAO();
-        int expResult = 0;
-        int result = instance.deleteRow(item);
-        assertFalse(expResult == result);
+        int rowsIns = instance.insertRow(item);
+        int rowsDel = instance.deleteRow(item);
+        assertEquals(rowsIns, rowsDel);
     }
     
 }

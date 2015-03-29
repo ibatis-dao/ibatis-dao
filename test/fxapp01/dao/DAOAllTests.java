@@ -33,11 +33,12 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses( {
     BaseDaoTest.class,
-    TestItemDAOIT.class,
-    DataCacheTest01.class,
+    TestItemDAOTest.class,
     BeanPropertiesTest.class,
     BeanPropertiesDescribedTest.class,
-    SortOrderTest.class
+    SortOrderTest.class,
+    DataListTest.class,
+    DataCacheRollingTest.class
 } )
 public class DAOAllTests {
 

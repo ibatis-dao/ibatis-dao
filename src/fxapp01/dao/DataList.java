@@ -15,6 +15,7 @@
  */
 package fxapp01.dao;
 
+import fxapp01.dao.filter.ISqlFilterable;
 import fxapp01.dao.sort.IDAOSortOrder;
 import fxapp01.dao.sort.SortOrder;
 import fxapp01.dto.INestedRange;
@@ -62,6 +63,7 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
     //private final List<ListChangeListener<? super DTOclass>> changeListeners;
     //private final List<InvalidationListener> invListeners;
     private IDAOSortOrder sortOrder;
+    private ISqlFilterable filter;
 
     public DataList(IDAO dao) throws IOException {
         log.trace(">>> constructor");
@@ -69,6 +71,7 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
         //this.invListeners = new ArrayList<>();
         this.dao = dao;
         this.sortOrder = new SortOrder();
+        this.filter = null;
         log.debug("before new DataCacheRolling");
         IDataRangeFetcher dps = this; // 
         //TODO желательно минимальный и максимальный диапазон окна определять 
@@ -76,10 +79,10 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
         this.cache = new DataCacheRolling<>(dps, 20, 40);
         log.debug("before FXCollections.observableList");
         this.dataFacade = FXCollections.observableList(cache);
-        log.debug("before requestDataPage");
-        INestedRange<Integer> initRange = cache.getRange().clone();
-        initRange.setLength(20);
-        dps.fetch(initRange, cache.getLeftLimit());
+        log.debug("make initRange");
+        cache.getRange().setLength(20);
+        log.debug("before refresh");
+        refresh();
         log.trace("<<< constructor");
     }
     
@@ -128,14 +131,9 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
     
     public void refresh() {
         log.trace("refresh");
-        INestedRange<Integer> r = cache.getRange().clone();
-        //cache.clear();
-        clear();
-        log.debug("after clear(). "+size());
-        //TODO fetch должен здесь заменять диапазон, а он прибавляет его. надо подумать, что с этим делать
-        fetch(r, cache.getLeftLimit());
-        debugPrintAll();
-        //fireInvalidationEvent();
+        cache.refresh();
+        log.debug("size()="+size());
+        //debugPrintAll();
     }
     
     // ******************* IDataRangeFetcher *******************
@@ -153,26 +151,24 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
      * запрашивает указанный диапазон адресов (номеров строк aRowsRange) у 
      * источника данных и помещает полученные данные в кеш по адресу pos.
      * @param aRowsRange - диапазон строк, который нужно запросить у источника данных
-     * @param pos - адрес (номер строки) в кеше, куда нужно поместить полученые из источника данные. 
-     * номер строки определяется адресацией кеша.
+     * @return 
      */
     @Override
-    public void fetch(INestedRange aRowsRange, int pos) {
-        log.trace(">>> fetch(aRowsRange="+aRowsRange+"), pos="+pos+")");
+    public List<DTOclass> fetch(INestedRange aRowsRange) {
+        log.trace(">>> fetch(aRowsRange="+aRowsRange+")");
         if (aRowsRange == null) {
             throw new ENullArgument("fetch");
         }
         List<DTOclass> l;
         try {
-            SQLParams qep = new SQLParams(aRowsRange, getSortOrder());
+            SQLParams qep = new SQLParams(aRowsRange, getSortOrder(), getFilter());
             l = dao.select(qep);
         } catch (IOException ex) {
             log.error(null, ex);
             l = new ArrayList<>();
         }
-        cache.addAll(pos, l);
-        log.debug("cache.size="+cache.size());
         log.trace("<<< fetch");
+        return l;
     }
 
     // ******************* javafx.collections.ObservableList *******************
@@ -248,7 +244,7 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
             log.error(null, ex);
             rc = 0;
         }
-        log.trace(">>> size="+sz+", RowCount="+rc);
+        log.trace(">>> size="+sz+", RowCount="+rc+", isEmpty="+dataFacade.isEmpty());
         //return dataFacade.size();
         return rc;
     }
@@ -436,6 +432,35 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
             refresh();
         } else {
             log.debug("isSortOrderChanged=false");
+        }
+    }
+
+    // ******************* fxapp01.dao.filter.ISqlFilterable *******************
+
+    @Override
+    public ISqlFilterable getFilter() {
+        return filter;
+    }
+
+    private boolean isFilterChanged(ISqlFilterable filter) {
+        log.trace("isFilterChanged");
+        if (this.filter == null) {
+            return (filter != null);
+        } else {
+            //обработать filter == null ?
+            return (! this.filter.equals(filter));
+        }
+    }
+
+    @Override
+    public void setFilter(ISqlFilterable filter) {
+        log.trace("setFilter");
+        if (isFilterChanged(filter)) {
+            log.debug("isFilterChanged=true");
+            this.filter = filter;
+            refresh();
+        } else {
+            log.debug("isFilterChanged=false");
         }
     }
     

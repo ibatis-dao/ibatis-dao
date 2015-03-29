@@ -44,13 +44,13 @@ public class Filter implements ISqlFilterable {
     }
 
     @Override
-    public String getText() {
+    public String getFilterSqlText() {
         return format(sqlTemplate, args);
     }
 
     @Override
     public String toString() {
-        return getText();
+        return getFilterSqlText();
     }
     
     protected String format(String pattern, Object... arguments) {
