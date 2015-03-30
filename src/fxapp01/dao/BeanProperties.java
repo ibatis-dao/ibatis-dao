@@ -69,12 +69,12 @@ public class BeanProperties implements IHasDataProperty {
     }
 
     @Override
-    public IDataProperty getDataProperty(Object id) {
+    public IDataProperty<Object,Object> getDataProperty(Object id) {
         return beanProperties.get(id);
     }
 
     @Override
-    public Collection<?> getDataPropertyIds() {
+    public Collection<Object> getDataPropertyIds() {
         return beanProperties.keySet(); //values();
     }
 

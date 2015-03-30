@@ -21,6 +21,7 @@ import fxapp01.dao.sort.SortOrder;
 import fxapp01.dto.INestedRange;
 import fxapp01.dto.SQLParams;
 import fxapp01.excpt.ENullArgument;
+import fxapp01.excpt.EUnsupported;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 import java.io.IOException;
@@ -38,38 +39,46 @@ import javafx.collections.ObservableList;
 /**
  * Адаптер источника данных для табличного представления (например, в javafx TableView).
  * Основное назначение - диспетчеризация и согласование вызовов между потребителем 
- * данных (TableView), кешем данных (DataCacheRolling) и объектом доступа к данным (IDAO).
- * Класс реализует интерфейс ObservableList и делегирует все обращения к данным извне 
- * к плавающему кешу данных DataCacheRolling. При наличии данных в кеше они 
- * извлекаются оттуда. При отсутствии в кеше данных кеш обращается с запросом на 
- * загрузку необходимых данных к данному классу, который в свою очередь делегирует 
- * вызов объекту доступа к данным IDAO.
- * При делегировании вызовов учитывается, что пространства номеров строк в 
- * потребителе (TableView), кеше данных (DataCacheRolling) и объекте доступа к 
- * данным (IDAO) отличаются и требуют согласования между собой. 
- * Данный класс реализует интерфейс List, который предполагает нумерацию строк 
- * с 0 до size()-1 во всех методах, кроме методов, реализующих интерфейс IDataRangeFetcher.
- * Нумерация строк в кеше и объекте доступа к данным зависит от подключенной БД 
- * и ограничена диапазоном, который можно получить вызовом метода IDAO.getRowTotalRange().
+ данных (TableView), кешем данных (DataCacheRolling) и объектом доступа к данным (IDAOreadonly).
+ Класс реализует интерфейс ObservableList и делегирует все обращения к данным извне 
+ к плавающему кешу данных DataCacheRolling. При наличии данных в кеше они 
+ извлекаются оттуда. При отсутствии в кеше данных кеш обращается с запросом на 
+ загрузку необходимых данных к данному классу, который в свою очередь делегирует 
+ вызов объекту доступа к данным IDAOreadonly.
+ При делегировании вызовов учитывается, что пространства номеров строк в 
+ потребителе (TableView), кеше данных (DataCacheRolling) и объекте доступа к 
+ данным (IDAOreadonly) отличаются и требуют согласования между собой. 
+ Данный класс реализует интерфейс List, который предполагает нумерацию строк 
+ с 0 до size()-1 во всех методах, кроме методов, реализующих интерфейс IDataRangeFetcher.
+ Нумерация строк в кеше и объекте доступа к данным зависит от подключенной БД 
+ и ограничена диапазоном, который можно получить вызовом метода IDAOreadonly.getRowTotalRange().
  * @author serg
  * @param <DTOclass> - класс объекта, представляющего строку данных
  */
-public class DataList<DTOclass> implements IHasData<DTOclass> {
+public class DataList<DTOclass> implements IDataCrud<DTOclass> {
     
     protected final ILogger log = LogMgr.getLogger(this.getClass());
     private final DataCacheRolling<DTOclass> cache;
     private final ObservableList<DTOclass> dataFacade;
-    private final IDAO dao;
+    private final IDAOreadonly dao;
+    private final boolean isWritable;
     //private final List<ListChangeListener<? super DTOclass>> changeListeners;
     //private final List<InvalidationListener> invListeners;
     private IDAOSortOrder sortOrder;
     private ISqlFilterable filter;
 
-    public DataList(IDAO dao) throws IOException {
+    /**
+     *
+     * @param dao может принимать объекты, поддерживающие интерфейс IDAOreadonly 
+     * и его наследников, в том числе, IDAOwritable
+     * @throws IOException
+     */
+    public DataList(IDAOreadonly dao) throws IOException {
         log.trace(">>> constructor");
         //this.changeListeners = new ArrayList<>();
         //this.invListeners = new ArrayList<>();
         this.dao = dao;
+        this.isWritable = (dao != null) && (dao instanceof IDataWriter);
         this.sortOrder = new SortOrder();
         this.filter = null;
         log.debug("before new DataCacheRolling");
@@ -86,7 +95,7 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
         log.trace("<<< constructor");
     }
     
-    public List<String> getColumnNames() {
+    public List getColumnNames() {
         return dao.getColumnNames();
     }
     
@@ -470,6 +479,38 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
             refresh();
         } else {
             log.debug("isFilterChanged=false");
+        }
+    }
+
+    // ******************* fxapp01.dao.IDataWriter *******************
+
+    @Override
+    public int insertRow(DTOclass item) throws IOException {
+        log.trace(">>> insertRow");
+        if (isWritable) {
+            return ((IDAOwritable)dao).insertRow(item);
+        } else {
+            throw new EUnsupported("DAO is read-only");
+        }
+    }
+
+    @Override
+    public int updateRow(DTOclass item) throws IOException {
+        log.trace(">>> updateRow");
+        if (isWritable) {
+            return ((IDAOwritable)dao).updateRow(item);
+        } else {
+            throw new EUnsupported("DAO is read-only");
+        }
+    }
+
+    @Override
+    public int deleteRow(DTOclass item) throws IOException {
+        log.trace(">>> deleteRow");
+        if (isWritable) {
+            return ((IDAOwritable)dao).deleteRow(item);
+        } else {
+            throw new EUnsupported("DAO is read-only");
         }
     }
     

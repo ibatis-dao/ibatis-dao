@@ -24,9 +24,11 @@ import fxapp01.log.LogMgr;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 
 /**
  * Скользящий (плавающий) кеш данных. В данной версии только read-only. Хранит "окно" данных 
@@ -44,12 +46,14 @@ public class DataCacheRolling<T> implements List<T> {
     private static final String exiting = "<<< ";
     // фактическое начало (порядковый номер первой строки) и фактический размер 
     // окна данных в рамках источника данных. 
-    private IDataRangeFetcher dataFetcher;
+    private final IDataRangeFetcher dataFetcher;
+    private final boolean hasWriteSupport;
     private INestedRange<Integer> outerLimits;
     private INestedRange<Integer> range;
     private int defSize;
     private int maxSize;
-    private final List<T> data;
+    private final List<T> readOnlyData;
+    private final Map<Integer,T> writableData; //HashMap или Hashtable
     
     public DataCacheRolling(IDataRangeFetcher dataFetcher) throws IOException {
         String methodName = "constructor(dataFetcher)";
@@ -58,9 +62,12 @@ public class DataCacheRolling<T> implements List<T> {
             throw new ENullArgument(methodName);
         } 
         this.dataFetcher = dataFetcher;
+        this.hasWriteSupport = (dataFetcher instanceof IDataCrud);
         this.defSize = 100; //defaults
         this.maxSize = 300;
-        this.data = new ArrayList<>();
+        this.readOnlyData = new ArrayList<>();
+        // If a thread-safe highly-concurrent implementation is desired, then it is recommended to use ConcurrentHashMap
+        this.writableData = new HashMap<>(16, 0.75f); //defaults
         log.debug("before dataFetcher.getRowTotalRange");
         this.outerLimits = dataFetcher.getRowTotalRange(); 
         this.range = new NestedIntRange(outerLimits.getFirst(), 0, outerLimits); 
@@ -134,12 +141,11 @@ public class DataCacheRolling<T> implements List<T> {
      * @return возвращает true, если этот номер строки данных найден в кеше
      */
     public boolean containsIndex(int index) {
-        /*
-        index = 99
-        data.size() = 99 [0 .. 98]
-        range.first=0, last=99
-        */
-        return range.IsInbound(index);
+        if (writableData.containsKey(index)) {
+            return true;
+        } else {
+            return range.IsInbound(index);
+        }
     }
     
     private boolean purge(int from, int to) {
@@ -147,15 +153,15 @@ public class DataCacheRolling<T> implements List<T> {
         if (from > to) {
             throw new EArgumentBreaksRule("remove", "(from <= to)");
         }
-        if (! ((from == 0) || (to == data.size()-1)) ) {
-            log.debug("data.size="+data.size());
+        if (! ((from == 0) || (to == readOnlyData.size()-1)) ) {
+            log.debug("data.size="+readOnlyData.size());
             throw new EArgumentBreaksRule("remove", "(from == 0) || (to == data.size()-1)");
         }
         for (int i = from; i <= to; i++) {
             //TODO 
-            data.remove(from);
+            readOnlyData.remove(from);
         }
-        log.debug("after data.remove. data.size="+data.size());
+        log.debug("after data.remove. data.size="+readOnlyData.size());
         int delta = to - from + 1;
         range.incLength(-delta);
         //TODO
@@ -170,7 +176,7 @@ public class DataCacheRolling<T> implements List<T> {
     @Override
     public int size() {
         //**********************************************************************
-        int sz = data.size();
+        int sz = readOnlyData.size();
         log.trace(">>> size()="+sz+", range.length="+range.getLength());
         //return dataFacade.size();
         return sz;
@@ -179,39 +185,42 @@ public class DataCacheRolling<T> implements List<T> {
     @Override
     public void clear() {
         log.trace(">>> clear");
-        data.clear();
+        readOnlyData.clear();
         range.setLength(0);
         log.trace("<<< clear. size="+size());
     }
     
     @Override
     public boolean isEmpty() {
-        return data.isEmpty();
+        return (readOnlyData.isEmpty() && writableData.isEmpty());
     }
 
     @Override
     public boolean contains(Object o) {
-        return data.contains(o);
+        return writableData.containsValue(o) || readOnlyData.contains(o);
     }
 
     @Override
     public Iterator<T> iterator() {
-        return data.iterator();
+        //TODO итератор по двум коллекциям
+        return readOnlyData.iterator();
     }
 
     @Override
     public Object[] toArray() {
-        return data.toArray();
+        int sz = readOnlyData.size() + writableData.size();
+        //Object[] res = new Object[sz]{readOnlyData.toArray()};
+        return readOnlyData.toArray();
     }
 
     @Override
     public <T>T[] toArray(T[] a) {
-        return data.toArray(a);
+        return readOnlyData.toArray(a);
     }
 
     @Override
     public boolean add(T e) {
-        boolean res = data.add(e);
+        boolean res = readOnlyData.add(e);
         if (res) {
             range.incLength(1);
         }
@@ -220,7 +229,7 @@ public class DataCacheRolling<T> implements List<T> {
 
     @Override
     public boolean remove(Object o) {
-        boolean res = data.remove(o);
+        boolean res = readOnlyData.remove(o);
         if (res) {
             range.incLength(-1);
         }
@@ -229,7 +238,7 @@ public class DataCacheRolling<T> implements List<T> {
 
     @Override
     public boolean containsAll(Collection c) {
-        return data.containsAll(c);
+        return readOnlyData.containsAll(c);
     }
 
     @Override
@@ -237,7 +246,7 @@ public class DataCacheRolling<T> implements List<T> {
         if (c != null) {
             range.incLength(c.size());
         }
-        return data.addAll(c);
+        return readOnlyData.addAll(c);
     }
 
     @Override
@@ -245,7 +254,7 @@ public class DataCacheRolling<T> implements List<T> {
         log.trace(entering+"addAll(index="+index+", c)");
         if (c != null) {
             log.debug("before data.addAll()");
-            boolean res = data.addAll(toCacheIndex(index), c);
+            boolean res = readOnlyData.addAll(toCacheIndex(index), c);
             log.debug("size="+size());
             range.incLength(c.size());
             return res;
@@ -257,7 +266,7 @@ public class DataCacheRolling<T> implements List<T> {
     @Override
     public boolean removeAll(Collection c) {
         if (c != null) {
-            boolean res = data.removeAll(c);
+            boolean res = readOnlyData.removeAll(c);
             range.incLength(- c.size());
             return res;
         } else {
@@ -267,7 +276,7 @@ public class DataCacheRolling<T> implements List<T> {
 
     @Override
     public boolean retainAll(Collection c) {
-        return data.retainAll(c);
+        return readOnlyData.retainAll(c);
     }
     
     /**
@@ -341,8 +350,8 @@ public class DataCacheRolling<T> implements List<T> {
             int intIdx = toCacheIndex(index);
             log.debug("intIdx="+intIdx);
             //если да, то возвращаем значение из этой строки
-            assert((0 <= intIdx) && (intIdx < data.size()));
-            return data.get(intIdx);
+            assert((0 <= intIdx) && (intIdx < readOnlyData.size()));
+            return readOnlyData.get(intIdx);
         } else {
             log.debug("Out of cache. Try find new range");
             //если строка за пределами текущего диапазона
@@ -380,8 +389,8 @@ public class DataCacheRolling<T> implements List<T> {
                     if (target < range.getFirst()) {
                         log.debug("target < range.first. before purge(x, len)");
                         //сбрасываем часть строк с правого края кеша
-                        log.debug("data.size="+data.size()+", aRange.length="+aRange.getLength());
-                        purge(data.size()-aRange.getLength(), data.size()-1);
+                        log.debug("data.size="+readOnlyData.size()+", aRange.length="+aRange.getLength());
+                        purge(readOnlyData.size()-aRange.getLength(), readOnlyData.size()-1);
                         log.debug("before dataFetcher.fetch(aRange, 0);");
                         //дозагружаем данные слева
                         addAll(range.getFirst(), dataFetcher.fetch(aRange));
@@ -410,20 +419,20 @@ public class DataCacheRolling<T> implements List<T> {
         int intIdx = index-range.getFirst();
         log.debug("intIdx="+intIdx);
         //если да, то возвращаем значение из этой строки
-        assert((0 <= intIdx) && (intIdx < data.size()));
-        return data.get(intIdx);
+        assert((0 <= intIdx) && (intIdx < readOnlyData.size()));
+        return readOnlyData.get(intIdx);
     }
 
     @Override
     public T set(int index, T element) {
         //return data.set(toCacheIndex(index), element);
-        return data.set(index, element);
+        return readOnlyData.set(index, element);
     }
 
     @Override
     public void add(int index, T element) {
         //data.add(toCacheIndex(index), element);
-        data.add(index, element);
+        readOnlyData.add(index, element);
         range.incLength(1);
     }
 
@@ -431,27 +440,27 @@ public class DataCacheRolling<T> implements List<T> {
     public T remove(int index) {
         range.incLength(-1);
         //return data.remove(toCacheIndex(index));
-        return data.remove(index);
+        return readOnlyData.remove(index);
     }
 
     @Override
     public int indexOf(Object o) {
         log.trace(entering+"indexOf(Object)");
         //return toDataRowNo(data.indexOf(o));
-        return data.indexOf(o);
+        return readOnlyData.indexOf(o);
     }
 
     @Override
     public int lastIndexOf(Object o) {
         log.trace(entering+"lastIndexOf(Object)");
         //return toDataRowNo(data.lastIndexOf(o));
-        return data.lastIndexOf(o);
+        return readOnlyData.lastIndexOf(o);
     }
 
     @Override
     public ListIterator<T> listIterator() {
         log.trace(entering+"listIterator()");
-        return data.listIterator();
+        return readOnlyData.listIterator();
     }
 
     /*
@@ -462,12 +471,12 @@ public class DataCacheRolling<T> implements List<T> {
     public ListIterator<T> listIterator(int index) {
         log.trace(entering+"listIterator(index="+index+")");
         //log.debug("toCacheIndex="+toCacheIndex(index));
-        return data.listIterator(index);
+        return readOnlyData.listIterator(index);
     }
 
     @Override
     public List<T> subList(int fromIndex, int toIndex) {
-        return data.subList(fromIndex, toIndex);
+        return readOnlyData.subList(fromIndex, toIndex);
         //return data.subList(toCacheIndex(fromIndex), toCacheIndex(toIndex));
     }
 }

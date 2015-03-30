@@ -17,25 +17,22 @@ package fxapp01.dao;
 
 import fxapp01.dto.INestedRange;
 import fxapp01.dto.SQLParams;
-import fxapp01.dto.TestItemDTO;
 import java.io.IOException;
 import java.util.List;
 
 /**
  *
  * @author serg
- * @param <DTOclass>
+ * @param <DTOclass> класс строки данных
  */
-public interface IDAO<DTOclass> {
+public interface IDAOreadonly<DTOclass>{
     
     public IHasDataProperty getBeanProperties();
     
-    public List<String> getColumnNames();
+    public List getColumnNames();
     
     public INestedRange getRowTotalRange() throws IOException;
     
-    //public List<DTOclass> select(INestedRange rowsrange) throws IOException;
-    
-    public List<TestItemDTO> select(SQLParams qep) throws IOException;
+    public List<DTOclass> select(SQLParams prm) throws IOException;
 
 }

@@ -18,39 +18,13 @@
     select 0 "first", count(id)-1 "length" from public."test02"
     </select>
     
-    <!--
-    <select id="select" databaseId="postgresql" parameterType="IntRange" resultMap="TestItemMap">
-    select id, name
-      from test02
-     order by id
-    offset #{first} limit #{length}
-    </select>
-
-    <select id="select" databaseId="oracle" parameterType="IntRange" resultMap="TestItemMap">
-    with t001 as (
-            select i.id, 
-                   i.name
-              from tmp$items i 
-             order by i.id
-          )
-    select id, name
-      from (
-        select rownum as rn, 
-               id, 
-               name
-          from t001
-      )
-     where rn between #{first} and #{last}
-    </select>
-    -->
-    
-    <select id="selectByID" databaseId="oracle" parameterType="BigInteger" resultMap="TestItemMap">
+    <select id="selectByPKey" databaseId="oracle" parameterType="BigInteger" resultMap="TestItemMap">
     select i.id, i.name
       from tmp$items i
      where i.id = #{id}
     </select>
     
-    <select id="selectByID" databaseId="postgresql" parameterType="BigInteger" resultMap="TestItemMap">
+    <select id="selectByPKey" databaseId="postgresql" parameterType="BigInteger" resultMap="TestItemMap">
     select id, 
            name 
       from test02

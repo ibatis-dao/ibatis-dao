@@ -31,7 +31,7 @@ import java.lang.reflect.InvocationTargetException;
  *
  * @author StarukhSA
  */
-public class TestItemDAO implements TestItemMapper, IDAO<TestItemDTO>{
+public class TestItemDAO implements TestItemMapper {
     
     private final ILogger log = LogMgr.getLogger(this.getClass());
     private INestedRange rowRange = null;
@@ -51,7 +51,7 @@ public class TestItemDAO implements TestItemMapper, IDAO<TestItemDTO>{
     
     public Object getBeanPropertyValue(Object bean, int propIndex) throws InvocationTargetException, IllegalAccessException {
         log.trace(">>> getBeanProperty");
-        IDataProperty dp = beanProperties.getDataProperty(propIndex);
+        IDataProperty<Object,Object> dp = beanProperties.getDataProperty(propIndex);
         if (dp != null) {
             return dp.getValue(bean);
         } else {
@@ -61,7 +61,7 @@ public class TestItemDAO implements TestItemMapper, IDAO<TestItemDTO>{
     
     public void setBeanPropertyValue(Object bean, int propIndex, Object propValue) throws InvocationTargetException, IllegalAccessException {
         log.trace(">>> setBeanProperty");
-        IDataProperty dp = beanProperties.getDataProperty(propIndex);
+        IDataProperty<Object,Object> dp = beanProperties.getDataProperty(propIndex);
         if (dp != null) {
             dp.setValue(bean, propValue);
         } else {
@@ -70,7 +70,7 @@ public class TestItemDAO implements TestItemMapper, IDAO<TestItemDTO>{
     }
     
     @Override
-    public List<String> getColumnNames() {
+    public List getColumnNames() {
         return beanProperties.getColumnNames();
     }
 
@@ -102,24 +102,7 @@ public class TestItemDAO implements TestItemMapper, IDAO<TestItemDTO>{
             orm.closeDBSession();
         }
     }
-/*
-    @Override
-    public List<TestItemDTO> select(INestedRange rowsrange) throws IOException {
-        log.trace(">>> select");
-        ORMFacade orm = new ORMFacade();
-        try {
-            TestItemMapper mapper = orm.getMapper(TestItemMapper.class);
-            List<TestItemDTO> res = mapper.select(rowsrange);
-            log.trace("<<< select");
-            return res;
-        } catch (Exception e) {
-            log.error(null, e);
-            throw e;
-        } finally {
-            orm.closeDBSession();
-        }
-    }
-*/
+    
     @Override
     public List<TestItemDTO> select(SQLParams prm) throws IOException {
         log.trace(">>> selectBE");
@@ -138,13 +121,13 @@ public class TestItemDAO implements TestItemMapper, IDAO<TestItemDTO>{
     }
 
     @Override
-    public TestItemDTO selectByID(BigInteger id) throws IOException {
-        log.trace(">>> selectByID");
+    public TestItemDTO selectByPKey(BigInteger PKey) throws IOException {
+        log.trace(">>> selectByPKey");
         ORMFacade orm = new ORMFacade();
         try {
             TestItemMapper mapper = orm.getMapper(TestItemMapper.class);
-            TestItemDTO res = mapper.selectByID(id);
-            log.trace("<<< selectByID");
+            TestItemDTO res = mapper.selectByPKey(PKey);
+            log.trace("<<< selectByPKey");
             return res;
         } catch (Exception e) {
             log.error(null, e);
