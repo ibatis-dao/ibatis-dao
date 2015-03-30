@@ -163,7 +163,7 @@ public class TestItemDAOTest {
         log.trace(">>> selectByID");
         BigInteger id = BigInteger.ONE;
         TestItemDAO instance = new TestItemDAO();
-        TestItemDTO result = instance.selectByID(id);
+        TestItemDTO result = instance.selectByPKey(id);
         assertNotNull(result);
         assertEquals(id, result.getId());
     }
@@ -229,7 +229,7 @@ public class TestItemDAOTest {
         TestItemDAO dao = new TestItemDAO();
         int numRows = dao.insertRow(item01);
         log.debug("Rows inserted="+numRows+", item:"+item01);
-        TestItemDTO exp = dao.selectByID(item01.getId());
+        TestItemDTO exp = dao.selectByPKey(item01.getId());
         log.debug("Item selected:"+exp);
         Assert.assertTrue(item01.equals(exp));
         log.trace("<<< testInsertRow");
@@ -249,7 +249,7 @@ public class TestItemDAOTest {
         dao.insertRowBySP(item02);
         //item = TestItemDTO.fromMap(params);
         log.debug("Inserted item:"+item02);
-        TestItemDTO exp = dao.selectByID(item02.getId());
+        TestItemDTO exp = dao.selectByPKey(item02.getId());
         log.debug("Item selected:"+exp);
         Assert.assertTrue(item02.getName().equals(exp.getName()));
         log.trace("<<< testInsertRowBySP");
@@ -267,7 +267,7 @@ public class TestItemDAOTest {
         TestItemDAO dao = new TestItemDAO();
         int cnt = dao.insertRowBySP2(item);
         log.debug("Inserted item:"+item+", affected rows="+cnt);
-        TestItemDTO exp = dao.selectByID(item.getId());
+        TestItemDTO exp = dao.selectByPKey(item.getId());
         log.debug("Item selected:"+exp);
         Assert.assertTrue(item.equals(exp));
         log.trace("<<< testInsertRowBySP2");

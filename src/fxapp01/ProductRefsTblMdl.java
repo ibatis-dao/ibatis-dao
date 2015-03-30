@@ -224,7 +224,7 @@ public class ProductRefsTblMdl extends AbstractTableModel {
 
     @Override
     public String getColumnName(int column) {
-        return dao.getColumnNames().get(column);
+        return dao.getColumnNames().get(column).toString();
     }
 
     @Override

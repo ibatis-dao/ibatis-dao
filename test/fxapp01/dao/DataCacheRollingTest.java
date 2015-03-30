@@ -49,9 +49,9 @@ public class DataCacheRollingTest {
     
     private class DataRangeFetcher<DTOclass> implements IDataRangeFetcher<DTOclass>  {
 
-        IDAO dao;
+        IDAOreadonly dao;
         
-        public DataRangeFetcher(IDAO dao) {
+        public DataRangeFetcher(IDAOreadonly dao) {
             this.dao = dao;
         }
         
@@ -81,7 +81,7 @@ public class DataCacheRollingTest {
     }
     
     public DataCacheRollingTest() throws IOException, IntrospectionException {
-        dataFetcher = new DataRangeFetcher<>(new TestItemDAO());
+        dataFetcher = new DataRangeFetcher<TestItemDTO>(new TestItemDAO());
         instance = new DataCacheRolling<>(dataFetcher, 20, 40);
         instance.getRange().setLength(20);
     }

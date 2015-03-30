@@ -15,7 +15,7 @@
  */
 package fxapp01.dao.sort;
 
-import fxapp01.dao.IDAO;
+import fxapp01.dao.IDAOreadonly;
 import fxapp01.excpt.ENullArgument;
 import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
@@ -30,7 +30,7 @@ public class SortOrder implements IDAOSortOrder {
     
     protected static final ILogger log = LogMgr.getLogger(SortOrder.class);
     private final ArrayList<SortOrderItem> list;
-    private IDAO dao;
+    private IDAOreadonly dao;
     private List<String> daoColumnNames;
     private static final Direction[] allDirs = Direction.values(); //ordered array of all enum values
 
@@ -45,7 +45,7 @@ public class SortOrder implements IDAOSortOrder {
         this.dao = null;
     }
     
-    public SortOrder(IDAO dao) {
+    public SortOrder(IDAOreadonly dao) {
         this();
         setDAO(dao);
     }
@@ -58,11 +58,11 @@ public class SortOrder implements IDAOSortOrder {
     // *************** IDAOSortOrder ********************
     
     @Override
-    public IDAO getDAO() {
+    public IDAOreadonly getDAO() {
         return dao;
     }
     
-    private void setDAO(IDAO dao) {
+    private void setDAO(IDAOreadonly dao) {
         this.dao = dao;
         if (dao != null) {
             daoColumnNames = dao.getColumnNames();

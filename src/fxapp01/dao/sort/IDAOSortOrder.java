@@ -15,12 +15,12 @@
  */
 package fxapp01.dao.sort;
 
-import fxapp01.dao.IDAO;
+import fxapp01.dao.IDAOreadonly;
 
 /**
  *
  * @author serg
  */
 public interface IDAOSortOrder extends ISortOrder {
-    IDAO getDAO();
+    IDAOreadonly getDAO();
 }
