@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Скользящий (плавающий) кеш данных. В данной версии только read-only. Хранит "окно" данных 
@@ -175,10 +176,8 @@ public class DataCacheRolling<T> implements List<T> {
 
     @Override
     public int size() {
-        //**********************************************************************
-        int sz = readOnlyData.size();
+        int sz = readOnlyData.size() + writableData.size();
         log.trace(">>> size()="+sz+", range.length="+range.getLength());
-        //return dataFacade.size();
         return sz;
     }
     
@@ -202,14 +201,16 @@ public class DataCacheRolling<T> implements List<T> {
 
     @Override
     public Iterator<T> iterator() {
-        //TODO итератор по двум коллекциям
-        return readOnlyData.iterator();
+        return new TwinIterator(readOnlyData, writableData);
     }
+
+    // **********************************************************************
 
     @Override
     public Object[] toArray() {
         int sz = readOnlyData.size() + writableData.size();
-        //Object[] res = new Object[sz]{readOnlyData.toArray()};
+        Object[] res = new Object[sz];
+        
         return readOnlyData.toArray();
     }
 
@@ -478,5 +479,35 @@ public class DataCacheRolling<T> implements List<T> {
     public List<T> subList(int fromIndex, int toIndex) {
         return readOnlyData.subList(fromIndex, toIndex);
         //return data.subList(toCacheIndex(fromIndex), toCacheIndex(toIndex));
+    }
+    
+    private class TwinIterator implements Iterator<T>{
+
+        private final Iterator<T> roi;
+        private final Iterator<Entry<Integer, T>> wi;
+        
+        private TwinIterator(List<T> readOnlyData, Map<Integer,T> writableData){
+            this.roi = readOnlyData.iterator();
+            this.wi = writableData.entrySet().iterator();
+        }
+
+        @Override
+        public boolean hasNext() {
+            if (roi.hasNext()) {
+                return true;
+            } else {
+                return wi.hasNext();
+            }
+        }
+
+        @Override
+        public T next() {
+            if (roi.hasNext()) {
+                return roi.next();
+            } else {
+                return wi.next().getValue();
+            }
+        }
+        
     }
 }
