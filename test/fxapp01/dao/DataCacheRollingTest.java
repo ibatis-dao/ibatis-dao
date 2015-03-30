@@ -119,6 +119,10 @@ public class DataCacheRollingTest {
         return c;
     }
     
+    private int getLeftLimit() {
+        return instance.getLeftLimit();
+    }
+
     /**
      * Test of debugPrintAll method, of class DataCacheRolling.
      */
@@ -341,7 +345,7 @@ public class DataCacheRollingTest {
     @Test
     public void testAddAll_int_Collection() {
         log.trace("addAll");
-        int index = 0;
+        int index = instance.getLeftLimit();
         Collection c = newDataRow_Collection();
         boolean result = instance.addAll(index, c);
         assertTrue(result);
@@ -404,7 +408,7 @@ public class DataCacheRollingTest {
     @Test
     public void testAdd_int_GenericType() {
         log.trace("add");
-        int index = instance.getLeftLimit();
+        int index = 0; //instance.getLeftLimit();
         TestItemDTO element = newDataRow(null);
         instance.add(index, element);
     }
@@ -463,7 +467,7 @@ public class DataCacheRollingTest {
     @Test
     public void testListIterator_int() {
         log.trace("listIterator");
-        int index = instance.getLeftLimit();
+        int index = 0; //instance.getLeftLimit();
         ListIterator result = instance.listIterator(index);
         assertNotNull(result);
     }
@@ -476,8 +480,8 @@ public class DataCacheRollingTest {
         log.trace("subList");
         instance.refresh();
         boolean wasEmpty = instance.isEmpty();
-        int fromIndex = 0;
-        int toIndex = 1;
+        int fromIndex = instance.getLeftLimit();
+        int toIndex = instance.getLeftLimit()+1;
         int expResult = 1;
         List result = instance.subList(fromIndex, toIndex);
         assertTrue((wasEmpty || (result.size() == expResult)));

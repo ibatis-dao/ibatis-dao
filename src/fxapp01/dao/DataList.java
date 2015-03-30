@@ -30,7 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import javafx.beans.InvalidationListener;
-import javafx.beans.value.ChangeListener;
+//import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -132,7 +132,7 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
     public void refresh() {
         log.trace("refresh");
         cache.refresh();
-        log.debug("size()="+size());
+        log.debug("size="+size());
         //debugPrintAll();
     }
     
@@ -164,6 +164,7 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
             SQLParams qep = new SQLParams(aRowsRange, getSortOrder(), getFilter());
             l = dao.select(qep);
         } catch (IOException ex) {
+            //TODO прятать проблемы нехорошо
             log.error(null, ex);
             l = new ArrayList<>();
         }
@@ -274,21 +275,29 @@ public class DataList<DTOclass> implements IHasData<DTOclass> {
     }
 
     @Override
-    public <T> T[] toArray(T[] a) {
+    public <DTOclass> DTOclass[] toArray(DTOclass[] a) {
         log.trace(">>> toArray(T[] a)");
         return dataFacade.toArray(a);
     }
 
     @Override
     public boolean add(DTOclass e) {
-        log.trace(">>> add(ProductRefs)");
-        return dataFacade.add(e);
+        log.trace(">>> add(DTOclass)");
+        boolean res;
+        log.debug("before dataFacade.add(). size="+size());
+        res = dataFacade.add(e);
+        log.debug("after dataFacade.add(). size="+size());
+        return res;
     }
 
     @Override
     public boolean remove(Object o) {
         log.trace(">>> remove(Object)");
-        return dataFacade.remove(o);
+        boolean res;
+        log.debug("before dataFacade.remove(). size="+size());
+        res = dataFacade.remove(o);
+        log.debug("after dataFacade.remove(). size="+size());
+        return res;
     }
 
     @Override

@@ -122,13 +122,9 @@ public class DataCacheRolling<T> implements List<T> {
     public void refresh() {
         log.trace("refresh");
         INestedRange<Integer> r = range.clone();
-        //cache.clear();
         clear();
-        log.debug("after clear(). "+size());
-        //TODO fetch должен здесь заменять диапазон, а он прибавляет его. надо подумать, что с этим делать
+        log.debug("after clear(). size="+size());
         addAll(r.getFirst(), dataFetcher.fetch(r));
-        //debugPrintAll();
-        //fireInvalidationEvent();
     }
     
     /**
@@ -185,7 +181,7 @@ public class DataCacheRolling<T> implements List<T> {
         log.trace(">>> clear");
         data.clear();
         range.setLength(0);
-        log.trace("<<< clear. "+size());
+        log.trace("<<< clear. size="+size());
     }
     
     @Override
@@ -420,33 +416,41 @@ public class DataCacheRolling<T> implements List<T> {
 
     @Override
     public T set(int index, T element) {
-        return data.set(toCacheIndex(index), element);
+        //return data.set(toCacheIndex(index), element);
+        return data.set(index, element);
     }
 
     @Override
     public void add(int index, T element) {
-        data.add(toCacheIndex(index), element);
+        //data.add(toCacheIndex(index), element);
+        data.add(index, element);
         range.incLength(1);
     }
 
     @Override
     public T remove(int index) {
         range.incLength(-1);
-        return data.remove(toCacheIndex(index));
+        //return data.remove(toCacheIndex(index));
+        return data.remove(index);
     }
 
     @Override
     public int indexOf(Object o) {
-        return toDataRowNo(data.indexOf(o));
+        log.trace(entering+"indexOf(Object)");
+        //return toDataRowNo(data.indexOf(o));
+        return data.indexOf(o);
     }
 
     @Override
     public int lastIndexOf(Object o) {
-        return toDataRowNo(data.lastIndexOf(o));
+        log.trace(entering+"lastIndexOf(Object)");
+        //return toDataRowNo(data.lastIndexOf(o));
+        return data.lastIndexOf(o);
     }
 
     @Override
     public ListIterator<T> listIterator() {
+        log.trace(entering+"listIterator()");
         return data.listIterator();
     }
 
@@ -457,13 +461,13 @@ public class DataCacheRolling<T> implements List<T> {
     @Override
     public ListIterator<T> listIterator(int index) {
         log.trace(entering+"listIterator(index="+index+")");
-        //index = toCacheIndex(index);
-        //log.debug("toCacheIndex="+index);
+        //log.debug("toCacheIndex="+toCacheIndex(index));
         return data.listIterator(index);
     }
 
     @Override
     public List<T> subList(int fromIndex, int toIndex) {
-        return data.subList(toCacheIndex(fromIndex), toCacheIndex(toIndex));
+        return data.subList(fromIndex, toIndex);
+        //return data.subList(toCacheIndex(fromIndex), toCacheIndex(toIndex));
     }
 }

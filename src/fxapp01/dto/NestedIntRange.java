@@ -143,7 +143,7 @@ public class NestedIntRange implements INestedRange<Integer> {
      */
     @Override
     public void setFirst(Integer first) {
-        log.debug(entering+setFirstMthdName+"("+first+"). old value="+this.first);
+        log.debug(entering+setFirstMthdName+"("+first+"). old first="+this.first);
         IsIntRule1Ok(setFirstMthdName, parentRange, first); // leftLimit <= first
         IsIntRule3Ok(setFirstMthdName, first, length, parentRange); // first+length-1 <= rightLimit
         this.first = first;
@@ -162,7 +162,7 @@ public class NestedIntRange implements INestedRange<Integer> {
      */
     @Override
     public void setLength(Integer length) {
-        log.debug(entering+setLengthMthdName+"("+length+")");
+        log.debug(entering+setLengthMthdName+"("+length+"). old length="+this.length);
         IsIntRule2Ok(setLengthMthdName, length); // length >= 0
         IsIntRule3Ok(setLengthMthdName, first, length, parentRange); // first+length-1 <= rightLimit
         this.length = length;
