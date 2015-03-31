@@ -32,9 +32,27 @@ public class TestItemDTO implements Serializable, IHasID<BigInteger> {
     private BigInteger id;
     private String name;
     */
+    
+    public TestItemDTO() {
+        this.id = null;
+        this.name = null;
+    }
+    
+    public TestItemDTO(BigInteger id, String name) {
+        setId(id);
+        setName(name);
+    }
+    
+    public TestItemDTO(String id, String name) {
+        setId(id);
+        setName(name);
+    }
+    
     private IntegerProperty id;
+    @Override
     public BigInteger getId() { return BigInteger.valueOf(IdProperty().get());  }
     public void setId(BigInteger id) { IdProperty().set(id.intValue());    }
+    public void setId(String id) { if (! "".equals(id)) { IdProperty().set(Integer.parseInt(id)); } }
     public IntegerProperty IdProperty() {
         if (id == null) {
             id = new SimpleIntegerProperty(this, "id");

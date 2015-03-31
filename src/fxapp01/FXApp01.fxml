@@ -40,7 +40,12 @@
                     <panes>
                       <TitledPane animated="false" text="%Accordion.TitledPane01">
                         <content>
-                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                 <children>
+                                    <TextField fx:id="txtColumn01" layoutX="14.0" layoutY="14.0" promptText="%txtColumn01.PromptText" />
+                                    <TextField fx:id="txtColumn02" layoutX="14.0" layoutY="48.0" promptText="%txtColumn02.PromptText" />
+                                    <Button fx:id="btnSaveItem" layoutX="14.0" layoutY="84.0" mnemonicParsing="false" onAction="#handleSaveItemButtonAction" text="%btnSaveItem.Text" />
+                                 </children></AnchorPane>
                         </content>
                       </TitledPane>
                       <TitledPane animated="false" text="%Accordion.TitledPane02">

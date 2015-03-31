@@ -22,6 +22,7 @@ import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 import java.beans.IntrospectionException;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.ResourceBundle;
@@ -30,11 +31,13 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SortEvent;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 /**
@@ -56,6 +59,12 @@ public class FXApp01Controller implements Initializable {
     private TableColumn<TestItemDTO,Integer> table01Column01;
     @FXML
     private TableColumn<TestItemDTO,String> table01Column02;
+    @FXML
+    private TextField txtColumn01;
+    @FXML
+    private TextField txtColumn02;
+    @FXML
+    private Button btnSaveItem;
     
     private TestItemObservList dataOL;
     
@@ -68,6 +77,21 @@ public class FXApp01Controller implements Initializable {
             log.error("Error getting javafx.runtime.version", e);
         }
         label.setText("Hello World!");
+        dataOL.debugPrintAll();
+    }
+    
+    @FXML
+    private void handleSaveItemButtonAction(ActionEvent event) {
+        try {
+            log.debug(">>> handleSaveItemButtonAction");
+            dataOL.add(
+                new TestItemDTO(
+                    txtColumn01.getText(),
+                    txtColumn02.getText()
+                ));
+        } catch (Exception e) { 
+            log.error("Error in handleSaveItemButtonAction", e);
+        }
         dataOL.debugPrintAll();
     }
     
@@ -93,9 +117,12 @@ public class FXApp01Controller implements Initializable {
                 table01.setItems(dataOL);
             }
             table01.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-            //table01.setEditable(true);
+            table01.setEditable(true);
+            table01.setPlaceholder(label); //a Node object to appear in an empty table
             //table01.getSortOrder().add(table01Column01);
             //table01Column02.setSortType(TableColumn.SortType.DESCENDING);
+            //table01Column02.setVisible(false);
+            //table01Column02.setMinWidth(100);
             
             table01.setOnSort(
                 new EventHandler<SortEvent<TableView<TestItemDTO>>>() {

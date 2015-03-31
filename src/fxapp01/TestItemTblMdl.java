@@ -41,11 +41,11 @@ import java.lang.reflect.InvocationTargetException;
 
 /**
  * data model for swing JTable
- * ProductRefsTblMdl
+ TestItemTblMdl
  */
-public class ProductRefsTblMdl extends AbstractTableModel {
+public class TestItemTblMdl extends AbstractTableModel {
     
-    private static final ILogger log = LogMgr.getLogger(ProductRefsTblMdl.class);
+    private static final ILogger log = LogMgr.getLogger(TestItemTblMdl.class);
     private static ObservableList<BarChart.Series> bcData;
     
     private final TestItemDAO dao;
@@ -61,7 +61,7 @@ public class ProductRefsTblMdl extends AbstractTableModel {
     // размер кеша данных относительно размера окна данных
     private Double dataCacheFactor; 
 
-    public ProductRefsTblMdl() throws IOException, IntrospectionException {
+    public TestItemTblMdl() throws IOException, IntrospectionException {
         dao = new TestItemDAO();
         dataCacheFactor = 3.0; //defaul cache factor
         outerLimits = new NestedIntRange(1, Integer.MAX_VALUE, null); 

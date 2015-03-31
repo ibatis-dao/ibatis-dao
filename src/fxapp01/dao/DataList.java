@@ -57,6 +57,9 @@ import javafx.collections.ObservableList;
  */
 public class DataList<DTOclass> implements IDataCrud<DTOclass> {
     
+    private static final String entering = ">>> ";
+    private static final String exiting = "<<< ";
+
     protected final ILogger log = LogMgr.getLogger(this.getClass());
     private final DataCacheRolling<DTOclass> cache;
     private final ObservableList<DTOclass> dataFacade;
@@ -74,7 +77,7 @@ public class DataList<DTOclass> implements IDataCrud<DTOclass> {
      * @throws IOException
      */
     public DataList(IDAOreadonly dao) throws IOException {
-        log.trace(">>> constructor");
+        log.trace(entering+"constructor");
         //this.changeListeners = new ArrayList<>();
         //this.invListeners = new ArrayList<>();
         this.dao = dao;
@@ -92,7 +95,7 @@ public class DataList<DTOclass> implements IDataCrud<DTOclass> {
         cache.getRange().setLength(20);
         log.debug("before refresh");
         refresh();
-        log.trace("<<< constructor");
+        log.trace(exiting+"constructor");
     }
     
     public List getColumnNames() {
@@ -164,7 +167,7 @@ public class DataList<DTOclass> implements IDataCrud<DTOclass> {
      */
     @Override
     public List<DTOclass> fetch(INestedRange aRowsRange) {
-        log.trace(">>> fetch(aRowsRange="+aRowsRange+")");
+        log.trace(entering+"fetch(aRowsRange="+aRowsRange+")");
         if (aRowsRange == null) {
             throw new ENullArgument("fetch");
         }
@@ -177,7 +180,7 @@ public class DataList<DTOclass> implements IDataCrud<DTOclass> {
             log.error(null, ex);
             l = new ArrayList<>();
         }
-        log.trace("<<< fetch");
+        log.trace(exiting+"fetch");
         return l;
     }
 
@@ -189,44 +192,44 @@ public class DataList<DTOclass> implements IDataCrud<DTOclass> {
      */
     @Override
     public boolean addAll(DTOclass[] elements) {
-        log.trace(">>> addAll");
+        log.trace(entering+"addAll");
         return dataFacade.addAll(elements);
     }
 
     @Override
     public boolean setAll(DTOclass[] elements) {
-        log.trace(">>> setAll(elements[])");
+        log.trace(entering+"setAll(elements[])");
         return dataFacade.setAll(elements);
     }
 
     @Override
     public boolean setAll(Collection<? extends DTOclass> col) {
-        log.trace(">>> setAll(Collection)");
+        log.trace(entering+"setAll(Collection)");
         return dataFacade.setAll(col);
     }
 
     @Override
     public boolean removeAll(DTOclass[] elements) {
-        log.trace(">>> setAll(elements[])");
+        log.trace(entering+"setAll(elements[])");
         return dataFacade.removeAll(elements);
     }
 
     @Override
     public boolean retainAll(DTOclass[] elements) {
-        log.trace(">>> retainAll(elements[])");
+        log.trace(entering+"retainAll(elements[])");
         return dataFacade.retainAll(elements);
     }
 
     @Override
     public void remove(int from, int to) {
-        log.trace(">>> remove(from, to)");
+        log.trace(entering+"remove(from, to)");
         dataFacade.remove(toDataRowNo(from), toDataRowNo(to));
     }
 
     @Override
     public void addListener(ListChangeListener<? super DTOclass> listener) {
         //throw new UnsupportedOperationException("Not supported yet.");
-        log.trace(">>> addListener(ListChangeListener)"+listener);
+        log.trace(entering+"addListener(ListChangeListener)"+listener);
         dataFacade.addListener(listener);
         //changeListeners.add(listener);
     }
@@ -234,7 +237,7 @@ public class DataList<DTOclass> implements IDataCrud<DTOclass> {
     @Override
     public void removeListener(ListChangeListener<? super DTOclass> listener) {
         //throw new UnsupportedOperationException("Not supported yet.");
-        log.trace(">>> removeListener(ListChangeListener)"+listener);
+        log.trace(entering+"removeListener(ListChangeListener)"+listener);
         dataFacade.removeListener(listener);
         //changeListeners.remove(listener);
     }
@@ -254,44 +257,44 @@ public class DataList<DTOclass> implements IDataCrud<DTOclass> {
             log.error(null, ex);
             rc = 0;
         }
-        log.trace(">>> size="+sz+", RowCount="+rc+", isEmpty="+dataFacade.isEmpty());
+        log.trace(entering+"size="+sz+", RowCount="+rc+", isEmpty="+dataFacade.isEmpty());
         //return dataFacade.size();
         return rc;
     }
 
     @Override
     public boolean isEmpty() {
-        log.trace(">>> isEmpty");
+        log.trace(entering+"isEmpty");
         return dataFacade.isEmpty();
     }
 
     @Override
     public boolean contains(Object o) {
-        log.trace(">>> contains(Object)");
+        log.trace(entering+"contains(Object)");
         return dataFacade.contains(o);
     }
 
     @Override
     public Iterator<DTOclass> iterator() {
-        log.trace(">>> iterator");
+        log.trace(entering+"iterator");
         return dataFacade.iterator();
     }
 
     @Override
     public Object[] toArray() {
-        log.trace(">>> toArray");
+        log.trace(entering+"toArray");
         return dataFacade.toArray();
     }
 
     @Override
     public <DTOclass> DTOclass[] toArray(DTOclass[] a) {
-        log.trace(">>> toArray(T[] a)");
+        log.trace(entering+"toArray(T[] a)");
         return dataFacade.toArray(a);
     }
 
     @Override
     public boolean add(DTOclass e) {
-        log.trace(">>> add(DTOclass)");
+        log.trace(entering+"add(DTOclass)");
         boolean res;
         log.debug("before dataFacade.add(). size="+size());
         res = dataFacade.add(e);
@@ -301,7 +304,7 @@ public class DataList<DTOclass> implements IDataCrud<DTOclass> {
 
     @Override
     public boolean remove(Object o) {
-        log.trace(">>> remove(Object)");
+        log.trace(entering+"remove(Object)");
         boolean res;
         log.debug("before dataFacade.remove(). size="+size());
         res = dataFacade.remove(o);
@@ -311,45 +314,45 @@ public class DataList<DTOclass> implements IDataCrud<DTOclass> {
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        log.trace(">>> containsAll(Collection)");
+        log.trace(entering+"containsAll(Collection)");
         return dataFacade.containsAll(c);
     }
 
     @Override
     public boolean addAll(Collection<? extends DTOclass> c) {
-        log.trace(">>> addAll(Collection)");
+        log.trace(entering+"addAll(Collection)");
         return dataFacade.addAll(c);
     }
 
     @Override
     public boolean addAll(int index, Collection<? extends DTOclass> c) {
-        log.trace(">>> addAll(index, Collection)");
+        log.trace(entering+"addAll(index, Collection)");
         return dataFacade.addAll(toDataRowNo(index), c);
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        log.trace(">>> removeAll(Collection)");
+        log.trace(entering+"removeAll(Collection)");
         return dataFacade.removeAll(c);
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
-        log.trace(">>> retainAll(Collection)");
+        log.trace(entering+"retainAll(Collection)");
         return dataFacade.retainAll(c);
     }
 
     @Override
     public void clear() {
-        log.trace(">>> clear");
+        log.trace(entering+"clear");
         cache.clear();
         dataFacade.clear();
-        log.trace("<<< clear");
+        log.trace(exiting+"clear");
     }
 
     @Override
     public DTOclass get(int index) {
-        //log.trace(">>> get(index="+index+")");
+        //log.trace(entering+"get(index="+index+")");
         //возвращаем значение из этой строки
         //assert(cache.containsIndex(index));
         return cache.get(toDataRowNo(index));
@@ -357,49 +360,49 @@ public class DataList<DTOclass> implements IDataCrud<DTOclass> {
 
     @Override
     public DTOclass set(int index, DTOclass element) {
-        log.trace(">>> set(index, element)");
+        log.trace(entering+"set(index, element)");
         return dataFacade.set(toDataRowNo(index), element);
     }
 
     @Override
     public void add(int index, DTOclass element) {
-        log.trace(">>> add(index, element)");
+        log.trace(entering+"add(index, element)");
         dataFacade.add(toDataRowNo(index), element);
     }
 
     @Override
     public DTOclass remove(int index) {
-        log.trace(">>> remove(index)");
+        log.trace(entering+"remove(index)");
         return dataFacade.remove(toDataRowNo(index));
     }
 
     @Override
     public int indexOf(Object o) {
-        log.trace(">>> indexOf(Object)");
+        log.trace(entering+"indexOf(Object)");
         return toListIndex(dataFacade.indexOf(o));
     }
 
     @Override
     public int lastIndexOf(Object o) {
-        log.trace(">>> lastIndexOf(Object)");
+        log.trace(entering+"lastIndexOf(Object)");
         return toListIndex(dataFacade.lastIndexOf(o));
     }
 
     @Override
     public ListIterator<DTOclass> listIterator() {
-        log.trace(">>> listIterator");
+        log.trace(entering+"listIterator");
         return dataFacade.listIterator();
     }
 
     @Override
     public ListIterator<DTOclass> listIterator(int index) {
-        log.trace(">>> listIterator(index)");
+        log.trace(entering+"listIterator(index)");
         return dataFacade.listIterator(index);
     }
 
     @Override
     public List<DTOclass> subList(int fromIndex, int toIndex) {
-        log.trace(">>> subList(fromIndex, toIndex)");
+        log.trace(entering+"subList(fromIndex, toIndex)");
         return dataFacade.subList(fromIndex, toIndex);
     }
 
@@ -411,14 +414,14 @@ public class DataList<DTOclass> implements IDataCrud<DTOclass> {
      */
     @Override
     public void addListener(InvalidationListener listener) {
-        log.trace(">>> addListener(InvalidationListener)");
+        log.trace(entering+"addListener(InvalidationListener)");
         dataFacade.addListener(listener);
         //invListeners.add(listener);
     }
 
     @Override
     public void removeListener(InvalidationListener listener) {
-        log.trace(">>> removeListener(InvalidationListener)");
+        log.trace(entering+"removeListener(InvalidationListener)");
         dataFacade.removeListener(listener);
         //invListeners.remove(listener);
     }
@@ -486,7 +489,7 @@ public class DataList<DTOclass> implements IDataCrud<DTOclass> {
 
     @Override
     public int insertRow(DTOclass item) throws IOException {
-        log.trace(">>> insertRow");
+        log.trace(entering+"insertRow");
         if (isWritable) {
             return ((IDAOwritable)dao).insertRow(item);
         } else {
@@ -496,7 +499,7 @@ public class DataList<DTOclass> implements IDataCrud<DTOclass> {
 
     @Override
     public int updateRow(DTOclass item) throws IOException {
-        log.trace(">>> updateRow");
+        log.trace(entering+"updateRow");
         if (isWritable) {
             return ((IDAOwritable)dao).updateRow(item);
         } else {
@@ -506,7 +509,7 @@ public class DataList<DTOclass> implements IDataCrud<DTOclass> {
 
     @Override
     public int deleteRow(DTOclass item) throws IOException {
-        log.trace(">>> deleteRow");
+        log.trace(entering+"deleteRow");
         if (isWritable) {
             return ((IDAOwritable)dao).deleteRow(item);
         } else {
