@@ -25,6 +25,7 @@ import fxapp01.log.LogMgr;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -57,7 +58,8 @@ public class DataCacheRolling<T> implements List<T> {
     private int defSize;
     private int maxSize;
     private final List<T> dataReadOnly;
-    private final Map<Integer, DataOldNewValues<T>> dataWritable;
+    private final Map<Object, T> dataOldValues;
+    private final Map<Object, T> dataNewValues;
     
     public DataCacheRolling(IDataRangeFetcher dataFetcher) throws IOException {
         String methodName = "constructor(dataFetcher)";
@@ -76,7 +78,8 @@ public class DataCacheRolling<T> implements List<T> {
         this.maxSize = 300;
         this.dataReadOnly = new ArrayList<>();
         // If a thread-safe highly-concurrent implementation is desired, then it is recommended to use ConcurrentHashMap
-        this.dataWritable = new HashMap<>(16, 0.75f); //defaults
+        this.dataOldValues = new HashMap<>(16, 0.75f); //defaults
+        this.dataNewValues = new HashMap<>(16, 0.75f); //defaults
         log.debug("before dataFetcher.getRowTotalRange");
         this.outerLimits = dataFetcher.getRowTotalRange(); 
         this.range = new NestedIntRange(outerLimits.getFirst(), 0, outerLimits); 
@@ -146,12 +149,12 @@ public class DataCacheRolling<T> implements List<T> {
     public void flush() throws IOException {
         log.trace(entering+"flush");
         if (hasWriteSupport) {
-            if (! dataWritable.isEmpty()) {
-                Set<Entry<Integer,DataOldNewValues<T>>> s = dataWritable.entrySet();
-                Iterator<Entry<Integer,DataOldNewValues<T>>> i = s.iterator();
+            if (! dataNewValues.isEmpty()) {
+                Set<Entry<Object,T>> s = dataNewValues.entrySet();
+                Iterator<Entry<Object,T>> i = s.iterator();
                 while (i.hasNext()) {
-                    Entry<Integer,DataOldNewValues<T>> e = i.next();
-                    DataOldNewValues onv = e.getValue();
+                    Entry<Object,T> e = i.next();
+                    T onv = e.getValue();
                     switch (onv.getChanged()) {
                         case INSERT: { dataWriter.insertRow(onv.getNewValue()); break; }
                         case UPDATE: { dataWriter.updateRow(onv.getNewValue()); break; }
@@ -520,6 +523,43 @@ public class DataCacheRolling<T> implements List<T> {
     private enum DataChanges {
         NONE, INSERT, UPDATE, DELETE
     }
+    
+    private class CacheKeyIndex {
+        
+        private final long keyIndex;
+                
+        public CacheKeyIndex() {
+            this.keyIndex = System.identityHashCode(System.nanoTime());
+        }
+
+        public CacheKeyIndex(long keyIndex) {
+            this.keyIndex = keyIndex;
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 7;
+            hash = 37 * hash + (int) (this.keyIndex ^ (this.keyIndex >>> 32));
+            return hash;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final CacheKeyIndex other = (CacheKeyIndex) obj;
+            return this.keyIndex == other.keyIndex;
+        }
+        
+        public long getKeyIndex() {
+            return keyIndex;
+        }
+
+    }
 
     private class DataOldNewValues<T> {
         private final T oldValue;
@@ -546,16 +586,16 @@ public class DataCacheRolling<T> implements List<T> {
         }
         
         private DataChanges compareValues() {
-            if (oldValue == null) {
+            if ((oldValue == null) && (newValue != null)) {
                 return DataChanges.INSERT;
             }
-            if (newValue == null) {
+            if ((oldValue != null) && (newValue == null)) {
                 return DataChanges.DELETE;
             }
-            if (newValue.equals(oldValue)) {
-                return DataChanges.NONE;
+            if ((oldValue != null) && (newValue != null) && (! newValue.equals(oldValue))) {
+                return DataChanges.UPDATE;
             }
-            return DataChanges.UPDATE;
+            return DataChanges.NONE;
         }
         
         public DataChanges getChanged() {
