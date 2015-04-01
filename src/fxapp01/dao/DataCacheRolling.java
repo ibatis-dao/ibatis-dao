@@ -33,6 +33,8 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Скользящий (плавающий) кеш данных. В данной версии только read-only. Хранит "окно" данных 
@@ -143,30 +145,63 @@ public class DataCacheRolling<T> implements List<T> {
         INestedRange<Integer> r = range.clone();
         clear();
         log.debug("after clear(). size="+size());
-        addAll(r.getFirst(), dataFetcher.fetch(r));
+        loadToCache(r.getFirst(), dataFetcher.fetch(r));
     }
     
-    public void flush() throws IOException {
-        log.trace(entering+"flush");
+    private DataChanges compareValues(T oldValue, T newValue) {
+        if ((oldValue == null) && (newValue != null)) {
+            return DataChanges.INSERT;
+        }
+        if ((oldValue != null) && (newValue == null)) {
+            return DataChanges.DELETE;
+        }
+        if ((oldValue != null) && (newValue != null) && (! newValue.equals(oldValue))) {
+            return DataChanges.UPDATE;
+        }
+        return DataChanges.NONE;
+    }
+        
+    public boolean hasDataChanges() {
+        return (! dataNewValues.isEmpty());
+    }
+    
+    public void applyDataChanges() throws IOException {
+        log.trace(entering+"applyDataChanges");
+        //если dataFetcher реализует интерфейс IDataWriter для поддержки записи данных
         if (hasWriteSupport) {
-            if (! dataNewValues.isEmpty()) {
+            //если буфер изменений данных не пуст
+            if (hasDataChanges()) {
+                //в цикле по всем измененным данным
                 Set<Entry<Object,T>> s = dataNewValues.entrySet();
                 Iterator<Entry<Object,T>> i = s.iterator();
                 while (i.hasNext()) {
                     Entry<Object,T> e = i.next();
-                    T onv = e.getValue();
-                    switch (onv.getChanged()) {
-                        case INSERT: { dataWriter.insertRow(onv.getNewValue()); break; }
-                        case UPDATE: { dataWriter.updateRow(onv.getNewValue()); break; }
-                        case DELETE: { dataWriter.deleteRow(onv.getOldValue()); break; }
-                        case NONE: { i.remove(); break; }
+                    Object key = e.getKey();
+                    //ключ (индекс) в буфере новых и старых значений данных совпадают
+                    T oldValue = dataOldValues.get(key);
+                    T newValue = e.getValue();
+                    //выясняем, какой вид изменений был выполнен над данными
+                    DataChanges ch = compareValues(oldValue, newValue);
+                    //вносим соответсвующие изменения в источник данных
+                    switch (ch) {
+                        case INSERT: { dataWriter.insertRow(newValue); break; }
+                        case UPDATE: { dataWriter.updateRow(newValue); break; }
+                        case DELETE: { dataWriter.deleteRow(oldValue); break; }
+                        case NONE: { break; }
                     }
                 }
             }
         } else {
             throw new EUnsupported("DAO is read-only");
         }
-        log.trace(exiting+"flush");
+        log.trace(exiting+"applyDataChanges");
+    }
+    
+    public void cancelDataChanges() {
+        log.trace(entering+"cancelDataChanges");
+        dataOldValues.clear();
+        dataNewValues.clear();
+        log.trace(exiting+"cancelDataChanges");
     }
     
     /**
@@ -176,15 +211,31 @@ public class DataCacheRolling<T> implements List<T> {
      * @return возвращает true, если этот номер строки данных найден в кеше
      */
     public boolean containsIndex(int index) {
-        if (dataWritable.containsKey(index)) {
-            return true;
-        } else {
-            return range.IsInbound(index);
-        }
+        return range.IsInbound(index);
     }
     
+    public boolean loadToCache(Collection<? extends T> c) {
+        if (c != null) {
+            range.incLength(c.size());
+        }
+        return dataReadOnly.addAll(c);
+    }
+
+    public boolean loadToCache(int index, Collection<? extends T> c) {
+        log.trace(entering+"loadToCache(index="+index+", c)");
+        if (c != null) {
+            log.debug("before dataReadOnly.addAll()");
+            boolean res = dataReadOnly.addAll(toCacheIndex(index), c);
+            log.debug("size="+size());
+            range.incLength(c.size());
+            return res;
+        } else {
+            return false;
+        }
+    }
+
     private boolean purge(int from, int to) {
-        log.trace("remove(from="+from+", to="+to+")");
+        log.trace(entering+"remove(from="+from+", to="+to+")");
         if (from > to) {
             throw new EArgumentBreaksRule("remove", "(from <= to)");
         }
@@ -210,42 +261,40 @@ public class DataCacheRolling<T> implements List<T> {
 
     @Override
     public int size() {
-        int sz = dataReadOnly.size() + dataWritable.size();
-        log.trace(">>> size()="+sz+", range.length="+range.getLength());
+        int sz = dataReadOnly.size();
+        log.trace(entering+"size()="+sz+", range.length="+range.getLength());
         return sz;
     }
     
     @Override
     public void clear() {
-        log.trace(">>> clear");
+        log.trace(entering+"clear");
         dataReadOnly.clear();
         range.setLength(0);
-        log.trace("<<< clear. size="+size());
+        log.trace(exiting+"clear. size="+size());
     }
     
     @Override
     public boolean isEmpty() {
-        return (dataReadOnly.isEmpty() && dataWritable.isEmpty());
+        return (dataReadOnly.isEmpty() && dataNewValues.isEmpty());
     }
 
     @Override
     public boolean contains(Object o) {
-        return dataWritable.containsValue(o) || dataReadOnly.contains(o);
+        return dataNewValues.containsValue((T)o) || dataReadOnly.contains(o);
     }
 
     @Override
     public Iterator<T> iterator() {
-        return new TwinIterator(dataReadOnly, dataWritable);
+        return new TwinIterator(dataReadOnly, dataNewValues);
     }
-
-    // **********************************************************************
 
     @Override
     public Object[] toArray() {
-        int sz = dataReadOnly.size() + dataWritable.size();
-        Object[] res = new Object[sz];
-        
-        return dataReadOnly.toArray();
+        Object[] res = new Object[dataReadOnly.size() + dataNewValues.size()];
+        System.arraycopy(dataReadOnly.toArray(), 0, res, 0, dataReadOnly.size());
+        System.arraycopy(dataNewValues.entrySet().toArray(), 0, res, dataReadOnly.size(), dataNewValues.size());
+        return res;
     }
 
     @Override
@@ -253,17 +302,21 @@ public class DataCacheRolling<T> implements List<T> {
         return dataReadOnly.toArray(a);
     }
 
+    // **********************************************************************
+
     @Override
     public boolean add(T e) {
+        log.trace(entering+"add(T)");
         boolean noKey;
-        noKey = (! dataWritable.containsKey(null));
+        noKey = (! dataNewValues.containsKey(null));
         if (! noKey) {
             log.warn("!!!  writableData.containsKey(null)==TRUE  !!!");
         }
-        T oldvalue = dataWritable.put(null, e);
+        T oldvalue = dataNewValues.put(null, e);
         if (noKey) {
             range.incLength(1);
         }
+        log.trace(exiting+"add(T)");
         return noKey;
     }
 
@@ -284,23 +337,29 @@ public class DataCacheRolling<T> implements List<T> {
     @Override
     public boolean addAll(Collection<? extends T> c) {
         if (c != null) {
-            range.incLength(c.size());
+            int attempts;
+            for (T row : c) {
+                CacheKeyIndex key = new CacheKeyIndex();
+                attempts = 0;
+                while (dataNewValues.containsKey(key) || (attempts < 3)) {
+                    attempts++;
+                    //Thread.sleep(5);
+                    key = new CacheKeyIndex();
+                }
+                if (attempts == 3) {
+                    throw new EUnsupported("Wrong (non-unique) new CacheKeyIndex.");
+                }
+                dataNewValues.put(key, row);
+                dataOldValues.put(key, null);
+            }
+            return (! c.isEmpty());
         }
-        return dataReadOnly.addAll(c);
+        return false;
     }
 
     @Override
     public boolean addAll(int index, Collection<? extends T> c) {
-        log.trace(entering+"addAll(index="+index+", c)");
-        if (c != null) {
-            log.debug("before data.addAll()");
-            boolean res = dataReadOnly.addAll(toCacheIndex(index), c);
-            log.debug("size="+size());
-            range.incLength(c.size());
-            return res;
-        } else {
-            return false;
-        }
+        return addAll(c);
     }
 
     @Override
@@ -415,9 +474,9 @@ public class DataCacheRolling<T> implements List<T> {
                 log.debug("after assert(target < 0);");
                 if (target < 0) //TODO нелепое условие. убрать
                 {
-                    addAll(range.getFirst(), dataFetcher.fetch(aRange));
+                    loadToCache(range.getFirst(), dataFetcher.fetch(aRange));
                 } else {
-                    addAll(range.getLast()+1, dataFetcher.fetch(aRange));
+                    loadToCache(range.getLast()+1, dataFetcher.fetch(aRange));
                 }
             } else {
                 //если расстояние меньше удвоенного макс. размера кеша,
@@ -433,14 +492,14 @@ public class DataCacheRolling<T> implements List<T> {
                         purge(dataReadOnly.size()-aRange.getLength(), dataReadOnly.size()-1);
                         log.debug("before dataFetcher.fetch(aRange, 0);");
                         //дозагружаем данные слева
-                        addAll(range.getFirst(), dataFetcher.fetch(aRange));
+                        loadToCache(range.getFirst(), dataFetcher.fetch(aRange));
                     } else {
                         log.debug("target >= 0. before purge(0, x). dist="+dist+", aRange.length="+aRange.getLength());
                         //сбрасываем часть строк с левого края кеша
                         purge(0, aRange.getLength()-1);
                         log.debug("before dataFetcher.fetch(aRange, size()+1);");
                         //дозагружаем данные справа
-                        addAll(range.getLast()+1, dataFetcher.fetch(aRange));
+                        loadToCache(range.getLast()+1, dataFetcher.fetch(aRange));
                     }
                 } else {
                     //расстояние равно или больше удвоенного макс. размера кеша,
@@ -449,7 +508,7 @@ public class DataCacheRolling<T> implements List<T> {
                     //сбрасываем кеш полностью
                     clear(); 
                     //загружаем данные 
-                    addAll(range.getFirst(), dataFetcher.fetch(aRange));
+                    loadToCache(range.getFirst(), dataFetcher.fetch(aRange));
                     range.setFirst(index);
                 }
             }
@@ -529,7 +588,8 @@ public class DataCacheRolling<T> implements List<T> {
         private final long keyIndex;
                 
         public CacheKeyIndex() {
-            this.keyIndex = System.identityHashCode(System.nanoTime());
+            //this.keyIndex = System.identityHashCode(System.nanoTime());
+            this.keyIndex = System.identityHashCode(Math.random());
         }
 
         public CacheKeyIndex(long keyIndex) {
@@ -611,9 +671,9 @@ public class DataCacheRolling<T> implements List<T> {
     private class TwinIterator implements Iterator<T>{
 
         private final Iterator<T> roi;
-        private final Iterator<Entry<Integer, T>> wi;
+        private final Iterator<Entry<Object, T>> wi;
         
-        private TwinIterator(List<T> readOnlyData, Map<Integer,T> writableData){
+        private TwinIterator(List<T> readOnlyData, Map<Object,T> writableData){
             this.roi = readOnlyData.iterator();
             this.wi = writableData.entrySet().iterator();
         }
