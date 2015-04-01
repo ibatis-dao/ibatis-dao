@@ -261,7 +261,7 @@ public class DataCacheRolling<T> implements List<T> {
 
     @Override
     public int size() {
-        int sz = dataReadOnly.size();
+        int sz = dataReadOnly.size()+dataNewValues.size();
         log.trace(entering+"size()="+sz+", range.length="+range.getLength());
         return sz;
     }
@@ -302,30 +302,32 @@ public class DataCacheRolling<T> implements List<T> {
         return dataReadOnly.toArray(a);
     }
 
-    // **********************************************************************
-
     @Override
     public boolean add(T e) {
         log.trace(entering+"add(T)");
-        boolean noKey;
-        noKey = (! dataNewValues.containsKey(null));
-        if (! noKey) {
-            log.warn("!!!  writableData.containsKey(null)==TRUE  !!!");
+        CacheKeyIndex key = new CacheKeyIndex();
+        int attempts = 0;
+        while (dataNewValues.containsKey(key) || (attempts < 3)) {
+            attempts++;
+            //Thread.sleep(5);
+            key = new CacheKeyIndex();
         }
-        T oldvalue = dataNewValues.put(null, e);
-        if (noKey) {
-            range.incLength(1);
+        if (attempts == 3) {
+            throw new EUnsupported("Wrong (non-unique) new CacheKeyIndex.");
         }
+        dataReadOnly.add(e);
+        dataNewValues.put(key, e);
+        dataOldValues.put(key, null);
         log.trace(exiting+"add(T)");
-        return noKey;
+        return true;
     }
 
     @Override
     public boolean remove(Object o) {
-        boolean res = dataReadOnly.remove(o);
-        if (res) {
-            range.incLength(-1);
-        }
+        log.trace(entering+"remove(Object)");
+        int index = dataReadOnly.indexOf(o);
+        boolean res = (remove(index) != null);
+        log.trace(exiting+"remove(Object)");
         return res;
     }
 
@@ -336,45 +338,42 @@ public class DataCacheRolling<T> implements List<T> {
 
     @Override
     public boolean addAll(Collection<? extends T> c) {
+        log.trace(entering+"addAll(Collection)");
         if (c != null) {
-            int attempts;
             for (T row : c) {
-                CacheKeyIndex key = new CacheKeyIndex();
-                attempts = 0;
-                while (dataNewValues.containsKey(key) || (attempts < 3)) {
-                    attempts++;
-                    //Thread.sleep(5);
-                    key = new CacheKeyIndex();
-                }
-                if (attempts == 3) {
-                    throw new EUnsupported("Wrong (non-unique) new CacheKeyIndex.");
-                }
-                dataNewValues.put(key, row);
-                dataOldValues.put(key, null);
+                add(row);
             }
             return (! c.isEmpty());
         }
+        log.trace(exiting+"addAll(Collection)");
         return false;
     }
 
     @Override
     public boolean addAll(int index, Collection<? extends T> c) {
+        log.trace(entering+"addAll(int,Collection)");
         return addAll(c);
     }
 
     @Override
     public boolean removeAll(Collection c) {
+        log.trace(entering+"removeAll(Collection)");
+        boolean res = false;
         if (c != null) {
-            boolean res = dataReadOnly.removeAll(c);
-            range.incLength(- c.size());
+            for (Object row : c) {
+                res = res || remove((T)row);
+            }
+            log.trace(exiting+"removeAll(Collection)");
             return res;
         } else {
-            return false;
+            log.trace(exiting+"removeAll(Collection)");
+            return res;
         }
     }
 
     @Override
     public boolean retainAll(Collection c) {
+        log.trace(entering+"retainAll(Collection)");
         return dataReadOnly.retainAll(c);
     }
     
@@ -524,22 +523,36 @@ public class DataCacheRolling<T> implements List<T> {
 
     @Override
     public T set(int index, T element) {
-        //return data.set(toCacheIndex(index), element);
-        return dataReadOnly.set(index, element);
+        log.trace(entering+"set(int, T)");
+        CacheKeyIndex key = new CacheKeyIndex(index);
+        T oldValue = dataReadOnly.set(index, element);
+        dataOldValues.put(key, oldValue);
+        dataNewValues.put(key, element);
+        log.trace(exiting+"set(int, T)");
+        return oldValue;
     }
 
     @Override
     public void add(int index, T element) {
-        //data.add(toCacheIndex(index), element);
+        log.trace(entering+"add(int,T)");
+        CacheKeyIndex key = new CacheKeyIndex(index);
+        dataNewValues.put(key, element);
+        dataOldValues.put(key, null);
         dataReadOnly.add(index, element);
         range.incLength(1);
+        log.trace(exiting+"add(int,T)");
     }
 
     @Override
     public T remove(int index) {
+        log.trace(entering+"remove(int)");
+        T res = dataReadOnly.remove(index);
         range.incLength(-1);
-        //return data.remove(toCacheIndex(index));
-        return dataReadOnly.remove(index);
+        CacheKeyIndex key = new CacheKeyIndex(index);
+        dataOldValues.put(key, res);
+        dataNewValues.put(key, null);
+        log.trace(exiting+"remove(int)");
+        return res;
     }
 
     @Override
@@ -555,6 +568,8 @@ public class DataCacheRolling<T> implements List<T> {
         //return toDataRowNo(data.lastIndexOf(o));
         return dataReadOnly.lastIndexOf(o);
     }
+
+    // **********************************************************************
 
     @Override
     public ListIterator<T> listIterator() {
@@ -621,53 +636,6 @@ public class DataCacheRolling<T> implements List<T> {
 
     }
 
-    private class DataOldNewValues<T> {
-        private final T oldValue;
-        private T newValue;
-        private DataChanges isChanged;
-        
-        public DataOldNewValues(T oldValue, T newValue) {
-            this.oldValue = oldValue;
-            this.newValue = newValue;
-            this.isChanged = compareValues();
-        }
-        
-        public T getOldValue() {
-            return oldValue;
-        }
-
-        public T getNewValue() {
-            return newValue;
-        }
-
-        public void setNewValue(T newValue) {
-            this.newValue = newValue;
-            this.isChanged = compareValues();
-        }
-        
-        private DataChanges compareValues() {
-            if ((oldValue == null) && (newValue != null)) {
-                return DataChanges.INSERT;
-            }
-            if ((oldValue != null) && (newValue == null)) {
-                return DataChanges.DELETE;
-            }
-            if ((oldValue != null) && (newValue != null) && (! newValue.equals(oldValue))) {
-                return DataChanges.UPDATE;
-            }
-            return DataChanges.NONE;
-        }
-        
-        public DataChanges getChanged() {
-            return isChanged;
-        }
-        
-        public void setChanged(DataChanges isChanged) {
-            this.isChanged = isChanged;
-        }
-
-    }
-    
     private class TwinIterator implements Iterator<T>{
 
         private final Iterator<T> roi;
@@ -694,6 +662,71 @@ public class DataCacheRolling<T> implements List<T> {
             } else {
                 return wi.next().getValue();
             }
+        }
+        
+    }
+
+    private class TwinListIterator implements ListIterator<T>{
+
+        private final ListIterator<T> roi;
+        private final ListIterator<Entry<Object, T>> wi;
+        
+        private TwinListIterator(List<T> readOnlyData, Map<Object,T> writableData){
+            this.roi = readOnlyData.listIterator();
+            this.wi = (new ArrayList(writableData.entrySet())).listIterator();
+        }
+
+        @Override
+        public boolean hasNext() {
+            if (roi.hasNext()) {
+                return true;
+            } else {
+                return wi.hasNext();
+            }
+        }
+
+        @Override
+        public T next() {
+            if (roi.hasNext()) {
+                return roi.next();
+            } else {
+                return wi.next().getValue();
+            }
+        }
+
+        @Override
+        public boolean hasPrevious() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public T previous() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public int nextIndex() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public int previousIndex() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void set(T e) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void add(T e) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
         
     }
