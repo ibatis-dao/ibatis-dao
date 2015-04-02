@@ -25,7 +25,7 @@ import java.io.IOException;
  *
  * @author serg
  */
-public class TestItemObservList extends DataList<TestItemDTO> {
+public class TestItemObservList extends DataList<TestItemDTO,Integer> {
     
     public TestItemObservList() throws IOException, IntrospectionException {
         super(new TestItemDAO());

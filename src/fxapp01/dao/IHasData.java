@@ -24,11 +24,12 @@ import javafx.collections.ObservableList;
  *
  * @author serg
  * @param <DTOclass> класс объекта, представляющего строку данных
+ * @param <RangeKeyClass>
  */
-public interface IHasData<DTOclass> 
+public interface IHasData<DTOclass,RangeKeyClass extends Number> 
     extends Serializable, 
             ObservableList<DTOclass>, 
-            IDataRangeFetcher<DTOclass>             
+            IDataRangeFetcher<DTOclass,RangeKeyClass>             
 {
     IDAOSortOrder getSortOrder();
     void setSortOrder(IDAOSortOrder sortOrder);

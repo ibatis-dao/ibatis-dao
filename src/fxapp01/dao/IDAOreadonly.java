@@ -24,14 +24,15 @@ import java.util.List;
  *
  * @author serg
  * @param <DTOclass> класс строки данных
+ * @param <RangeKeyClass>
  */
-public interface IDAOreadonly<DTOclass>{
+public interface IDAOreadonly<DTOclass,RangeKeyClass extends Number>{
     
     public IHasDataProperty getBeanProperties();
     
     public List getColumnNames();
     
-    public INestedRange getRowTotalRange() throws IOException;
+    public INestedRange<RangeKeyClass> getRowTotalRange() throws IOException;
     
     public List<DTOclass> select(SQLParams prm) throws IOException;
 

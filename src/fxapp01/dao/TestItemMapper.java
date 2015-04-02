@@ -22,7 +22,7 @@ import java.util.List;
 import fxapp01.dto.TestItemDTO;
 import java.io.IOException;
 
-public interface TestItemMapper extends IDAOreadonly<TestItemDTO>, IDataWriter<TestItemDTO>{
+public interface TestItemMapper extends IDAOreadonly<TestItemDTO,Integer>, IDataWriter<TestItemDTO>{
     //List<TestItemDTO> select(INestedRange rowsrange) throws IOException;
     @Override
     List<TestItemDTO> select(SQLParams prm) throws IOException;

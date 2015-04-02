@@ -15,6 +15,9 @@
  */
 package fxapp01.dto;
 
+import fxapp01.excpt.ENullArgument;
+import fxapp01.excpt.EUnsupported;
+
 /**
  *
  * @author StarukhSA
@@ -66,5 +69,40 @@ public interface INestedRange<T extends Number> {
     
     public INestedRange<T> Complement(T to);
 
+    public T getZero();
+    
+    public T addNum(T x, T y);
+    
+    public T subNum(T x, T y);
     //public INestedRange Complement(INestedRange<T> aRange);
+    
+    public static Object newInstance(Class rangeKeyClass, Number first, Number length, INestedRange parentRange) throws InstantiationException, IllegalAccessException {
+        if (rangeKeyClass != null) {
+            if (rangeKeyClass == Integer.class) {
+                Integer f = null;
+                if (first != null) {
+                    f = first.intValue();
+                }
+                Integer l = null;
+                if (length != null) {
+                    l = length.intValue();
+                }
+                return new NestedIntRange(f, l, parentRange);
+            }
+            if (rangeKeyClass == Long.class) {
+                Long f = null;
+                if (first != null) {
+                    f = first.longValue();
+                }
+                Long l = null;
+                if (length != null) {
+                    l = length.longValue();
+                }
+                return new NestedLongRange(f, l, parentRange);
+            }
+            throw new EUnsupported("Unsupported range key class "+rangeKeyClass.getName());
+        } else {
+            throw new ENullArgument("createRangeOf", "rangeKeyClass");
+        }
+    }
 }

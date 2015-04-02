@@ -43,8 +43,9 @@ import java.util.logging.Logger;
  * данных range и outerLimits.
  * @author StarukhSA
  * @param <T>
+ * @param <RangeKeyClass>
  */
-public class DataCacheRolling<T> implements List<T> {
+public class DataCacheRolling<T,RangeKeyClass extends Number> implements List<T> {
     //TODO после отладки заменить реализацию интерфейса List на расширение класса ArrayList
     
     private static final ILogger log = LogMgr.getLogger(DataCacheRolling.class);
@@ -52,18 +53,19 @@ public class DataCacheRolling<T> implements List<T> {
     private static final String exiting = "<<< ";
     // фактическое начало (порядковый номер первой строки) и фактический размер 
     // окна данных в рамках источника данных. 
-    private final IDataRangeFetcher dataFetcher;
+    private final IDataRangeFetcher<T,RangeKeyClass> dataFetcher;
     private final boolean hasWriteSupport;
-    private final IDataWriter dataWriter;
-    private INestedRange<Integer> outerLimits;
-    private INestedRange<Integer> range;
+    private final IDataWriter<T> dataWriter;
+    private INestedRange<RangeKeyClass> outerLimits;
+    private INestedRange<RangeKeyClass> range;
     private int defSize;
     private int maxSize;
     private final List<T> dataReadOnly;
-    private final Map<Object, T> dataOldValues;
-    private final Map<Object, T> dataNewValues;
+    private final HashMap<Object, T> dataOldValues;
+    private final HashMap<Object, T> dataNewValues;
     
-    public DataCacheRolling(IDataRangeFetcher dataFetcher) throws IOException {
+    @SuppressWarnings("unchecked")
+    public DataCacheRolling(IDataRangeFetcher<T,RangeKeyClass> dataFetcher) throws IOException {
         String methodName = "constructor(dataFetcher)";
         log.trace(entering+methodName);
         if (dataFetcher == null) {
@@ -72,7 +74,7 @@ public class DataCacheRolling<T> implements List<T> {
         this.dataFetcher = dataFetcher;
         this.hasWriteSupport = (dataFetcher instanceof IDataWriter);
         if (hasWriteSupport) {
-            this.dataWriter = (IDataWriter)dataFetcher;
+            this.dataWriter = (IDataWriter<T>)dataFetcher;
         } else {
             this.dataWriter = null;
         }
@@ -83,12 +85,18 @@ public class DataCacheRolling<T> implements List<T> {
         this.dataOldValues = new HashMap<>(16, 0.75f); //defaults
         this.dataNewValues = new HashMap<>(16, 0.75f); //defaults
         log.debug("before dataFetcher.getRowTotalRange");
-        this.outerLimits = dataFetcher.getRowTotalRange(); 
-        this.range = new NestedIntRange(outerLimits.getFirst(), 0, outerLimits); 
+        this.outerLimits = dataFetcher.getRowTotalRange();
+        if (this.outerLimits == null) {
+            throw new ENullArgument(methodName, "outerLimits");
+        }
+        this.range = this.outerLimits.clone();
+        this.range.setFirst(outerLimits.getFirst());
+        this.range.setLength(this.range.getZero());
+        this.range.setParentRange(outerLimits);
         log.trace(exiting+methodName);
     }
     
-    public DataCacheRolling(IDataRangeFetcher dataFetcher, int defSize, int maxSize) throws IOException {
+    public DataCacheRolling(IDataRangeFetcher<T,RangeKeyClass> dataFetcher, int defSize, int maxSize) throws IOException {
         this(dataFetcher);
         String methodName = "constructor(dataFetcher, defSize, maxSize)";
         log.trace(entering+methodName);
@@ -108,19 +116,19 @@ public class DataCacheRolling<T> implements List<T> {
         log.debug("----- printAll -----");
     }
 
-    private int toCacheIndex(int dataRowNo){
-        return dataRowNo-range.getFirst();
+    private int toCacheIndex(RangeKeyClass dataRowNo){
+        return range.subNum(dataRowNo, range.getFirst()).intValue();
     }
     
-    private int toDataRowNo(int cacheIndex){
-        return cacheIndex+range.getFirst();
+    private RangeKeyClass toDataRowNo(RangeKeyClass cacheIndex){
+        return range.addNum(cacheIndex,range.getFirst());
     }
     
-    public INestedRange<Integer> getRange() {
+    public INestedRange<RangeKeyClass> getRange() {
         return range;
     }
     
-    public int getLeftLimit() {
+    public RangeKeyClass getLeftLimit() {
         return outerLimits.getFirst();
     }
 
@@ -142,7 +150,7 @@ public class DataCacheRolling<T> implements List<T> {
     
     public void refresh() {
         log.trace("refresh");
-        INestedRange<Integer> r = range.clone();
+        INestedRange<RangeKeyClass> r = range.clone();
         clear();
         log.debug("after clear(). size="+size());
         loadToCache(r.getFirst(), dataFetcher.fetch(r));
@@ -174,6 +182,12 @@ public class DataCacheRolling<T> implements List<T> {
                 //в цикле по всем измененным данным
                 Set<Entry<Object,T>> s = dataNewValues.entrySet();
                 Iterator<Entry<Object,T>> i = s.iterator();
+                //TODO подержка общей транзакции для операций в цикле. 
+                //сейчас каждая операция открывает свою транзакцию. 
+                //Это может привести к частичному сохранению данных.
+                //нужно или сразу после сохранения удалять строку из буфера или 
+                //откатывать изменения, если сохранение некоторых строк завершилось неудачно
+                //TODO поддержка списка проблем/конфликтов, возникших при сохранении данных
                 while (i.hasNext()) {
                     Entry<Object,T> e = i.next();
                     Object key = e.getKey();
@@ -190,6 +204,8 @@ public class DataCacheRolling<T> implements List<T> {
                         case NONE: { break; }
                     }
                 }
+                dataOldValues.clear();
+                dataNewValues.clear();
             }
         } else {
             throw new EUnsupported("DAO is read-only");
@@ -210,7 +226,7 @@ public class DataCacheRolling<T> implements List<T> {
      * зависит от нумерации строк конкретного источника данных (конкретной БД)
      * @return возвращает true, если этот номер строки данных найден в кеше
      */
-    public boolean containsIndex(int index) {
+    public boolean containsIndex(RangeKeyClass index) {
         return range.IsInbound(index);
     }
     
@@ -221,7 +237,7 @@ public class DataCacheRolling<T> implements List<T> {
         return dataReadOnly.addAll(c);
     }
 
-    public boolean loadToCache(int index, Collection<? extends T> c) {
+    public boolean loadToCache(RangeKeyClass index, Collection<? extends T> c) {
         log.trace(entering+"loadToCache(index="+index+", c)");
         if (c != null) {
             log.debug("before dataReadOnly.addAll()");
@@ -270,7 +286,7 @@ public class DataCacheRolling<T> implements List<T> {
     public void clear() {
         log.trace(entering+"clear");
         dataReadOnly.clear();
-        range.setLength(0);
+        range.setLength(range.getZero());
         log.trace(exiting+"clear. size="+size());
     }
     
@@ -279,6 +295,7 @@ public class DataCacheRolling<T> implements List<T> {
         return (dataReadOnly.isEmpty() && dataNewValues.isEmpty());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean contains(Object o) {
         return dataNewValues.containsValue((T)o) || dataReadOnly.contains(o);
@@ -355,6 +372,7 @@ public class DataCacheRolling<T> implements List<T> {
         return addAll(c);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean removeAll(Collection c) {
         log.trace(entering+"removeAll(Collection)");
@@ -626,7 +644,8 @@ public class DataCacheRolling<T> implements List<T> {
             if (getClass() != obj.getClass()) {
                 return false;
             }
-            final CacheKeyIndex other = (CacheKeyIndex) obj;
+            @SuppressWarnings("unchecked") //проверка в предыдущем операторе
+            final CacheKeyIndex other = (CacheKeyIndex)obj;
             return this.keyIndex == other.keyIndex;
         }
         
@@ -673,60 +692,66 @@ public class DataCacheRolling<T> implements List<T> {
         
         private TwinListIterator(List<T> readOnlyData, Map<Object,T> writableData){
             this.roi = readOnlyData.listIterator();
-            this.wi = (new ArrayList(writableData.entrySet())).listIterator();
+            this.wi = (new ArrayList<>(writableData.entrySet())).listIterator();
         }
 
         @Override
         public boolean hasNext() {
+            throw new EUnsupported();
+            /*
             if (roi.hasNext()) {
                 return true;
             } else {
                 return wi.hasNext();
             }
+            */
         }
 
         @Override
         public T next() {
+            throw new EUnsupported();
+            /*
             if (roi.hasNext()) {
                 return roi.next();
             } else {
                 return wi.next().getValue();
             }
+            */
         }
 
         @Override
         public boolean hasPrevious() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            throw new EUnsupported();
         }
 
         @Override
         public T previous() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            throw new EUnsupported();
         }
 
         @Override
         public int nextIndex() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            throw new EUnsupported();
         }
 
         @Override
         public int previousIndex() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            throw new EUnsupported();
         }
 
         @Override
         public void remove() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            throw new EUnsupported();
         }
 
         @Override
         public void set(T e) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            throw new EUnsupported();
         }
 
         @Override
         public void add(T e) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            throw new EUnsupported();
         }
         
     }

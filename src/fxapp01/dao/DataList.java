@@ -54,14 +54,15 @@ import javafx.collections.ObservableList;
  и ограничена диапазоном, который можно получить вызовом метода IDAOreadonly.getRowTotalRange().
  * @author serg
  * @param <DTOclass> - класс объекта, представляющего строку данных
+ * @param <RangeKeyClass>
  */
-public class DataList<DTOclass> implements IDataCrud<DTOclass> {
+public class DataList<DTOclass,RangeKeyClass extends Number> implements IDataCrud<DTOclass,RangeKeyClass> {
     
     private static final String entering = ">>> ";
     private static final String exiting = "<<< ";
 
     protected final ILogger log = LogMgr.getLogger(this.getClass());
-    private final DataCacheRolling<DTOclass> cache;
+    private final DataCacheRolling<DTOclass,RangeKeyClass> cache;
     private final ObservableList<DTOclass> dataFacade;
     private final IDAOreadonly dao;
     private final boolean isWritable;
@@ -85,14 +86,16 @@ public class DataList<DTOclass> implements IDataCrud<DTOclass> {
         this.sortOrder = new SortOrder();
         this.filter = null;
         log.debug("before new DataCacheRolling");
-        IDataRangeFetcher dps = this; // 
+        IDataRangeFetcher<DTOclass,RangeKeyClass> dps = this; // 
         //TODO желательно минимальный и максимальный диапазон окна определять 
         //по размеру видимой страницы данных на клиенте
         this.cache = new DataCacheRolling<>(dps, 20, 40);
         log.debug("before FXCollections.observableList");
         this.dataFacade = FXCollections.observableList(cache);
         log.debug("make initRange");
-        cache.getRange().setLength(20);
+        Number n;
+        //n = new Integer(20);
+        cache.getRange().setLength(n);
         log.debug("before refresh");
         refresh();
         log.trace(exiting+"constructor");
@@ -155,7 +158,7 @@ public class DataList<DTOclass> implements IDataCrud<DTOclass> {
      * @throws java.io.IOException 
     */
     @Override
-    public INestedRange getRowTotalRange() throws IOException{
+    public INestedRange<RangeKeyClass> getRowTotalRange() throws IOException{
         return dao.getRowTotalRange();
     }
     
@@ -166,7 +169,7 @@ public class DataList<DTOclass> implements IDataCrud<DTOclass> {
      * @return 
      */
     @Override
-    public List<DTOclass> fetch(INestedRange aRowsRange) {
+    public List<DTOclass> fetch(INestedRange<RangeKeyClass> aRowsRange) {
         log.trace(entering+"fetch(aRowsRange="+aRowsRange+")");
         if (aRowsRange == null) {
             throw new ENullArgument("fetch");

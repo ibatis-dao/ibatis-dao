@@ -20,8 +20,8 @@ package fxapp01.dao;
  * @author serg
  * @param <DTOclass> класс строки данных
  */
-public interface IDAOwritable<DTOclass> 
-    extends IDAOreadonly<DTOclass>,
+public interface IDAOwritable<DTOclass,RangeKeyClass extends Number> 
+    extends IDAOreadonly<DTOclass,RangeKeyClass>,
             IDataWriter<DTOclass>
 {
     

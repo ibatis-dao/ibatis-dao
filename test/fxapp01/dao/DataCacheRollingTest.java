@@ -44,10 +44,10 @@ public class DataCacheRollingTest {
 
     private final ILogger log = LogMgr.getLogger(this.getClass());
     
-    IDataRangeFetcher<TestItemDTO> dataFetcher;
+    IDataRangeFetcher<TestItemDTO,Integer> dataFetcher;
     private final DataCacheRolling<TestItemDTO> instance;
     
-    private class DataRangeFetcher<DTOclass> implements IDataRangeFetcher<DTOclass>  {
+    private class DataRangeFetcher<DTOclass,Integer> implements IDataRangeFetcher  {
 
         IDAOreadonly dao;
         
@@ -81,7 +81,7 @@ public class DataCacheRollingTest {
     }
     
     public DataCacheRollingTest() throws IOException, IntrospectionException {
-        dataFetcher = new DataRangeFetcher<TestItemDTO>(new TestItemDAO());
+        dataFetcher = new DataRangeFetcher<TestItemDTO,Integer>(new TestItemDAO());
         instance = new DataCacheRolling<>(dataFetcher, 20, 40);
         instance.getRange().setLength(20);
     }

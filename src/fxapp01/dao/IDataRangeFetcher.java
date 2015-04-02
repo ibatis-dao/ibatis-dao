@@ -23,10 +23,11 @@ import java.util.List;
  * Интерфейс источника данных, поддерживающий их извлечение по-странично.
  * @author StarukhSA
  * @param <DTOclass> - класс строки данных
+ * @param <RangeKeyClass>
  */
-public interface IDataRangeFetcher<DTOclass> {
+public interface IDataRangeFetcher<DTOclass,RangeKeyClass extends Number> {
     
-    public INestedRange getRowTotalRange() throws IOException;
+    public INestedRange<RangeKeyClass> getRowTotalRange() throws IOException;
     
-    List<DTOclass> fetch(INestedRange aRowsRange);
+    List<DTOclass> fetch(INestedRange<RangeKeyClass> aRowsRange);
 }

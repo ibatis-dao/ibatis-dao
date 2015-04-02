@@ -68,7 +68,7 @@ public final class DataListTest {
         return instance.getRowTotalRange().getLast().intValue();
     }
     
-    private DataList newDataList() throws IOException, IntrospectionException {
+    private DataList<TestItemDTO,Integer> newDataList() throws IOException, IntrospectionException {
         return new TestItemObservList();
     }
     
