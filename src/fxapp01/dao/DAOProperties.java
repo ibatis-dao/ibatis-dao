@@ -28,7 +28,7 @@ import java.util.List;
  *
  * @author serg
  */
-public class DAOProperties extends BeanPropertiesDescribed implements IDAOProperties {
+public class DAOProperties extends BeanPropertiesDescribed implements IDAOProperties<Object,Object> {
 
     private final List<BeanPropertyMapping> beanPropertiesMap;
     private List<String> columnNames;
@@ -74,7 +74,7 @@ public class DAOProperties extends BeanPropertiesDescribed implements IDAOProper
     
     public Object getBeanPropertyValue(Object bean, int propIndex) throws InvocationTargetException, IllegalAccessException {
         log.trace(">>> getBeanProperty");
-        IDataProperty dp = getDataProperty(propIndex);
+        IDataProperty<Object,Object> dp = getDataProperty(propIndex);
         if (dp != null) {
             return dp.getValue(bean);
         } else {
@@ -84,7 +84,7 @@ public class DAOProperties extends BeanPropertiesDescribed implements IDAOProper
     
     public void setBeanPropertyValue(Object bean, int propIndex, Object propValue) throws InvocationTargetException, IllegalAccessException {
         log.trace(">>> setBeanProperty");
-        IDataProperty dp = getDataProperty(propIndex);
+        IDataProperty<Object,Object> dp = getDataProperty(propIndex);
         if (dp != null) {
             dp.setValue(bean, propValue);
         } else {

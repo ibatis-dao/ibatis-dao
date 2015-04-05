@@ -19,16 +19,16 @@ package fxapp01.dao;
  *
  * @author serg
  */
-public interface IHasDataPropertyDescribed extends IHasDataProperty {
+public interface IHasDataPropertyDescribed<B,V> extends IHasDataProperty<B,V> {
     
     /*
     * Tries to add a new Property into the Item.
     */
-    boolean addDescribedDataProperty(Object id, IDataPropertyDescribed property);
+    boolean addDescribedDataProperty(Object id, IDataPropertyDescribed<B,V> property);
 
     /*
     * Gets the Property corresponding to the given Property ID stored in the Item.
     */
-    IDataPropertyDescribed getDescribedDataProperty(Object id);
+    IDataPropertyDescribed<B,V> getDescribedDataProperty(Object id);
     
 }

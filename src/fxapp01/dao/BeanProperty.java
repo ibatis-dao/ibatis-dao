@@ -25,7 +25,7 @@ import java.lang.reflect.Method;
  *
  * @author serg
  */
-public class BeanProperty implements IDataProperty {
+public class BeanProperty implements IDataProperty<Object,Object> {
     
     private static final ILogger log = LogMgr.getLogger(BeanProperty.class);
     private final Class<?> beanClass;
@@ -43,7 +43,7 @@ public class BeanProperty implements IDataProperty {
     }
 
     @Override
-    public Class getType() {
+    public Class<?> getType() {
         return pd.getPropertyType();
     }
 

@@ -56,7 +56,7 @@ import javafx.collections.ObservableList;
  * @param <DTOclass> - класс объекта, представляющего строку данных
  * @param <RangeKeyClass>
  */
-public class DataList<DTOclass,RangeKeyClass extends Number> implements IDataCrud<DTOclass,RangeKeyClass> {
+public class DataList<DTOclass,RangeKeyClass extends Number & Comparable<RangeKeyClass>> implements IDataCrud<DTOclass,RangeKeyClass> {
     
     private static final String entering = ">>> ";
     private static final String exiting = "<<< ";
@@ -64,8 +64,9 @@ public class DataList<DTOclass,RangeKeyClass extends Number> implements IDataCru
     protected final ILogger log = LogMgr.getLogger(this.getClass());
     private final DataCacheRolling<DTOclass,RangeKeyClass> cache;
     private final ObservableList<DTOclass> dataFacade;
-    private final IDAOreadonly dao;
+    private final IDAOreadonly<DTOclass,RangeKeyClass> dao;
     private final boolean isWritable;
+    private final IDataWriter<DTOclass> daoWriter;
     //private final List<ListChangeListener<? super DTOclass>> changeListeners;
     //private final List<InvalidationListener> invListeners;
     private IDAOSortOrder sortOrder;
@@ -77,12 +78,21 @@ public class DataList<DTOclass,RangeKeyClass extends Number> implements IDataCru
      * и его наследников, в том числе, IDAOwritable
      * @throws IOException
      */
-    public DataList(IDAOreadonly dao) throws IOException {
+    public DataList(IDAOreadonly<DTOclass,RangeKeyClass> dao) throws IOException {
         log.trace(entering+"constructor");
         //this.changeListeners = new ArrayList<>();
         //this.invListeners = new ArrayList<>();
         this.dao = dao;
-        this.isWritable = (dao != null) && (dao instanceof IDataWriter);
+        if (dao != null) {
+            if (dao.getClass().isInstance(IDataWriter.class)) {
+                daoWriter = (IDataWriter<DTOclass>)dao;
+            } else {
+                this.daoWriter = null;
+            }
+        } else {
+            this.daoWriter = null;
+        }
+        this.isWritable = (this.daoWriter != null);
         this.sortOrder = new SortOrder();
         this.filter = null;
         log.debug("before new DataCacheRolling");
@@ -93,9 +103,7 @@ public class DataList<DTOclass,RangeKeyClass extends Number> implements IDataCru
         log.debug("before FXCollections.observableList");
         this.dataFacade = FXCollections.observableList(cache);
         log.debug("make initRange");
-        Number n;
-        //n = new Integer(20);
-        cache.getRange().setLength(n);
+        cache.getRange().setLength(20);
         log.debug("before refresh");
         refresh();
         log.trace(exiting+"constructor");
@@ -110,7 +118,7 @@ public class DataList<DTOclass,RangeKeyClass extends Number> implements IDataCru
     }
     
     private int toListIndex(int dataRowNo){
-        return dataRowNo-cache.getLeftLimit();
+        return dataRowNo - cache.getLeftLimit().intValue();
     }
     
     /*
@@ -118,7 +126,7 @@ public class DataList<DTOclass,RangeKeyClass extends Number> implements IDataCru
     * конвертируем индекс списка в номер строки диапазона
     */
     private int toDataRowNo(int listIndex){
-        return listIndex+cache.getLeftLimit();
+        return listIndex + cache.getLeftLimit().intValue();
     }
     
 /*
@@ -176,7 +184,7 @@ public class DataList<DTOclass,RangeKeyClass extends Number> implements IDataCru
         }
         List<DTOclass> l;
         try {
-            SQLParams qep = new SQLParams(aRowsRange, getSortOrder(), getFilter());
+            SQLParams<RangeKeyClass> qep = new SQLParams<>(aRowsRange, getSortOrder(), getFilter());
             l = dao.select(qep);
         } catch (IOException ex) {
             //TODO прятать проблемы нехорошо
@@ -494,7 +502,7 @@ public class DataList<DTOclass,RangeKeyClass extends Number> implements IDataCru
     public int insertRow(DTOclass item) throws IOException {
         log.trace(entering+"insertRow");
         if (isWritable) {
-            return ((IDAOwritable)dao).insertRow(item);
+            return daoWriter.insertRow(item);    
         } else {
             throw new EUnsupported("DAO is read-only");
         }
@@ -504,7 +512,7 @@ public class DataList<DTOclass,RangeKeyClass extends Number> implements IDataCru
     public int updateRow(DTOclass item) throws IOException {
         log.trace(entering+"updateRow");
         if (isWritable) {
-            return ((IDAOwritable)dao).updateRow(item);
+            return daoWriter.updateRow(item);
         } else {
             throw new EUnsupported("DAO is read-only");
         }
@@ -514,7 +522,7 @@ public class DataList<DTOclass,RangeKeyClass extends Number> implements IDataCru
     public int deleteRow(DTOclass item) throws IOException {
         log.trace(entering+"deleteRow");
         if (isWritable) {
-            return ((IDAOwritable)dao).deleteRow(item);
+            return daoWriter.deleteRow(item);
         } else {
             throw new EUnsupported("DAO is read-only");
         }

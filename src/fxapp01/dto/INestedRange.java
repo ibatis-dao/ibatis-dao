@@ -20,20 +20,20 @@ import fxapp01.excpt.EUnsupported;
 
 /**
  *
- * @author StarukhSA
+ * @author serg
  * @param <T>
  */
-public interface INestedRange<T extends Number> {
+public interface INestedRange<T extends Number & Comparable<T>> {
 
     public T getFirst();
 
-    public void setFirst(T first);
+    public void setFirst(Number first);
     
     public T getLength();
 
-    public void setLength(T length);
+    public void setLength(Number length);
     
-    public void incLength(T increment);
+    public void incLength(Number increment);
     
     public INestedRange<T> getParentRange();
     
@@ -45,15 +45,15 @@ public interface INestedRange<T extends Number> {
     
     public boolean IsSingular();
     
-    public boolean IsInbound(T value);
+    public boolean IsInbound(Number value);
     
     public boolean IsInbound(INestedRange<T> aRange);
     
-    public T getMinDistance(T to);
+    public Number getMinDistance(Number to);
     
     //public T getMinDistance(INestedRange<T> aRange);
     
-    public T getMaxDistance(T to);
+    public Number getMaxDistance(Number to);
     
     //public T getMaxDistance(INestedRange<T> aRange);
 
@@ -67,15 +67,19 @@ public interface INestedRange<T extends Number> {
     
     public INestedRange<T> Shift(T value);
     
-    public INestedRange<T> Complement(T to);
+    public INestedRange<T> Complement(Number to);
 
-    public T getZero();
+    public T valueOf(Number v);
     
-    public T addNum(T x, T y);
+    public T NumberAdd(Number x, Number y);
     
-    public T subNum(T x, T y);
+    public T NumberSub(Number x, Number y);
+    
+    public int compareXandY(Number x, Number y);
+
     //public INestedRange Complement(INestedRange<T> aRange);
     
+    @SuppressWarnings("unchecked")
     public static Object newInstance(Class rangeKeyClass, Number first, Number length, INestedRange parentRange) throws InstantiationException, IllegalAccessException {
         if (rangeKeyClass != null) {
             if (rangeKeyClass == Integer.class) {

@@ -29,11 +29,11 @@ import java.util.Map;
  *
  * @author serg
  */
-public class BeanProperties implements IHasDataProperty {
+public class BeanProperties implements IHasDataProperty<Object,Object> {
 
     protected static final ILogger log = LogMgr.getLogger(BeanProperties.class);
     protected final Class<?> beanClass;
-    protected final Map<Object,IDataProperty> beanProperties;
+    protected final Map<Object,IDataProperty<Object,Object>> beanProperties;
 
     public BeanProperties(Class<?> beanClass) throws IntrospectionException {
         if (beanClass == null) {
@@ -63,7 +63,7 @@ public class BeanProperties implements IHasDataProperty {
     }
     
     @Override
-    public boolean addDataProperty(Object id, IDataProperty property) {
+    public boolean addDataProperty(Object id, IDataProperty<Object,Object> property) {
         beanProperties.put(id, property);
         return true;
     }

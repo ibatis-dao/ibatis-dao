@@ -22,17 +22,17 @@ import java.util.Collection;
  *
  * @author serg
  */
-public interface IHasDataProperty extends Serializable {
+public interface IHasDataProperty<B,V> extends Serializable {
     
     /*
     * Tries to add a new Property into the Item.
     */
-    boolean addDataProperty(Object id, IDataProperty property);
+    boolean addDataProperty(Object id, IDataProperty<B,V> property);
 
     /*
     * Gets the Property corresponding to the given Property ID stored in the Item.
     */
-    IDataProperty getDataProperty(Object id);
+    IDataProperty<B,V> getDataProperty(Object id);
 
     /*
     * Gets the collection of IDs of all Properties stored in the Item.

@@ -26,11 +26,11 @@ import java.util.List;
  * @param <DTOclass> класс строки данных
  * @param <RangeKeyClass>
  */
-public interface IDAOreadonly<DTOclass,RangeKeyClass extends Number>{
+public interface IDAOreadonly<DTOclass,RangeKeyClass extends Number & Comparable<RangeKeyClass>>{
     
     public IHasDataProperty getBeanProperties();
     
-    public List getColumnNames();
+    public List<String> getColumnNames();
     
     public INestedRange<RangeKeyClass> getRowTotalRange() throws IOException;
     

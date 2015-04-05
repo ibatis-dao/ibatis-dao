@@ -22,7 +22,7 @@ import java.beans.PropertyDescriptor;
  *
  * @author serg
  */
-public class BeanPropertiesDescribed extends BeanProperties implements IHasDataPropertyDescribed {
+public class BeanPropertiesDescribed extends BeanProperties implements IHasDataPropertyDescribed<Object,Object> {
 
     public BeanPropertiesDescribed(Class<?> beanClass) throws IntrospectionException {
         super(beanClass);
@@ -41,16 +41,16 @@ public class BeanPropertiesDescribed extends BeanProperties implements IHasDataP
     implementation of interface IHasDataPropertyDescribed
     */
     @Override
-    public boolean addDescribedDataProperty(Object id, IDataPropertyDescribed property) {
+    public boolean addDescribedDataProperty(Object id, IDataPropertyDescribed<Object, Object> property) {
         //log.debug("containsKey="+beanProperties.containsKey(id));
         beanProperties.put(id, property);
         return true;
     }
 
     @Override
-    public IDataPropertyDescribed getDescribedDataProperty(Object id) {
+    public IDataPropertyDescribed<Object, Object> getDescribedDataProperty(Object id) {
         //извлекаем "базовое" свойство по его ID
-        IDataProperty dp = beanProperties.get(id);
+        IDataProperty<Object,Object> dp = beanProperties.get(id);
         if (dp == null) {
             //если свойство не найдено
             return null;
@@ -58,7 +58,7 @@ public class BeanPropertiesDescribed extends BeanProperties implements IHasDataP
             //если свойство найдено
             if (dp instanceof IDataPropertyDescribed) {
                 //если свойство можно реализует интерфейс IDataPropertyDescribed
-                return (IDataPropertyDescribed)dp;
+                return (IDataPropertyDescribed<Object,Object>)dp;
             } else {
                 //свойство не реализует интерфейс IDataPropertyDescribed. возвращаем null
                 return null;

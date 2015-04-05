@@ -81,7 +81,7 @@ public class NestedIntRange implements INestedRange<Integer> {
     
     private static boolean IsIntRule1Ok(final String callerMethodName, INestedRange<Integer> parentRange, Integer first) throws EArgumentBreaksRule {
         if (parentRange != null) {
-            if (first < parentRange.getFirst()) {
+            if (first < parentRange.getFirst().intValue()) {
                 throw new EArgumentBreaksRule(callerMethodName, "parentRange.first <= first");
             }
         }
@@ -97,7 +97,7 @@ public class NestedIntRange implements INestedRange<Integer> {
 
     private static boolean IsIntRule3Ok(final String callerMethodName, Integer first, Integer length, INestedRange<Integer> parentRange) throws EArgumentBreaksRule {
         if (parentRange != null) {
-            if (first+length-1 > parentRange.getLast()) {
+            if (first+length-1 > parentRange.getLast().intValue()) {
                 throw new EArgumentBreaksRule(callerMethodName, "first+length-1 <= parentRange.last");
             }
         }
@@ -115,7 +115,7 @@ public class NestedIntRange implements INestedRange<Integer> {
     
     private static boolean IsIntRule5Ok(final String callerMethodName, INestedRange<Integer> parentRange, Integer to) throws EArgumentBreaksRule {
         if (parentRange != null) {
-            if ((to < parentRange.getFirst()) || (to > parentRange.getLast())) {
+            if ((to < parentRange.getFirst().intValue()) || (to > parentRange.getLast().intValue())) {
                 throw new EArgumentBreaksRule(callerMethodName, "parentRange.first >= to >= parentRange.last");
             }
         }
@@ -142,11 +142,11 @@ public class NestedIntRange implements INestedRange<Integer> {
      * @param first the first to set
      */
     @Override
-    public void setFirst(Integer first) {
+    public void setFirst(Number first) {
         log.debug(entering+setFirstMthdName+"("+first+"). old first="+this.first);
-        IsIntRule1Ok(setFirstMthdName, parentRange, first); // leftLimit <= first
-        IsIntRule3Ok(setFirstMthdName, first, length, parentRange); // first+length-1 <= rightLimit
-        this.first = first;
+        IsIntRule1Ok(setFirstMthdName, parentRange, first.intValue()); // leftLimit <= first
+        IsIntRule3Ok(setFirstMthdName, first.intValue(), length, parentRange); // first+length-1 <= rightLimit
+        this.first = first.intValue();
     }
 
     /**
@@ -161,20 +161,20 @@ public class NestedIntRange implements INestedRange<Integer> {
      * @param length the length to set
      */
     @Override
-    public void setLength(Integer length) {
+    public void setLength(Number length) {
         log.debug(entering+setLengthMthdName+"("+length+"). old length="+this.length);
-        IsIntRule2Ok(setLengthMthdName, length); // length >= 0
-        IsIntRule3Ok(setLengthMthdName, first, length, parentRange); // first+length-1 <= rightLimit
-        this.length = length;
+        IsIntRule2Ok(setLengthMthdName, length.intValue()); // length >= 0
+        IsIntRule3Ok(setLengthMthdName, first, length.intValue(), parentRange); // first+length-1 <= rightLimit
+        this.length = length.intValue();
     }
     
     @Override
-    public void incLength(Integer increment) {
+    public void incLength(Number increment) {
         log.debug(entering+incLengthMthdName+"("+increment+"). old length="+length);
-        if (IsIntRule2Ok(incLengthMthdName, length+increment)) { // length >= 0
-            IsIntRule3Ok(incLengthMthdName, first, length+increment, parentRange); // first+length-1 <= rightLimit
+        if (IsIntRule2Ok(incLengthMthdName, length+increment.intValue())) { // length >= 0
+            IsIntRule3Ok(incLengthMthdName, first, length+increment.intValue(), parentRange); // first+length-1 <= rightLimit
         }
-        this.length = length + increment;
+        this.length = length + increment.intValue();
     }
     
     @Override
@@ -255,8 +255,8 @@ public class NestedIntRange implements INestedRange<Integer> {
         hash = 89 * hash + first;
         hash = 89 * hash + length;
         if (parentRange != null) {
-            hash = 89 * hash + parentRange.getFirst();
-            hash = 89 * hash + parentRange.getLast();
+            hash = 89 * hash + parentRange.getFirst().intValue();
+            hash = 89 * hash + parentRange.getLast().intValue();
         } else {
             hash = 89 * hash;
         }
@@ -283,9 +283,9 @@ public class NestedIntRange implements INestedRange<Integer> {
      * @return 
      */
     @Override
-    public boolean IsInbound(Integer value) {
+    public boolean IsInbound(Number value) {
         log.trace(IsInboundMthdName+"(value="+value+"). first="+first+", last="+getLast());
-        return (first <= value) && (value <= getLast());
+        return (first <= value.intValue()) && (value.intValue() <= getLast());
     }
     
     /**
@@ -299,7 +299,7 @@ public class NestedIntRange implements INestedRange<Integer> {
         if (aRange == null) {
             throw new ENullArgument(IsInboundMthdName);
         } 
-        return ((aRange.getFirst() <= first) && (getLast() <= aRange.getLast()));
+        return ((aRange.getFirst().intValue() <= first) && (getLast() <= aRange.getLast().intValue()));
     }
     
     /*
@@ -308,15 +308,15 @@ public class NestedIntRange implements INestedRange<Integer> {
     Если точка внутри самого диапазона, то расстояние = 0
     */
     @Override
-    public Integer getMinDistance(Integer to) {
+    public Integer getMinDistance(Number to) {
         log.trace(getMinDistanceMthdName+"(to="+to+")");
-        IsIntRule5Ok(getMinDistanceMthdName, parentRange, to); // leftLimit >= to >= rightLimit
+        IsIntRule5Ok(getMinDistanceMthdName, parentRange, to.intValue()); // leftLimit >= to >= rightLimit
         if (IsInbound(to)) {
             return 0;
         } else {
-            Integer dist = Math.min(Math.abs(to - first), Math.abs(to - getLast()));
+            Integer dist = Math.min(Math.abs(to.intValue() - first), Math.abs(to.intValue() - getLast()));
             log.debug("dist="+dist);
-            if (to < first) {
+            if (to.intValue() < first) {
                 return - dist;
             } else {
                 return dist;
@@ -330,15 +330,15 @@ public class NestedIntRange implements INestedRange<Integer> {
     Если точка внутри самого диапазона, то расстояние = 0
     */
     @Override
-    public Integer getMaxDistance(Integer to) {
+    public Integer getMaxDistance(Number to) {
         log.trace(getMaxDistanceMthdName+"(to="+to+")");
-        IsIntRule5Ok(getMaxDistanceMthdName, parentRange, to); // leftLimit >= to >= rightLimit
+        IsIntRule5Ok(getMaxDistanceMthdName, parentRange, to.intValue()); // leftLimit >= to >= rightLimit
         if (IsInbound(to)) {
             return 0;
         } else {
-            Integer dist = Math.max(Math.abs(to - first), Math.abs(to - getLast()));
+            Integer dist = Math.max(Math.abs(to.intValue() - first), Math.abs(to.intValue() - getLast()));
             log.debug("dist="+dist);
-            if (to < first) {
+            if (to.intValue() < first) {
                 return - dist;
             } else {
                 return dist;
@@ -356,7 +356,7 @@ public class NestedIntRange implements INestedRange<Integer> {
         if (aRange == null) {
             throw new ENullArgument(IsOverlappedMthdName);
         } 
-        return !((getLast() < aRange.getFirst()) || (getFirst() > aRange.getLast()));
+        return !((getLast() < aRange.getFirst().intValue()) || (getFirst() > aRange.getLast().intValue()));
     }
     
     /**
@@ -435,7 +435,7 @@ public class NestedIntRange implements INestedRange<Integer> {
      * @return 
      */
     @Override
-    public INestedRange<Integer> Complement(Integer to) {
+    public INestedRange<Integer> Complement(Number to) {
         log.trace(ComplementMthdName+"(to="+to+")");
         Integer dist = getMinDistance(to);
         if (dist < 0) {
@@ -450,20 +450,26 @@ public class NestedIntRange implements INestedRange<Integer> {
     }
 
     @Override
-    public Integer getZero(){
-        return 0;
+    public Integer NumberAdd(Number x, Number y) {
+        return x.intValue() + y.intValue();
     }
 
     @Override
-    public Integer addNum(Integer x, Integer y) {
-        return x + y;
-    }
-
-    @Override
-    public Integer subNum(Integer x, Integer y) {
-        return x - y;
+    public Integer NumberSub(Number x, Number y) {
+        return x.intValue() - y.intValue();
     }
     
+    @Override
+    public int compareXandY(Number x, Number y) {
+        Integer xint = x.intValue();
+        return xint.compareTo(y.intValue());
+    }
+
+    @Override
+    public Integer valueOf(Number v) {
+        return v.intValue();
+    }
+
     /*
     @Override
     public INestedRange<Integer> Complement(INestedRange<Integer> aRange) {
@@ -525,7 +531,7 @@ public class NestedIntRange implements INestedRange<Integer> {
         }
 
         @Override
-        public void setFirst(Integer first) {
+        public void setFirst(Number first) {
             throw new UnsupportedOperationException(ns);
         }
 
@@ -535,12 +541,12 @@ public class NestedIntRange implements INestedRange<Integer> {
         }
 
         @Override
-        public void setLength(Integer length) {
+        public void setLength(Number length) {
             throw new UnsupportedOperationException(ns);
         }
 
         @Override
-        public void incLength(Integer increment) {
+        public void incLength(Number increment) {
             throw new UnsupportedOperationException(ns);
         }
 
@@ -565,7 +571,7 @@ public class NestedIntRange implements INestedRange<Integer> {
         }
 
         @Override
-        public boolean IsInbound(Integer value) {
+        public boolean IsInbound(Number value) {
             throw new UnsupportedOperationException(ns);
         }
 
@@ -575,12 +581,12 @@ public class NestedIntRange implements INestedRange<Integer> {
         }
 
         @Override
-        public Integer getMinDistance(Integer to) {
+        public Integer getMinDistance(Number to) {
             throw new UnsupportedOperationException(ns);
         }
 
         @Override
-        public Integer getMaxDistance(Integer to) {
+        public Integer getMaxDistance(Number to) {
             throw new UnsupportedOperationException(ns);
         }
 
@@ -610,7 +616,7 @@ public class NestedIntRange implements INestedRange<Integer> {
         }
 
         @Override
-        public INestedRange<Integer> Complement(Integer to) {
+        public INestedRange<Integer> Complement(Number to) {
             throw new UnsupportedOperationException(ns);
         }
 
@@ -620,18 +626,24 @@ public class NestedIntRange implements INestedRange<Integer> {
         }
 
         @Override
-        public Integer getZero(){
-            return 0;
+        public Integer valueOf(Number v) {
+            return v.intValue();
         }
 
         @Override
-        public Integer addNum(Integer x, Integer y) {
-            return x+y;
+        public Integer NumberAdd(Number x, Number y) {
+            return x.intValue()+y.intValue();
         }
 
         @Override
-        public Integer subNum(Integer x, Integer y) {
-            return x-y;
+        public Integer NumberSub(Number x, Number y) {
+            return x.intValue() - y.intValue();
+        }
+
+        @Override
+        public int compareXandY(Number x, Number y) {
+            Integer xint = x.intValue();
+            return xint.compareTo(y.intValue());
         }
 
     }

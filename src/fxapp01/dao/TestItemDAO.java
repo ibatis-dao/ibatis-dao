@@ -34,7 +34,7 @@ import java.lang.reflect.InvocationTargetException;
 public class TestItemDAO implements TestItemMapper {
     
     private final ILogger log = LogMgr.getLogger(this.getClass());
-    private INestedRange rowRange = null;
+    private INestedRange<Integer> rowRange = null;
     private final DAOProperties beanProperties;
     
     public TestItemDAO() throws IOException, IntrospectionException {
@@ -70,12 +70,12 @@ public class TestItemDAO implements TestItemMapper {
     }
     
     @Override
-    public List getColumnNames() {
+    public List<String> getColumnNames() {
         return beanProperties.getColumnNames();
     }
 
     @Override
-    public INestedRange getRowTotalRange() throws IOException {
+    public INestedRange<Integer> getRowTotalRange() throws IOException {
         //log.trace(">>> getRowCount");
         //TODO сделать обновление диапазона
         if (rowRange == null) {
@@ -87,12 +87,12 @@ public class TestItemDAO implements TestItemMapper {
     }
     
     @Override
-    public INestedRange selectTotalRange() throws IOException {
+    public INestedRange<Integer> selectTotalRange() throws IOException {
         log.trace(">>> selectTotalRange");
         ORMFacade orm = new ORMFacade();
         try {
             TestItemMapper mapper = orm.getMapper(TestItemMapper.class);
-            INestedRange res = mapper.selectTotalRange();
+            INestedRange<Integer> res = mapper.selectTotalRange();
             log.trace("<<< selectTotalRange");
             return res;
         } catch (Exception e) {

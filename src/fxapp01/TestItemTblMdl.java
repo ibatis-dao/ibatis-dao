@@ -140,13 +140,13 @@ public class TestItemTblMdl extends AbstractTableModel {
         // фактически запрашиваем данные для вычисленного диапазона
         List<TestItemDTO> l;
         try {
-            l = dao.select(new SQLParams(aRowsRange));
+            l = dao.select(new SQLParams<>(aRowsRange));
         } catch (IOException ex) {
             log.error(null, ex);
             l = new ArrayList<>();
         }
         //смотрим, куда добавлять полученные данные - в начало кеша или в конец
-        if (aRowsRange.getFirst() <= cacheRowsRange.getFirst()) {
+        if (aRowsRange.compareXandY(aRowsRange.getFirst(), cacheRowsRange.getFirst()) <= 0) {
             //добавляем в начало
             l.addAll(data);
             data.setAll(l);
@@ -242,7 +242,7 @@ public class TestItemTblMdl extends AbstractTableModel {
         List<TestItemDTO> l;
         try {
             
-            l = dao.select(new SQLParams(new NestedIntRange(row, 1, outerLimits)));
+            l = dao.select(new SQLParams<>(new NestedIntRange(row, 1, outerLimits)));
         } catch (IOException ex) {
             log.error(null, ex);
             l = new ArrayList<>();
@@ -264,7 +264,7 @@ public class TestItemTblMdl extends AbstractTableModel {
                 for (int column = 0; column < getColumnCount(); column++) {
                     series.add(new BarChart.Data<String,Object>(getColumnName(column), getValueAt(row, column)));
                 }
-                bcData.add(new BarChart.Series(series));
+                bcData.add(new BarChart.Series<>(series));
             }
         }
         return bcData;

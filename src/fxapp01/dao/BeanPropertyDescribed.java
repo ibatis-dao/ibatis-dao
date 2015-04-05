@@ -26,7 +26,7 @@ import java.util.Enumeration;
  *
  * @author serg
  */
-public class BeanPropertyDescribed implements IDataPropertyDescribed {
+public class BeanPropertyDescribed implements IDataPropertyDescribed<Object, Object> {
 
     private static final ILogger log = LogMgr.getLogger(BeanPropertyDescribed.class);
     private final Class<?> beanClass;
@@ -50,7 +50,7 @@ public class BeanPropertyDescribed implements IDataPropertyDescribed {
     implementation of interface IDataProperty
     */
     @Override
-    public Class getType() {
+    public Class<?> getType() {
         return pd.getPropertyType();
     }
 

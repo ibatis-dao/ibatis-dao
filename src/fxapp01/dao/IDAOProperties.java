@@ -21,7 +21,7 @@ import java.util.List;
  *
  * @author serg
  */
-public interface IDAOProperties extends IHasDataPropertyDescribed {
+public interface IDAOProperties<B,V> extends IHasDataPropertyDescribed<B,V> {
     public List<String> getColumnNames();
     public List<String> getPropertiesNames();
 }

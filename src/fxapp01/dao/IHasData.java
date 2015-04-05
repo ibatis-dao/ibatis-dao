@@ -26,7 +26,7 @@ import javafx.collections.ObservableList;
  * @param <DTOclass> класс объекта, представляющего строку данных
  * @param <RangeKeyClass>
  */
-public interface IHasData<DTOclass,RangeKeyClass extends Number> 
+public interface IHasData<DTOclass,RangeKeyClass extends Number & Comparable<RangeKeyClass>> 
     extends Serializable, 
             ObservableList<DTOclass>, 
             IDataRangeFetcher<DTOclass,RangeKeyClass>             

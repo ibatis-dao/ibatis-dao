@@ -25,7 +25,7 @@ import java.util.List;
  * @param <DTOclass> - класс строки данных
  * @param <RangeKeyClass>
  */
-public interface IDataRangeFetcher<DTOclass,RangeKeyClass extends Number> {
+public interface IDataRangeFetcher<DTOclass,RangeKeyClass extends Number & Comparable<RangeKeyClass>> {
     
     public INestedRange<RangeKeyClass> getRowTotalRange() throws IOException;
     

@@ -16,7 +16,6 @@
 package fxapp01.dao;
 
 import fxapp01.dto.INestedRange;
-import fxapp01.dto.NestedIntRange;
 import fxapp01.excpt.EArgumentBreaksRule;
 import fxapp01.excpt.ENullArgument;
 import fxapp01.excpt.EUnsupported;
@@ -25,7 +24,6 @@ import fxapp01.log.LogMgr;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -33,19 +31,17 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Скользящий (плавающий) кеш данных. В данной версии только read-only. Хранит "окно" данных 
  * ограниченного размера. "Окно" сдвигается при запросе строки данных за его пределами.
  * Адресация строк кеша во всех публичных методах совпадает с адресацией строк диапазона 
  * данных range и outerLimits.
- * @author StarukhSA
+ * @author serg
  * @param <T>
  * @param <RangeKeyClass>
  */
-public class DataCacheRolling<T,RangeKeyClass extends Number> implements List<T> {
+public class DataCacheRolling<T,RangeKeyClass extends Number & Comparable<RangeKeyClass>> implements List<T> {
     //TODO после отладки заменить реализацию интерфейса List на расширение класса ArrayList
     
     private static final ILogger log = LogMgr.getLogger(DataCacheRolling.class);
@@ -64,7 +60,6 @@ public class DataCacheRolling<T,RangeKeyClass extends Number> implements List<T>
     private final HashMap<Object, T> dataOldValues;
     private final HashMap<Object, T> dataNewValues;
     
-    @SuppressWarnings("unchecked")
     public DataCacheRolling(IDataRangeFetcher<T,RangeKeyClass> dataFetcher) throws IOException {
         String methodName = "constructor(dataFetcher)";
         log.trace(entering+methodName);
@@ -91,7 +86,7 @@ public class DataCacheRolling<T,RangeKeyClass extends Number> implements List<T>
         }
         this.range = this.outerLimits.clone();
         this.range.setFirst(outerLimits.getFirst());
-        this.range.setLength(this.range.getZero());
+        this.range.setLength(0);
         this.range.setParentRange(outerLimits);
         log.trace(exiting+methodName);
     }
@@ -116,12 +111,12 @@ public class DataCacheRolling<T,RangeKeyClass extends Number> implements List<T>
         log.debug("----- printAll -----");
     }
 
-    private int toCacheIndex(RangeKeyClass dataRowNo){
-        return range.subNum(dataRowNo, range.getFirst()).intValue();
+    private int toCacheIndex(Number dataRowNo){
+        return range.NumberSub(dataRowNo, range.getFirst()).intValue();
     }
     
     private RangeKeyClass toDataRowNo(RangeKeyClass cacheIndex){
-        return range.addNum(cacheIndex,range.getFirst());
+        return range.NumberAdd(cacheIndex,range.getFirst());
     }
     
     public INestedRange<RangeKeyClass> getRange() {
@@ -226,7 +221,7 @@ public class DataCacheRolling<T,RangeKeyClass extends Number> implements List<T>
      * зависит от нумерации строк конкретного источника данных (конкретной БД)
      * @return возвращает true, если этот номер строки данных найден в кеше
      */
-    public boolean containsIndex(RangeKeyClass index) {
+    public boolean containsIndex(Number index) {
         return range.IsInbound(index);
     }
     
@@ -268,9 +263,9 @@ public class DataCacheRolling<T,RangeKeyClass extends Number> implements List<T>
         range.incLength(-delta);
         //TODO
         if (from == 0) {
-            range.setFirst(range.getFirst()+delta);
+            range.setFirst(range.NumberAdd(range.getFirst(),delta));
         } else {
-            range.setFirst(range.getFirst()-delta);
+            range.setFirst(range.NumberSub(range.getFirst(),delta));
         }
         return (from <= to);
     }
@@ -286,7 +281,7 @@ public class DataCacheRolling<T,RangeKeyClass extends Number> implements List<T>
     public void clear() {
         log.trace(entering+"clear");
         dataReadOnly.clear();
-        range.setLength(range.getZero());
+        range.setLength(range.valueOf(0));
         log.trace(exiting+"clear. size="+size());
     }
     
@@ -403,20 +398,20 @@ public class DataCacheRolling<T,RangeKeyClass extends Number> implements List<T>
     private int AlignToCacheDefSize(int point) {
         /* округляем до ближайшего большего целого размера страницы кеша */
         log.debug("AlignToCacheDefSize(point="+point+")");
-        int pagePart = (point-getLeftLimit()) % defSize;
+        int pagePart = range.NumberSub(point, outerLimits.getFirst()).intValue() % defSize;
         log.debug("pagePart="+pagePart);
-        if (point < range.getFirst()) {
+        if (range.compareXandY(point, range.getFirst()) < 0) {
             point = point - pagePart;
         } else {
-            if (point > range.getLast()) {
+            if (range.compareXandY(point, range.getLast()) > 0) {
                 point = point + defSize - pagePart - 1;
             }
         }
-        if (point < outerLimits.getFirst()) {
-            point = outerLimits.getFirst();
+        if (outerLimits.compareXandY(point, outerLimits.getFirst()) < 0) {
+            point = outerLimits.getFirst().intValue();
         }
-        if (point > outerLimits.getLast()) {
-            point = outerLimits.getLast();
+        if (outerLimits.compareXandY(point, outerLimits.getLast()) > 0) {
+            point = outerLimits.getLast().intValue();
         }
         log.debug("point="+point);
         return point;
@@ -472,19 +467,20 @@ public class DataCacheRolling<T,RangeKeyClass extends Number> implements List<T>
             log.debug("Out of cache. Try find new range");
             //если строка за пределами текущего диапазона
             //выравниваем строку по границе страниц кеша
-            int target = AlignToCacheDefSize(index);
+            Integer target = AlignToCacheDefSize(index);
             log.debug("after AlignToCacheDefSize. index="+index+", target="+target);
             //рассчитываем расстояние до указаной строки в целых страницах кеша
             int dist;
-            dist = Math.abs(range.getMaxDistance(target));
+            dist = Math.abs(range.getMaxDistance(target).intValue());
             log.debug("dist="+dist);
-            INestedRange<Integer> aRange;
+            INestedRange<RangeKeyClass> aRange;
             //если расчетная длина диапазона меньше максимально допустимого размера кеша
             if (dist <= maxSize) {
                 log.debug("dist <= maxSize");
                 //вычисляем диапазон строк, который требуется дозагрузить
                 //загружаем только новую порцию данных.  
                 //ту часть диапазона, что уже есть в кеше, исключаем из загрузки
+                
                 aRange = range.Complement(target);
                 log.debug("before assert(target < 0); target="+target);
                 assert(target >= 0);
@@ -493,7 +489,7 @@ public class DataCacheRolling<T,RangeKeyClass extends Number> implements List<T>
                 {
                     loadToCache(range.getFirst(), dataFetcher.fetch(aRange));
                 } else {
-                    loadToCache(range.getLast()+1, dataFetcher.fetch(aRange));
+                    loadToCache(range.NumberAdd(range.getLast(),1), dataFetcher.fetch(aRange));
                 }
             } else {
                 //если расстояние меньше удвоенного макс. размера кеша,
@@ -502,26 +498,29 @@ public class DataCacheRolling<T,RangeKeyClass extends Number> implements List<T>
                 if (dist < maxSize * 2) {
                     log.debug("dist < maxSize * 2");
                     aRange = range.Complement(target);
-                    if (target < range.getFirst()) {
+                    if (range.compareXandY(target, range.getFirst()) < 0) {
                         log.debug("target < range.first. before purge(x, len)");
                         //сбрасываем часть строк с правого края кеша
                         log.debug("data.size="+dataReadOnly.size()+", aRange.length="+aRange.getLength());
-                        purge(dataReadOnly.size()-aRange.getLength(), dataReadOnly.size()-1);
+                        purge(range.NumberSub(dataReadOnly.size(), aRange.getLength()).intValue(), dataReadOnly.size()-1);
                         log.debug("before dataFetcher.fetch(aRange, 0);");
                         //дозагружаем данные слева
                         loadToCache(range.getFirst(), dataFetcher.fetch(aRange));
                     } else {
                         log.debug("target >= 0. before purge(0, x). dist="+dist+", aRange.length="+aRange.getLength());
                         //сбрасываем часть строк с левого края кеша
-                        purge(0, aRange.getLength()-1);
+                        purge(0, range.NumberSub(aRange.getLength(), 1).intValue());
                         log.debug("before dataFetcher.fetch(aRange, size()+1);");
                         //дозагружаем данные справа
-                        loadToCache(range.getLast()+1, dataFetcher.fetch(aRange));
+                        loadToCache(range.NumberAdd(range.getLast(), 1), dataFetcher.fetch(aRange));
                     }
                 } else {
                     //расстояние равно или больше удвоенного макс. размера кеша,
                     log.debug("dist >= maxSize * 2");
-                    aRange = new NestedIntRange(index, defSize, outerLimits);
+                    aRange = outerLimits.clone();
+                    aRange.setFirst(index);
+                    aRange.setLength(defSize);
+                    aRange.setParentRange(outerLimits);
                     //сбрасываем кеш полностью
                     clear(); 
                     //загружаем данные 
@@ -532,7 +531,7 @@ public class DataCacheRolling<T,RangeKeyClass extends Number> implements List<T>
         }
         log.debug("Cache ranging finshed. Check asserts about range.");
         log.debug("index="+index+", range=("+range+")");
-        int intIdx = index-range.getFirst();
+        int intIdx = range.NumberSub(index, range.getFirst()).intValue();
         log.debug("intIdx="+intIdx);
         //если да, то возвращаем значение из этой строки
         assert((0 <= intIdx) && (intIdx < dataReadOnly.size()));

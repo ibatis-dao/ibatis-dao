@@ -16,26 +16,27 @@
 package fxapp01.dao.sort;
 
 import java.util.Iterator;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.util.Callback;
 
 
-public class SortOrderHelper<DTOclass> extends SortOrder {
+public class SortOrderHelper extends SortOrder {
 
-    public SortOrderHelper(ObservableList<TableColumn<DTOclass,?>> cols) {
+    public <DTOclass,T extends Object> SortOrderHelper(ObservableList<TableColumn<DTOclass,T>> cols) {
         super();
         if (cols != null) {
-            Iterator<TableColumn<DTOclass,?>> it = cols.iterator();
+            Iterator<TableColumn<DTOclass,T>> it = cols.iterator();
             while (it.hasNext()) {
-                TableColumn<DTOclass,?> col = it.next();
+                TableColumn<DTOclass,T> col = it.next();
                 ISortOrder.Direction dir = (col.getSortType() == TableColumn.SortType.ASCENDING) ? ISortOrder.Direction.ASC : ISortOrder.Direction.DESC;
                 //TODO имя колонки таблицы не совпадает с именем столбца в источнике данных
                 String colID;
-                PropertyValueFactory<DTOclass,?> pvf;
-                Object o = col.getCellValueFactory();
-                if (o instanceof PropertyValueFactory) {
-                    pvf = (PropertyValueFactory<DTOclass,?>)o;
+                Callback<TableColumn.CellDataFeatures<DTOclass,T>, ObservableValue<T>> clb = col.getCellValueFactory();
+                if (clb instanceof PropertyValueFactory) {
+                    PropertyValueFactory<DTOclass,T> pvf = (PropertyValueFactory<DTOclass,T>)clb;
                     colID = pvf.getProperty();
                 } else {
                     colID = col.getId();

@@ -15,14 +15,15 @@
  */
 package fxapp01.dao;
 
-import java.util.Collection;
 import java.util.Enumeration;
 
 /**
  *
  * @author serg
+ * @param <B>
+ * @param <V>
  */
-public interface IDataPropertyDescribed extends IDataProperty {
+public interface IDataPropertyDescribed<B, V> extends IDataProperty<B, V> {
     /*
     * Gets the name (usually short "programmatic", non localizable) of the Property.
     */
