@@ -17,6 +17,7 @@ package fxapp01.dao;
 
 import fxapp01.orm.ORMFacade;
 import fxapp01.dto.INestedRange;
+import fxapp01.dto.NestedIntRange;
 import fxapp01.dto.SQLParams;
 import java.math.BigInteger;
 import java.util.List;
@@ -93,6 +94,8 @@ public class TestItemDAO implements TestItemMapper {
         try {
             TestItemMapper mapper = orm.getMapper(TestItemMapper.class);
             INestedRange<Integer> res = mapper.selectTotalRange();
+            //NestedIntRange nir = (NestedIntRange)res;
+            log.debug("range="+res);
             log.trace("<<< selectTotalRange");
             return res;
         } catch (Exception e) {

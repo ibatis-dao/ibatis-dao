@@ -20,7 +20,6 @@ import fxapp01.log.ILogger;
 import fxapp01.log.LogMgr;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.util.Collection;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

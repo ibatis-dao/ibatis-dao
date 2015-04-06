@@ -52,11 +52,12 @@ public class NestedIntRange implements INestedRange<Integer> {
     private static final INestedRange<Integer> Singular = new SingularIntRange();
     
     public NestedIntRange() {
-        
+        log.trace(entering+contructorMthdName+"()");
     }
 
     public NestedIntRange(INestedRange<Integer> range) {
         this();
+        log.trace(entering+contructorMthdName+"(range)");
         if (range != null) {
             init(range.getFirst(), range.getLength(), range.getParentRange());
         }

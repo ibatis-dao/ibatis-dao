@@ -35,11 +35,11 @@ import static org.junit.Assert.*;
  *
  * @author StarukhSA
  */
-public class BaseDaoTest {
+public class ORMFacadeTest {
     
     private final ILogger log = LogMgr.getLogger(this.getClass()); 
 
-    public BaseDaoTest() {
+    public ORMFacadeTest() {
     }
     
     @BeforeClass

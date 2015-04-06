@@ -48,8 +48,8 @@ import static org.junit.Assert.*;
 public final class DataListTest {
     
     private final ILogger log = LogMgr.getLogger(this.getClass());
-    private final DataList instance;
-    private final INestedRange totalRange;
+    private final DataList<TestItemDTO,Integer> instance;
+    private final INestedRange<Integer> totalRange;
 
     public DataListTest() throws Exception {
         instance = newDataList();
@@ -57,15 +57,15 @@ public final class DataListTest {
     }
     
     private int getRangeFirst() throws IOException {
-        return instance.getRowTotalRange().getFirst().intValue();
+        return instance.getRowTotalRange().getFirst();
     }
     
     private int getRangeLength() throws IOException {
-        return instance.getRowTotalRange().getLength().intValue();
+        return instance.getRowTotalRange().getLength();
     }
     
     private int getRangeLast() throws IOException {
-        return instance.getRowTotalRange().getLast().intValue();
+        return instance.getRowTotalRange().getLast();
     }
     
     private DataList<TestItemDTO,Integer> newDataList() throws IOException, IntrospectionException {
@@ -91,8 +91,8 @@ public final class DataListTest {
         return newDataRow(BigInteger.ONE);
     }
     
-    private Object[] newDataRow_GenericType() {
-        return new Object[] {newDataRow01()};
+    private TestItemDTO[] newDataRow_GenericType() {
+        return new TestItemDTO[] {newDataRow01()};
     }
     
     private Collection newDataRow_Collection() {
@@ -194,7 +194,7 @@ public final class DataListTest {
     @Test
     public void testAddAll_GenericType() {
         log.trace("addAll");
-        Object[] elements = newDataRow_GenericType();
+        TestItemDTO[] elements = newDataRow_GenericType();
         boolean result = instance.addAll(elements);
         assertTrue(result);
     }
@@ -205,7 +205,7 @@ public final class DataListTest {
     @Test
     public void testSetAll_GenericType() {
         log.trace("setAll");
-        Object[] elements = newDataRow_GenericType();
+        TestItemDTO[] elements = newDataRow_GenericType();
         boolean result = instance.setAll(elements);
         assertTrue(result);
     }
@@ -227,7 +227,7 @@ public final class DataListTest {
     @Test
     public void testRemoveAll_GenericType() {
         log.trace("removeAll");
-        Object[] elements = newDataRow_GenericType();
+        TestItemDTO[] elements = newDataRow_GenericType();
         boolean result = instance.addAll(elements);
         assertTrue(result);
         result = instance.removeAll(elements);
@@ -241,7 +241,7 @@ public final class DataListTest {
     public void testRetainAll_GenericType() {
         log.trace("retainAll");
         boolean wasEmpty = instance.isEmpty();
-        Object[] elements = newDataRow_GenericType();
+        TestItemDTO[] elements = newDataRow_GenericType();
         boolean result = instance.addAll(elements);
         assertTrue(result);
         result = wasEmpty || instance.retainAll(elements);
@@ -256,7 +256,7 @@ public final class DataListTest {
         log.trace("remove");
         int from = 0;
         int to = 2;
-        Object[] elements = new Object[] {newDataRow(null), newDataRow(null), newDataRow(null)};
+        TestItemDTO[] elements = new TestItemDTO[] {newDataRow(null), newDataRow(null), newDataRow(null)};
         boolean result = instance.addAll(elements);
         assertTrue(result);
         instance.remove(from, to);
@@ -320,11 +320,11 @@ public final class DataListTest {
     @Test
     public void testContains() {
         log.trace("contains");
-        Object o = null;
+        TestItemDTO o = null;
         boolean expResult = false;
         boolean result = instance.contains(o);
         assertFalse(result);
-        Object[] elements = newDataRow_GenericType();
+        TestItemDTO[] elements = newDataRow_GenericType();
         result = instance.addAll(elements);
         assertTrue(result);
         result = instance.contains(elements[0]);
@@ -370,7 +370,7 @@ public final class DataListTest {
     @Test
     public void testAdd_GenericType() {
         log.trace("add");
-        Object e = newDataRow(null);
+        TestItemDTO e = newDataRow(null);
         boolean result = instance.add(e);
         assertTrue(result);
     }
@@ -381,7 +381,7 @@ public final class DataListTest {
     @Test
     public void testRemove_Object() {
         log.trace("remove");
-        Object o = newDataRow(null);
+        TestItemDTO o = newDataRow(null);
         boolean result = instance.add(o);
         assertTrue(result);
         result = instance.remove(o);
@@ -481,7 +481,7 @@ public final class DataListTest {
         log.trace("set");
         boolean wasEmpty = instance.isEmpty();
         int index = getRangeFirst();
-        Object element = newDataRow(null);
+        TestItemDTO element = newDataRow(null);
         Object result = instance.set(index, element);
         assertTrue((wasEmpty || (result != null)));
     }
@@ -494,7 +494,7 @@ public final class DataListTest {
     public void testAdd_int_GenericType() throws IOException {
         log.trace("add");
         int index = getRangeFirst();
-        Object element = newDataRow(null);
+        TestItemDTO element = newDataRow(null);
         instance.add(index, element);
     }
 
@@ -517,7 +517,7 @@ public final class DataListTest {
     @Test
     public void testIndexOf() {
         log.trace("indexOf");
-        Object o = newDataRow(null);
+        TestItemDTO o = newDataRow(null);
         instance.add(o);
         int result = instance.indexOf(o);
         assertTrue(result >= 0);
@@ -529,7 +529,7 @@ public final class DataListTest {
     @Test
     public void testLastIndexOf() {
         log.trace("lastIndexOf");
-        Object o = newDataRow(null);
+        TestItemDTO o = newDataRow(null);
         instance.add(o);
         int result = instance.lastIndexOf(o);
         assertTrue(result >= 0);

@@ -23,9 +23,9 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
 
 
-public class SortOrderHelper extends SortOrder {
+public class SortOrderHelper<DTOclass,T extends Object> extends SortOrder {
 
-    public <DTOclass,T extends Object> SortOrderHelper(ObservableList<TableColumn<DTOclass,T>> cols) {
+    public SortOrderHelper(ObservableList<TableColumn<DTOclass,T>> cols) {
         super();
         if (cols != null) {
             Iterator<TableColumn<DTOclass,T>> it = cols.iterator();

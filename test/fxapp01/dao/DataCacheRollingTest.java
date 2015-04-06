@@ -45,7 +45,7 @@ public class DataCacheRollingTest {
     private final ILogger log = LogMgr.getLogger(this.getClass());
     
     IDataRangeFetcher<TestItemDTO,Integer> dataFetcher;
-    private final DataCacheRolling<TestItemDTO> instance;
+    private final DataCacheRolling<TestItemDTO,Integer> instance;
     
     private class DataRangeFetcher<DTOclass,Integer> implements IDataRangeFetcher  {
 
