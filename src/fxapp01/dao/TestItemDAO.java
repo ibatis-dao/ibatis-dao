@@ -44,7 +44,7 @@ public class TestItemDAO implements TestItemMapper {
         log.trace("<<< constructor");
     }
     
-    @Override
+    //@Override
     public IDAOProperties getBeanProperties() {
         log.trace(">>> getBeanProperties");
         return beanProperties;
@@ -70,14 +70,14 @@ public class TestItemDAO implements TestItemMapper {
         }
     }
     
-    @Override
+    //@Override
     public List<String> getColumnNames() {
         return beanProperties.getColumnNames();
     }
 
     @Override
     public INestedRange<Integer> getRowTotalRange() throws IOException {
-        //log.trace(">>> getRowCount");
+        log.trace(">>> getRowTotalRange");
         //TODO сделать обновление диапазона
         if (rowRange == null) {
             rowRange = selectTotalRange();
@@ -88,14 +88,16 @@ public class TestItemDAO implements TestItemMapper {
     }
     
     @Override
-    public INestedRange<Integer> selectTotalRange() throws IOException {
+    public INestedRange selectTotalRange() throws IOException {
         log.trace(">>> selectTotalRange");
         ORMFacade orm = new ORMFacade();
         try {
             TestItemMapper mapper = orm.getMapper(TestItemMapper.class);
-            INestedRange<Integer> res = mapper.selectTotalRange();
+            INestedRange res = mapper.selectTotalRange();
             //NestedIntRange nir = (NestedIntRange)res;
             log.debug("range="+res);
+            INestedRange<Integer> nr = res;
+            log.debug("range="+nr);
             log.trace("<<< selectTotalRange");
             return res;
         } catch (Exception e) {

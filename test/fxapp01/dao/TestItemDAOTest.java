@@ -179,7 +179,7 @@ public class TestItemDAOTest {
         NestedIntRange range = new NestedIntRange(0, 10, null);
         TestItemDTO example = new TestItemDTO();
         example.setId(BigInteger.ONE);
-        SQLParams par = new SQLParams(range, null, null);
+        SQLParams<Integer> par = new SQLParams<Integer>(range, null, null);
         par.setExample(example);
         List<TestItemDTO> l = dao.select(par);
         int numRows = 0;
@@ -210,7 +210,7 @@ public class TestItemDAOTest {
             so.add(s, ISortOrder.Direction.ASC);
         }
         
-        par = new SQLParams(range, so, null);
+        par = new SQLParams<Integer>(range, so, null);
         par.setExample(example);
         l = dao.select(par);
         

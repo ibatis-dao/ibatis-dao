@@ -22,12 +22,12 @@ import java.util.List;
 import fxapp01.dto.TestItemDTO;
 import java.io.IOException;
 
-public interface TestItemMapper extends IDAOreadonly<TestItemDTO,Integer>, IDataWriter<TestItemDTO>{
+public interface TestItemMapper extends IDAOreadonly<TestItemDTO,Integer>, IDataWriter<TestItemDTO> {
     //List<TestItemDTO> select(INestedRange rowsrange) throws IOException;
     @Override
     List<TestItemDTO> select(SQLParams prm) throws IOException;
     TestItemDTO selectByPKey(BigInteger PKey) throws IOException;
-    INestedRange<Integer> selectTotalRange() throws IOException;
+    INestedRange selectTotalRange() throws IOException;
     @Override
     int insertRow(TestItemDTO item) throws IOException;
     int insertRowBySP(TestItemDTO item) throws IOException;
