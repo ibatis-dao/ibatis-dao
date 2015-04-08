@@ -27,7 +27,7 @@ public interface TestItemMapper extends IDAOreadonly<TestItemDTO,Integer>, IData
     @Override
     List<TestItemDTO> select(SQLParams prm) throws IOException;
     TestItemDTO selectByPKey(BigInteger PKey) throws IOException;
-    INestedRange selectTotalRange() throws IOException;
+    INestedRange<Integer> selectTotalRange() throws IOException;
     @Override
     int insertRow(TestItemDTO item) throws IOException;
     int insertRowBySP(TestItemDTO item) throws IOException;

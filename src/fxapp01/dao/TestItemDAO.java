@@ -88,7 +88,7 @@ public class TestItemDAO implements TestItemMapper {
     }
     
     @Override
-    public INestedRange selectTotalRange() throws IOException {
+    public INestedRange<Integer> selectTotalRange() throws IOException {
         log.trace(">>> selectTotalRange");
         ORMFacade orm = new ORMFacade();
         try {
