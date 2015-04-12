@@ -528,4 +528,21 @@ public class DataList<DTOclass,RangeKeyClass extends Number & Comparable<RangeKe
         }
     }
     
+    // ******************  IHasDataChanges ********************
+
+    @Override
+    public boolean hasDataChanges() {
+        return cache.hasDataChanges();
+    }
+
+    @Override
+    public void applyDataChanges() throws IOException {
+        cache.applyDataChanges();
+    }
+
+    @Override
+    public void cancelDataChanges() {
+        cache.cancelDataChanges();
+    }
+    
 }

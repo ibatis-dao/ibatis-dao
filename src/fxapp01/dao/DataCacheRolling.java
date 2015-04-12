@@ -41,7 +41,7 @@ import java.util.Set;
  * @param <T>
  * @param <RangeKeyClass>
  */
-public class DataCacheRolling<T,RangeKeyClass extends Number & Comparable<RangeKeyClass>> implements List<T> {
+public class DataCacheRolling<T,RangeKeyClass extends Number & Comparable<RangeKeyClass>> implements List<T>, IHasDataChanges {
     //TODO после отладки заменить реализацию интерфейса List на расширение класса ArrayList
     
     private static final ILogger log = LogMgr.getLogger(DataCacheRolling.class);
@@ -164,10 +164,12 @@ public class DataCacheRolling<T,RangeKeyClass extends Number & Comparable<RangeK
         return DataChanges.NONE;
     }
         
+    @Override
     public boolean hasDataChanges() {
         return (! dataNewValues.isEmpty());
     }
     
+    @Override
     public void applyDataChanges() throws IOException {
         log.trace(entering+"applyDataChanges");
         //если dataFetcher реализует интерфейс IDataWriter для поддержки записи данных

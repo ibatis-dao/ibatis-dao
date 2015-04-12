@@ -647,4 +647,18 @@ public final class DataListTest {
         instance.debugPrintAll();
         log.trace("<<< testGetFewRows");
     }
+    
+    /**
+     * Test of add method, of class DataList.
+     */
+    @Test
+    public void testAdd_IHasDataChanges() {
+        log.trace("testAdd_IHasDataChanges");
+        TestItemDTO e = newDataRow(null);
+        boolean result = instance.add(e);
+        assertTrue(result);
+        assertTrue(instance.hasDataChanges());
+    }
+
+
 }

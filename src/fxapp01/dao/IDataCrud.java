@@ -23,6 +23,7 @@ package fxapp01.dao;
  */
 public interface IDataCrud<DTOclass,RangeKeyClass extends Number & Comparable<RangeKeyClass>> 
     extends IHasData<DTOclass,RangeKeyClass>,
+            IHasDataChanges,
             IDataWriter<DTOclass>
 {
 }
