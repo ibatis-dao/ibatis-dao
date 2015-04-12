@@ -140,7 +140,7 @@ public class TestItemTblMdl extends AbstractTableModel {
         // фактически запрашиваем данные для вычисленного диапазона
         List<TestItemDTO> l;
         try {
-            l = dao.select(new SQLParams<>(aRowsRange));
+            l = dao.select(new SQLParams(aRowsRange));
         } catch (IOException ex) {
             log.error(null, ex);
             l = new ArrayList<>();
@@ -242,7 +242,7 @@ public class TestItemTblMdl extends AbstractTableModel {
         List<TestItemDTO> l;
         try {
             
-            l = dao.select(new SQLParams<>(new NestedIntRange(row, 1, outerLimits)));
+            l = dao.select(new SQLParams(new NestedIntRange(row, 1, outerLimits)));
         } catch (IOException ex) {
             log.error(null, ex);
             l = new ArrayList<>();

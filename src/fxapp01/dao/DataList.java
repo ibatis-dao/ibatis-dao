@@ -103,7 +103,7 @@ public class DataList<DTOclass,RangeKeyClass extends Number & Comparable<RangeKe
         log.debug("before FXCollections.observableList");
         this.dataFacade = FXCollections.observableList(cache);
         log.debug("make initRange");
-        cache.getRange().setLength(20);
+        cache.getRange().setLength(cache.getRange().valueOf(20));
         log.debug("before refresh");
         refresh();
         log.trace(exiting+"constructor");
@@ -184,7 +184,7 @@ public class DataList<DTOclass,RangeKeyClass extends Number & Comparable<RangeKe
         }
         List<DTOclass> l;
         try {
-            SQLParams<RangeKeyClass> qep = new SQLParams<>(aRowsRange, getSortOrder(), getFilter());
+            SQLParams qep = new SQLParams(aRowsRange, getSortOrder(), getFilter());
             l = dao.select(qep);
         } catch (IOException ex) {
             //TODO прятать проблемы нехорошо

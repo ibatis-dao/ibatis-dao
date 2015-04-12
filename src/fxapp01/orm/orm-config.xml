@@ -14,9 +14,11 @@
   <typeAliases>
     <typeAlias alias="TestItemDTO" type="fxapp01.dto.TestItemDTO"/>
     <typeAlias alias="IntRange" type="fxapp01.dto.NestedIntRange"/>
+    <typeAlias alias="INestedRange" type="fxapp01.dto.INestedRange"/>
     <typeAlias alias="SQLParams" type="fxapp01.dto.SQLParams"/>
   </typeAliases>
-  <environments default="${environment-current}">
+  <typeHandlers/>
+  <environments default="development-postgresql">
     <environment id="development-oracle">
       <transactionManager type="JDBC" >
       	<!-- property name="commitRequired" value="true"/ -->

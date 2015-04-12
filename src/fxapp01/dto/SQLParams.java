@@ -23,27 +23,28 @@ import fxapp01.dao.sort.IDAOSortOrder;
  * @author serg
  * @param <RangeKeyClass>
  */
-public class SQLParams<RangeKeyClass extends Number & Comparable<RangeKeyClass>> {
-    private INestedRange<RangeKeyClass> rowsRange;
+public class SQLParams {
+    private NestedIntRange rowsRange;
     private IDAOSortOrder sortOrder;
     private ISqlFilterable filter;
     private Object example; // query by example
 
-    public SQLParams(INestedRange<RangeKeyClass> rowsRange){
+    public SQLParams(INestedRange rowsRange){
         this(rowsRange, null, null);
     }
     
-    public SQLParams(INestedRange<RangeKeyClass> rowsRange, IDAOSortOrder sortOrder){
+    public SQLParams(INestedRange rowsRange, IDAOSortOrder sortOrder){
         this(rowsRange, sortOrder, null);
     }
     
-    public SQLParams(INestedRange<RangeKeyClass> rowsRange, ISqlFilterable filter){
+    public SQLParams(INestedRange rowsRange, ISqlFilterable filter){
         this(rowsRange, null, filter);
     }
     
-    public SQLParams(INestedRange<RangeKeyClass> rowsRange, IDAOSortOrder sortOrder, ISqlFilterable filter){
+    public SQLParams(INestedRange rowsRange, IDAOSortOrder sortOrder, ISqlFilterable filter){
         if (rowsRange != null) {
-            this.rowsRange = rowsRange.clone();
+            this.rowsRange = new NestedIntRange(rowsRange);
+            //this.rowsRange = rowsRange.clone();
         } else {
             this.rowsRange = null;
         }
@@ -52,11 +53,11 @@ public class SQLParams<RangeKeyClass extends Number & Comparable<RangeKeyClass>>
         this.example = null;
     }
     
-    public INestedRange<RangeKeyClass> getRowsRange() {
+    public NestedIntRange getRowsRange() {
         return rowsRange;
     }
 
-    public void setRowsRange(INestedRange<RangeKeyClass> rowsRange) {
+    public void setRowsRange(NestedIntRange rowsRange) {
         if (rowsRange != null) {
             this.rowsRange = rowsRange.clone();
         } else {

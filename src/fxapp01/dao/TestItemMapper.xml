@@ -15,7 +15,7 @@
     
     <select id="selectTotalRange" databaseId="postgresql" resultType="IntRange">
         <!-- database specific minimum number of row and rows count -->
-    select 0 "first", count(id)-1 "length" from public."test02"
+    select 0 "first", count(id) "length" from public."test02"
     </select>
     
     <select id="selectByPKey" databaseId="oracle" parameterType="BigInteger" resultMap="TestItemMap">

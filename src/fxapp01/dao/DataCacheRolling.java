@@ -86,7 +86,7 @@ public class DataCacheRolling<T,RangeKeyClass extends Number & Comparable<RangeK
         }
         this.range = this.outerLimits.clone();
         this.range.setFirst(outerLimits.getFirst());
-        this.range.setLength(0);
+        this.range.setLength(range.valueOf(0));
         this.range.setParentRange(outerLimits);
         log.trace(exiting+methodName);
     }
@@ -221,13 +221,13 @@ public class DataCacheRolling<T,RangeKeyClass extends Number & Comparable<RangeK
      * зависит от нумерации строк конкретного источника данных (конкретной БД)
      * @return возвращает true, если этот номер строки данных найден в кеше
      */
-    public boolean containsIndex(Number index) {
-        return range.IsInbound(index);
+    public boolean containsIndex(Integer index) {
+        return range.IsInbound(range.valueOf(index));
     }
     
     public boolean loadToCache(Collection<? extends T> c) {
         if (c != null) {
-            range.incLength(c.size());
+            range.incLength(range.valueOf(c.size()));
         }
         return dataReadOnly.addAll(c);
     }
@@ -238,7 +238,7 @@ public class DataCacheRolling<T,RangeKeyClass extends Number & Comparable<RangeK
             log.debug("before dataReadOnly.addAll()");
             boolean res = dataReadOnly.addAll(toCacheIndex(index), c);
             log.debug("size="+size());
-            range.incLength(c.size());
+            range.incLength(range.valueOf(c.size()));
             return res;
         } else {
             return false;
@@ -260,7 +260,7 @@ public class DataCacheRolling<T,RangeKeyClass extends Number & Comparable<RangeK
         }
         log.debug("after data.remove. data.size="+dataReadOnly.size());
         int delta = to - from + 1;
-        range.incLength(-delta);
+        range.incLength(range.valueOf(-delta));
         //TODO
         if (from == 0) {
             range.setFirst(range.NumberAdd(range.getFirst(),delta));
@@ -319,8 +319,9 @@ public class DataCacheRolling<T,RangeKeyClass extends Number & Comparable<RangeK
         log.trace(entering+"add(T)");
         CacheKeyIndex key = new CacheKeyIndex();
         int attempts = 0;
-        while (dataNewValues.containsKey(key) || (attempts < 3)) {
+        while (dataNewValues.containsKey(key) && (attempts < 3)) {
             attempts++;
+            log.debug("attempts="+attempts);
             //Thread.sleep(5);
             key = new CacheKeyIndex();
         }
@@ -471,7 +472,7 @@ public class DataCacheRolling<T,RangeKeyClass extends Number & Comparable<RangeK
             log.debug("after AlignToCacheDefSize. index="+index+", target="+target);
             //рассчитываем расстояние до указаной строки в целых страницах кеша
             int dist;
-            dist = Math.abs(range.getMaxDistance(target).intValue());
+            dist = Math.abs(range.getMaxDistance(range.valueOf(target)).intValue());
             log.debug("dist="+dist);
             INestedRange<RangeKeyClass> aRange;
             //если расчетная длина диапазона меньше максимально допустимого размера кеша
@@ -481,7 +482,7 @@ public class DataCacheRolling<T,RangeKeyClass extends Number & Comparable<RangeK
                 //загружаем только новую порцию данных.  
                 //ту часть диапазона, что уже есть в кеше, исключаем из загрузки
                 
-                aRange = range.Complement(target);
+                aRange = range.Complement(range.valueOf(target));
                 log.debug("before assert(target < 0); target="+target);
                 assert(target >= 0);
                 log.debug("after assert(target < 0);");
@@ -497,7 +498,7 @@ public class DataCacheRolling<T,RangeKeyClass extends Number & Comparable<RangeK
                 //сбросим часть кеша и дозагрузим новую часть 
                 if (dist < maxSize * 2) {
                     log.debug("dist < maxSize * 2");
-                    aRange = range.Complement(target);
+                    aRange = range.Complement(range.valueOf(target));
                     if (range.compareXandY(target, range.getFirst()) < 0) {
                         log.debug("target < range.first. before purge(x, len)");
                         //сбрасываем часть строк с правого края кеша
@@ -518,14 +519,14 @@ public class DataCacheRolling<T,RangeKeyClass extends Number & Comparable<RangeK
                     //расстояние равно или больше удвоенного макс. размера кеша,
                     log.debug("dist >= maxSize * 2");
                     aRange = outerLimits.clone();
-                    aRange.setFirst(index);
-                    aRange.setLength(defSize);
+                    aRange.setFirst(aRange.valueOf(index));
+                    aRange.setLength(aRange.valueOf(defSize));
                     aRange.setParentRange(outerLimits);
                     //сбрасываем кеш полностью
                     clear(); 
                     //загружаем данные 
                     loadToCache(range.getFirst(), dataFetcher.fetch(aRange));
-                    range.setFirst(index);
+                    range.setFirst(aRange.valueOf(index));
                 }
             }
         }
@@ -556,7 +557,7 @@ public class DataCacheRolling<T,RangeKeyClass extends Number & Comparable<RangeK
         dataNewValues.put(key, element);
         dataOldValues.put(key, null);
         dataReadOnly.add(index, element);
-        range.incLength(1);
+        range.incLength(range.valueOf(1));
         log.trace(exiting+"add(int,T)");
     }
 
@@ -564,7 +565,7 @@ public class DataCacheRolling<T,RangeKeyClass extends Number & Comparable<RangeK
     public T remove(int index) {
         log.trace(entering+"remove(int)");
         T res = dataReadOnly.remove(index);
-        range.incLength(-1);
+        range.incLength(range.valueOf(-1));
         CacheKeyIndex key = new CacheKeyIndex(index);
         dataOldValues.put(key, res);
         dataNewValues.put(key, null);
@@ -620,11 +621,14 @@ public class DataCacheRolling<T,RangeKeyClass extends Number & Comparable<RangeK
         private final long keyIndex;
                 
         public CacheKeyIndex() {
-            //this.keyIndex = System.identityHashCode(System.nanoTime());
-            this.keyIndex = System.identityHashCode(Math.random());
+            log.trace(entering+"CacheKeyIndex()");
+            this.keyIndex = System.identityHashCode(System.nanoTime());
+            //this.keyIndex = System.identityHashCode(Math.random());
+            log.debug("keyIndex="+keyIndex);
         }
 
         public CacheKeyIndex(long keyIndex) {
+            log.trace(entering+"CacheKeyIndex("+keyIndex+")");
             this.keyIndex = keyIndex;
         }
 

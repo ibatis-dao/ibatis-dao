@@ -27,13 +27,13 @@ public interface INestedRange<T extends Number & Comparable<T>> {
 
     public T getFirst();
 
-    public void setFirst(Number first);
+    public void setFirst(T first);
     
     public T getLength();
 
-    public void setLength(Number length);
+    public void setLength(T length);
     
-    public void incLength(Number increment);
+    public void incLength(T increment);
     
     public INestedRange<T> getParentRange();
     
@@ -45,15 +45,15 @@ public interface INestedRange<T extends Number & Comparable<T>> {
     
     public boolean IsSingular();
     
-    public boolean IsInbound(Number value);
+    public boolean IsInbound(T value);
     
     public boolean IsInbound(INestedRange<T> aRange);
     
-    public Number getMinDistance(Number to);
+    public T getMinDistance(T to);
     
     //public T getMinDistance(INestedRange<T> aRange);
     
-    public Number getMaxDistance(Number to);
+    public T getMaxDistance(T to);
     
     //public T getMaxDistance(INestedRange<T> aRange);
 
@@ -67,7 +67,7 @@ public interface INestedRange<T extends Number & Comparable<T>> {
     
     public INestedRange<T> Shift(T value);
     
-    public INestedRange<T> Complement(Number to);
+    public INestedRange<T> Complement(T to);
 
     public T valueOf(Number v);
     
