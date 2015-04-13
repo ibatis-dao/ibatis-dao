@@ -56,7 +56,7 @@ import javafx.collections.ObservableList;
  * @param <DTOclass> - класс объекта, представляющего строку данных
  * @param <RangeKeyClass>
  */
-public class DataList<DTOclass,RangeKeyClass extends Number & Comparable<RangeKeyClass>> implements IDataCrud<DTOclass,RangeKeyClass> {
+public class DataList<DTOclass,RangeKeyClass extends Number> implements IDataCrud<DTOclass,RangeKeyClass> {
     
     private static final String entering = ">>> ";
     private static final String exiting = "<<< ";
@@ -84,8 +84,8 @@ public class DataList<DTOclass,RangeKeyClass extends Number & Comparable<RangeKe
         //this.invListeners = new ArrayList<>();
         this.dao = dao;
         if (dao != null) {
-            if (dao.getClass().isInstance(IDataWriter.class)) {
-                daoWriter = (IDataWriter<DTOclass>)dao;
+            if (dao.getClass().isAssignableFrom(IDataWriter.class)) {
+                daoWriter = (IDataWriter)dao;
             } else {
                 this.daoWriter = null;
             }

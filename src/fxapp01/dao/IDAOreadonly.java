@@ -26,7 +26,7 @@ import java.util.List;
  * @param <DTOclass> класс строки данных
  * @param <RangeKeyClass>
  */
-public interface IDAOreadonly<DTOclass,RangeKeyClass extends Number & Comparable<RangeKeyClass>>{
+public interface IDAOreadonly<DTOclass,RangeKeyClass extends Number>{
     
     public IHasDataProperty getBeanProperties();
     

@@ -65,7 +65,7 @@ public class BeanPropertiesDescribedTest {
         //log.debug("Properties.size="+instance.beanProperties.size());
         PropertyDescriptor[] pds = instance.getBeanPropertyDescriptors(TestItemDTO.class);
         int expResult = pds.length+1;
-        IDataPropertyDescribed property = new BeanPropertyDescribed(TestItemDTO.class, pds[0]);
+        IDataPropertyDescribed<Object, Object> property = new BeanPropertyDescribed(TestItemDTO.class, pds[0]);
         instance.addDescribedDataProperty(pds.length, property);
         int result = instance.beanProperties.size();
         assertEquals(expResult, result);

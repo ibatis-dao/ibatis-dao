@@ -23,7 +23,7 @@ import fxapp01.excpt.EUnsupported;
  * @author serg
  * @param <T>
  */
-public interface INestedRange<T extends Number & Comparable<T>> {
+public interface INestedRange<T extends Number> {
 
     public T getFirst();
 

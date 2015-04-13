@@ -21,7 +21,7 @@ package fxapp01.dao;
  * @param <DTOclass> класс объекта, представляющего строку данных
  * @param <RangeKeyClass>
  */
-public interface IDataCrud<DTOclass,RangeKeyClass extends Number & Comparable<RangeKeyClass>> 
+public interface IDataCrud<DTOclass,RangeKeyClass extends Number> 
     extends IHasData<DTOclass,RangeKeyClass>,
             IHasDataChanges,
             IDataWriter<DTOclass>
